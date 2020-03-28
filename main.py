@@ -1,18 +1,24 @@
+'''
+Note-taking:
+
+limit shots like in galaga
+UPGRADE IDEAS:
+Auto-shoot -> hold mouse to shoot as soon as a laser is avaliable
+more shots -> Increase current bullet num cap
+Buy repar -> refil a heart of health
+Shield?
+
+
+enemies move faster
+more enemies
+
+'''
+
 import os
 import pygame as py
 import random
 
-# limit shots like in galaga
-## UPGRADE IDEAS:
-# Auto-shoot -> hold mouse to shoot as soon as a laser is avaliable
-# more shots -> Increase current bullet num cap
-# Buy repar -> refil a heart of health
-# Shield?
-
-
-# enemies move faster
-# more enemies
-
+# Xavier here, can we get rid of this loop with nothing in it?
 
 if False:
     ## KEY INPUT
@@ -46,9 +52,14 @@ if False:
     ## Polygon
     #   py.draw.polygon(Surface, Colour, Points {list or tuple}, like thickness {0 fills the shape})
     pass
+
 def initialise_program():
     # PRINT INITIAL CREDITS/INFO IN CONSOLE
     if True:
+        absolutePath = os.path.abspath(__file__) # takes file name and converts it to an absolute path
+        directoryName = os.path.dirname(absolutePath) # uses absolute path to locate file on local system
+        os.chdir(directoryName) # changes cwd to the direct directory (I hate file paths.)
+        
         print('\n'*30)
         print("=========================================================")
         print("U\u0332n\u0332t\u0332i\u0332t\u0332l\u0332e\u0332d\u0332 \u0332S\u0332p\u0332a\u0332c\u0332e\u0332 \u0332T\u0332h\u0332i\u0332n\u0332g\u0332")
@@ -58,10 +69,12 @@ def initialise_program():
         print("__________                                               ")
         print("=========================================================")
         print('\n'*2)
+
     # INITIALISE PYGAME AND ASK FOR SCREEN SIZE
     py.init()
     py.display.set_caption('Untitled Space Thing')               ## PICK A NAME
     clock = py.time.Clock()
+
     while True:
         try:
             tempVar = int(input('Enter screen width: '))
@@ -76,10 +89,12 @@ def initialise_program():
         except ValueError:
             print('  Error: Invalid input t\u0332y\u0332p\u0332e\u0332;')
             print('    Input must be a positive intager above 500 \n')
+
     X = int(tempVar *0.8)
     Y = int(tempVar)
     SCREEN = py.display.set_mode((X, Y))
     return X, Y, SCREEN, clock
+
 X, Y, SCREEN, clock = initialise_program()
 
 def distance(startPoint, endPoint):                             # Returns distance between two poins in form (XDiff, YDiff), distance is always positive.
@@ -88,18 +103,21 @@ def distance(startPoint, endPoint):                             # Returns distan
     #dist = ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
     #return dist
     return ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
+
 def calculate_mouse_movement(currentPos, prevPos):              # Returns related mouse pos variables
     x1, y1 = currentPos
     x2, y2 = prevPos
     posDifference = (x1-x2, y1-y2)
     prevPos = currentPos
     return currentPos, prevPos, posDifference
+
 def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Animation
     physMove = 5
     animationLength = 5
     # Define fade out
     fadeOut = py.Surface((X, Y))
     fadeAlpha = 0
+
     for n in range(int(animationLength * 30)):
         mousePos = py.mouse.get_pos()
         # Detect Quit
@@ -125,6 +143,7 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
                              (Stars.posX[i], Stars.posY[i] -physMove*0.2*Stars.depth[i]),   # Pos 2
                              int(Stars.depth[i]))   				                        # Width
             # In case of depreciation of auto int() with pygame vectors:
+            
             #py.draw.line(SURFACE,(c, c, c),(int(Stars.posX[i]),int(Stars.posY[i]+physMove*0.2*Stars.depth[i])),(int(Stars.posX[i]),int(Stars.posY[i]-physMove*0.2*Stars.depth[i])),int(Stars.depth[i])) 
         # Boosters Animation
         py.draw.line(SURFACE, (0, 220, 255),
@@ -159,6 +178,7 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
     # Shuffle stars pos after hyperdrive
     return Stars.posX
 
+
 class Stars:            # Background Stars
     num = 250
     numLayers = 6
@@ -173,6 +193,7 @@ class Stars:            # Background Stars
         posY.append(random.randrange(Y))
         depth.append(random.randrange(numLayers) *X*0.001 + minSize)
     del numLayers, minSize
+
     def handle_stars(SURFACE, Stars, movementMultiplier=X*0.002):
         for i in range(Stars.num):
             Stars.posY[i] += movementMultiplier * Stars.depth[i]*0.5
@@ -181,6 +202,8 @@ class Stars:            # Background Stars
             # In case of depreciation of auto int() with pygame vectors:
             #py.draw.rect(SURFACE, (255,255,255), (int(Stars.posX[i]), int(Stars.posY[i]), int(Stars.depth[i]), int(Stars.depth[i])))
         return Stars.posY
+        
+
 class Mouse:            # All mouse related variables / input
     currentPos = (0,0)                      # Current pos of mouse expressed as (x, y)
     prevPos = (0,0)                         # Pos of mouse last frame expressed as (x, y)
@@ -188,9 +211,13 @@ class Mouse:            # All mouse related variables / input
     B1, B2, B3 = False, False, False        # Mouse held down? -> B1 = left button   B2 = middle button   B3 = right button
     leftClick, rightClick = False, False    # Initial click    -> Only active for frame in which click occurs
     clickPos = (0,0)                        # Pos of last click expressed as (x, y)     
+
+
 class Text:             # All text/font files & renders
     #infoFont = py.font.Font('', int(X*0.01))
     pass     
+
+
 class Colour:           # All colours (Preferabaly RGB format)
     BLACK        = (  0,   0,   0)
     WHITE        = (255, 255, 255)
@@ -200,11 +227,14 @@ class Colour:           # All colours (Preferabaly RGB format)
     GREY         = (170, 170, 170)
     BACKGROUND_COLOUR = (0, 0, 0) 
     PLAYER_LASER_COLOUR = (255,50,50)
+
+
 class Player:           # Player variables
     size = int(X*0.07)
     halfSize = int(size*0.5)
     health = 100
-    SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player_ship.png')), (size, size))
+    SHIP_SPRITE = py.transform.scale(py.image.load('Sprites/player.png'), (size, size))
+
     def draw_player():
         py.draw.line(SCREEN, (255,60,0), Mouse.currentPos, (Mouse.currentPos[0], 
             Mouse.currentPos[1] +int(X*0.04) +random.randrange(int(X*0.02))), int(random.randrange(int(X*0.01)) +X*0.02))
@@ -214,6 +244,7 @@ class Player:           # Player variables
             Mouse.currentPos[1] +int(X*0.04) +random.randrange(int(X*0.01))), int(X*0.005))
         SCREEN.blit(Player.SHIP_SPRITE, (Mouse.currentPos[0]-Player.halfSize, 
             Mouse.currentPos[1]-Player.halfSize))
+
     class Lasers:
     	pos = []
     	length = int(Y*0.05)
@@ -230,7 +261,9 @@ class Player:           # Player variables
     		for i in range(len(Lasers.pos)):
     			py.draw.line(SCREEN, Colour.PLAYER_LASER_COLOUR, (Lasers.pos[i]), (Lasers.pos[i][0], Lasers.pos[i][1]-Lasers.length), Lasers.width)
     		return Lasers, Enemies
+
 class Enemies:
+
     class Asteroids:
         initialSize = int(X*0.1)
         initialSpeed = int(X*0.005)+1
@@ -238,6 +271,7 @@ class Enemies:
         asteroid_2 = py.transform.scale(py.image.load(os.path.join('Sprites', 'asteroid_2.png')), (initialSize, initialSize))
         asteroid_3 = py.transform.scale(py.image.load(os.path.join('Sprites', 'asteroid_3.png')), (initialSize, initialSize))
         data = []    # X, Y, Size, Sprite
+
         def move_and_print(asteroidData):
             tempList = []
             for x, y, size, sprite in asteroidData:
@@ -246,6 +280,7 @@ class Enemies:
                     tempList.append((x, newY, size, sprite))
                     SCREEN.blit(sprite, (x, newY))
             return tempList
+
         def create_new():
             size = int(Enemies.Asteroids.initialSize * ((random.randrange(10)+5)/10))
             randSelect = random.randrange(3)
@@ -264,6 +299,7 @@ class Enemies:
 
 ## MAIN LOOP ##
 difficulty = 2 # Increases as player progresses
+
 while True:
     ## Initialise Frame & Frame Dependant Variables
     if True:
@@ -272,6 +308,7 @@ while True:
         Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
         Mouse.leftClick, Mouse.rightClick = False, False
         Mouse.currentPos, Mouse.prevPos, Mouse.movement = calculate_mouse_movement(py.mouse.get_pos(), Mouse.prevPos)
+
         for event in py.event.get():
             if event.type == py.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -306,5 +343,3 @@ while True:
     ## Update Screen
     clock.tick(30)
     py.display.update() 
-
-
