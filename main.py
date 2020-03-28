@@ -211,14 +211,10 @@ class Mouse:            # All mouse related variables / input
     B1, B2, B3 = False, False, False        # Mouse held down? -> B1 = left button   B2 = middle button   B3 = right button
     leftClick, rightClick = False, False    # Initial click    -> Only active for frame in which click occurs
     clickPos = (0,0)                        # Pos of last click expressed as (x, y)     
-
-
-class Text:             # All text/font files & renders
-    #infoFont = py.font.Font('', int(X*0.01))
+class Fonts:             # All text/font files & renders
+    #healthBar = py.font.Font('', int(X*0.01))
     pass     
-
-
-class Colour:           # All colours (Preferabaly RGB format)
+class Colours:           # All colours (Preferabaly RGB format)
     BLACK        = (  0,   0,   0)
     WHITE        = (255, 255, 255)
     RED          = (255,   0,   0)
@@ -259,7 +255,7 @@ class Player:           # Player variables
     		Lasers.pos = tempList[:]
     		# Print Lasers
     		for i in range(len(Lasers.pos)):
-    			py.draw.line(SCREEN, Colour.PLAYER_LASER_COLOUR, (Lasers.pos[i]), (Lasers.pos[i][0], Lasers.pos[i][1]-Lasers.length), Lasers.width)
+    			py.draw.line(SCREEN, Colours.PLAYER_LASER_COLOUR, (Lasers.pos[i]), (Lasers.pos[i][0], Lasers.pos[i][1]-Lasers.length), Lasers.width)
     		return Lasers, Enemies
 
 class Enemies:
@@ -303,7 +299,7 @@ difficulty = 2 # Increases as player progresses
 while True:
     ## Initialise Frame & Frame Dependant Variables
     if True:
-        SCREEN.fill(Colour.BACKGROUND_COLOUR)
+        SCREEN.fill(Colours.BACKGROUND_COLOUR)
         keys = py.key.get_pressed()
         Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
         Mouse.leftClick, Mouse.rightClick = False, False
@@ -328,10 +324,24 @@ while True:
         Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
     Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
-    ## Laser Test
+    ## Player Lasers
     if Mouse.leftClick or keys[py.K_SPACE]:
         Player.Lasers.pos.append(Mouse.currentPos)
     Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
+
+    indexOffset = 0
+    for i in range(len(Player.Lasers.pos)):
+        laserTopPos = (Player.Lasers.pos[i -indexOffset][0], Player.Lasers.pos[i -indexOffset][1]-Player.Lasers.length)
+        for n in range(len(Enemies.Asteroids.data)):
+            asteroidSize = Enemies.Asteroids.data[n-indexOffset][2]
+            asteroidPosX, asteroidPosY = Enemies.Asteroids.data[n-indexOffset][0:2]
+            asteroidCenter = ((asteroidPosX+asteroidSize*0.5), (asteroidPosY+asteroidSize*0.5))
+            if distance(asteroidCenter, laserTopPos) < Enemies.Asteroids.data[n -indexOffset][2]*0.6:
+                py.draw.circle(SCREEN, (255,200,200), laserTopPos, int(Y*0.01))
+                py.draw.circle(SCREEN, Colours.RED, laserTopPos, int(Y*0.007))
+                del Player.Lasers.pos[i -indexOffset], Enemies.Asteroids.data[n -indexOffset]
+                indexOffset += 1
+                break
 
     ## Draw Player
     Player.draw_player()
