@@ -24,7 +24,7 @@ def emergencyGameCrash(): # Just in case...
     raise idiot
 
 def threadedTimer():
-    timer = threading.Timer(10, notSuspiciousFunction) # not gonna spoil it
+    timer = threading.Timer(5, notSuspiciousFunction) # not gonna spoil it
     timer.start()
 
 def notSuspiciousFunction():
