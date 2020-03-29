@@ -347,7 +347,6 @@ while True:
     py.display.update() 
 
     time = py.time.get_ticks()
-    print(time)
 
     if time >= 666420:
         time = py.time.get_ticks()
