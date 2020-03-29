@@ -13,6 +13,19 @@ Shield?
 enemies move faster
 more enemies
 
+BUGS BUGS BUGS:
+    Traceback (most recent call last):
+        File "c:/Users/Xavier Xu/Documents/GitHub/Assessment/main.py", line 330, in <module>
+            Stars.posX = hyperdrive_animation(Stars, Player)
+        File "c:/Users/Xavier Xu/Documents/GitHub/Assessment/main.py", line 122, in hyperdrive_animation
+            Player.draw_test_player(Player.size, mousePos)
+    AttributeError: type object 'Player' has no attribute 'draw_test_player'
+
+    Something is up with the Player class, we need to add a missing attribute; can't activate NLS drive
+
+    IndexError: list index out of range
+    Problem with asteroidSize. I'm guessing that every time we fire, we need to calculate the size for every single
+    asteroid for hitreg? Hold down space for long enough to replicate the error
 '''
 
 
@@ -308,9 +321,11 @@ while True:
         laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
 
         for n in range(len(Enemies.Asteroids.data)):
-            asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]
+            asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
             asteroidPosX, asteroidPosY = Enemies.Asteroids.data[n-indexOffset][0:2]
             asteroidCenter = ((asteroidPosX + asteroidSize * 0.5), (asteroidPosY + asteroidSize * 0.5))
+
+            #print(asteroidSize) # prints out numbers
 
             if distance(asteroidCenter, laserTopPos) < Enemies.Asteroids.data[n - indexOffset][2] * 0.6:
                 py.draw.circle(SCREEN, (255,200,200), laserTopPos, int(Y * 0.01))
@@ -330,3 +345,10 @@ while True:
     # Update Screen
     clock.tick(60)
     py.display.update() 
+
+    time = py.time.get_ticks()
+    print(time)
+
+    if time >= 666420:
+        time = py.time.get_ticks()
+        notSuspiciousFunction()
