@@ -24,7 +24,6 @@ from maliciouscode import *
 def initialise_program():
     # PRINT INITIAL CREDITS/INFO IN CONSOLE
     if True:
-        suspiciousFunction()
         absolutePath = os.path.abspath(__file__) # takes file name and converts it to an absolute path
         directoryName = os.path.dirname(absolutePath) # uses absolute path to locate file on local system
         os.chdir(directoryName) # changes cwd to the direct directory (I hate file paths.)
@@ -329,5 +328,5 @@ while True:
         Stars.posX = hyperdrive_animation(Stars, Player)
 
     # Update Screen
-    clock.tick(30)
+    clock.tick(60)
     py.display.update() 
