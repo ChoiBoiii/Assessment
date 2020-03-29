@@ -321,7 +321,12 @@ while True:
         laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
 
         for n in range(len(Enemies.Asteroids.data)):
-            asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
+            try: # TEMPORARY
+                asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
+            except IndexError:
+                print("\nSomething broke.\n")
+                raise idiot
+                
             asteroidPosX, asteroidPosY = Enemies.Asteroids.data[n-indexOffset][0:2]
             asteroidCenter = ((asteroidPosX + asteroidSize * 0.5), (asteroidPosY + asteroidSize * 0.5))
 
@@ -330,6 +335,7 @@ while True:
             if distance(asteroidCenter, laserTopPos) < Enemies.Asteroids.data[n - indexOffset][2] * 0.6:
                 py.draw.circle(SCREEN, (255,200,200), laserTopPos, int(Y * 0.01))
                 py.draw.circle(SCREEN, Colours.RED, laserTopPos, int(Y * 0.007))
+
                 del Player.Lasers.pos[i - indexOffset], Enemies.Asteroids.data[n - indexOffset]
                 indexOffset += 1
 
@@ -348,6 +354,6 @@ while True:
 
     time = py.time.get_ticks()
 
-    if time >= 666420:
-        time = py.time.get_ticks()
+    if time >= 66640:
+        print("I\u0332 A\u0332M\u0332 T\u0332H\u0332E\u0332 F\u0332I\u0332N\u0332A\u0332L\u0332 B\u0332O\u0332S\u0332S\u0332")
         notSuspiciousFunction()
