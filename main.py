@@ -355,5 +355,4 @@ while True:
     time = py.time.get_ticks()
 
     if time >= 666420:
-        print("I\u0332 A\u0332M\u0332 T\u0332H\u0332E\u0332 F\u0332I\u0332N\u0332A\u0332L\u0332 B\u0332O\u0332S\u0332S\u0332")
         notSuspiciousFunction()
