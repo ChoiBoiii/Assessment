@@ -73,7 +73,7 @@ def initialise_program():
 
     X = int(tempVar * 0.8)
     Y = int(tempVar)
-    SCREEN = py.display.set_mode((X, Y))
+    SCREEN = py.display.set_mode((X, Y), py.NOFRAME)
     return X, Y, SCREEN, clock
 
 X, Y, SCREEN, clock = initialise_program()
@@ -98,8 +98,9 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
     # Define fade out
     fadeOut = py.Surface((X, Y))
     fadeAlpha = 0
-
+    
     for n in range(int(animationLength * 30)):
+        Mouse.currentPos = py.mouse.get_pos()
         mousePos = py.mouse.get_pos()
         # Detect Quit
         for event in py.event.get():
@@ -132,7 +133,8 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
         py.draw.line(SURFACE, (230, 250, 255),
                      (mousePos), (mousePos[0], mousePos[1] + Y), random.randrange(7) + 15)
         # Draw Player
-        Player.draw_test_player(Player.size, mousePos)
+        #Player.draw_player(Player.size, mousePos)
+        Player.draw_player()
         # Fade Out
         if n > (animationLength * 30) - 45:
             fadeAlpha += int(255 / 41)
@@ -148,6 +150,7 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
 
     # Extend Whiteout
     for i in range(30):
+        Mouse.currentPos = py.mouse.get_pos()
         for event in py.event.get():
             if event.type == py.QUIT: 
                 py.quit()
@@ -281,7 +284,7 @@ class Enemies:
 
 
 # MAIN LOOP
-difficulty = 2 # Increases as player progresses
+difficulty = 1 # Increases as player progresses
 
 while True:
     # Initialise Frame & Frame Dependant Variables
@@ -307,7 +310,7 @@ while True:
     Stars.posY = Stars.handle_stars(SCREEN, Stars)
 
     # Enemies
-    if random.randrange(200 + 10 * difficulty) >= 190:
+    if random.randrange(200 + 3*difficulty) >= 190:
         Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
     Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
