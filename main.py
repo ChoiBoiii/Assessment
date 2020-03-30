@@ -98,8 +98,9 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
     # Define fade out
     fadeOut = py.Surface((X, Y))
     fadeAlpha = 0
-
+    
     for n in range(int(animationLength * 30)):
+        Mouse.currentPos = py.mouse.get_pos()
         mousePos = py.mouse.get_pos()
         # Detect Quit
         for event in py.event.get():
@@ -132,7 +133,8 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
         py.draw.line(SURFACE, (230, 250, 255),
                      (mousePos), (mousePos[0], mousePos[1] + Y), random.randrange(7) + 15)
         # Draw Player
-        Player.draw_test_player(Player.size, mousePos)
+        #Player.draw_player(Player.size, mousePos)
+        Player.draw_player()
         # Fade Out
         if n > (animationLength * 30) - 45:
             fadeAlpha += int(255 / 41)
@@ -148,6 +150,7 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
 
     # Extend Whiteout
     for i in range(30):
+        Mouse.currentPos = py.mouse.get_pos()
         for event in py.event.get():
             if event.type == py.QUIT: 
                 py.quit()
