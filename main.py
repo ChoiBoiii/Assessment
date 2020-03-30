@@ -226,9 +226,9 @@ class Player:           # Player variables
 
     class Lasers:
     	pos = []
-    	length = int(Y * 0.05)
-    	width = int(X * 0.005) + 1
-    	moveStep = int(Y * 0.03)
+    	length = int(Y * 0.07)
+    	width = int(X * 0.004) + 1
+    	moveStep = int(Y * 0.025)
 
     	def handle_lasers(Lasers, Enemies):
     		# Move Lasers & Delete Offscreen
