@@ -73,7 +73,7 @@ def initialise_program():
 
     X = int(tempVar * 0.8)
     Y = int(tempVar)
-    SCREEN = py.display.set_mode((X, Y))
+    SCREEN = py.display.set_mode((X, Y), py.NOFRAME)
     return X, Y, SCREEN, clock
 
 X, Y, SCREEN, clock = initialise_program()
@@ -281,7 +281,7 @@ class Enemies:
 
 
 # MAIN LOOP
-difficulty = 2 # Increases as player progresses
+difficulty = 1 # Increases as player progresses
 
 while True:
     # Initialise Frame & Frame Dependant Variables
@@ -307,7 +307,7 @@ while True:
     Stars.posY = Stars.handle_stars(SCREEN, Stars)
 
     # Enemies
-    if random.randrange(200 + 10 * difficulty) >= 190:
+    if random.randrange(200 + 3*difficulty) >= 190:
         Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
     Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
