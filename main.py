@@ -238,26 +238,29 @@ class Player:           # Player variables
         autoShoot = True
         
     class Lasers:
-    	pos = []
-    	length = int(Y * 0.05)
-    	width = int(X * 0.005) + 1
-    	moveStep = int(Y * 0.03)
-    	maxLasers = 1
+        pos = []
+        length = int(Y * 0.05)
+        width = int(X * 0.005) + 1
+        moveStep = int(Y * 0.03)
+        maxLasers = 1
 
-    	def handle_lasers(Lasers, Enemies):
-    		# Move Lasers & Delete Offscreen
-    		tempList = []
-    		for x, y in Lasers.pos:
-    			if not (y - Lasers.moveStep < 0):
-    				tempList.append((x, y - Lasers.moveStep))
-    		Lasers.pos = tempList[:]
+        def handle_lasers(Lasers, Enemies):
+            # Move Lasers & Delete Offscreen
+            global Player
+            tempList = []
+            for x, y in Lasers.pos:
+                if not (y - Lasers.moveStep < 0):
+                    tempList.append((x, y - Lasers.moveStep))
+                else:
+                    Player.score -= 5
+            Lasers.pos = tempList[:]
 
-    		# Print Lasers
-    		for i in range(len(Lasers.pos)):
-    			py.draw.line(SCREEN, Colours.PLAYER_LASER_COLOUR, (Lasers.pos[i]),
+            # Print Lasers
+            for i in range(len(Lasers.pos)):
+                py.draw.line(SCREEN, Colours.PLAYER_LASER_COLOUR, (Lasers.pos[i]),
                  (Lasers.pos[i][0], Lasers.pos[i][1] - Lasers.length), Lasers.width)
 
-    		return Lasers, Enemies
+            return Lasers, Enemies
 
 class Enemies:
 
@@ -364,7 +367,7 @@ while True:
                 del Player.Lasers.pos[i - indexOffset], Enemies.Asteroids.data[n - indexOffset]
                 indexOffset += 1
 
-                Player.score += 50
+                Player.score += 10
 
                 break
     #SCORE TEST
