@@ -299,7 +299,8 @@ class Enemies:
 
 # MAIN LOOP
 difficulty = 0 # Increases as player progresses
-
+py.mixer.music.load('Sounds/game_music.wav')
+py.mixer.music.play(0)
 while True:
     # Initialise Frame & Frame Dependant Variables
     if True:
