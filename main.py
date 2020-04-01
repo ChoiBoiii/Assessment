@@ -11,8 +11,8 @@ Limit to only 3 shots a second to prevent spamming?
 UPGRADE IDEAS:
 Auto-shoot -> hold mouse to shoot as soon as a laser is avaliable  -DONE   BUY FOR 1000 POINTS 
 more shots -> Increase current bullet num cap
-Buy repar -> refil a heart of health
-Shield?
+Buy repair -> refil a heart of health
+Shield? -> Nah shield's for noobs 
 
 enemies move faster
 more enemies
@@ -32,7 +32,7 @@ BUGS BUGS BUGS:
     asteroid for hitreg? Hold down space for long enough to replicate the error
 
 SHOULD BE FIXED BY LIMITING SHOTS (Mark this section with ur name when read)
-- Isaak
+- Isaak - No I don't think I will
 
 '''
 
