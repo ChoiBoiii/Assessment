@@ -1,11 +1,15 @@
 '''
 Note-taking:
 
-limit shots like in galaga
+UPGRADES CLASS INSIDE PLAYER CLASS:
+e.g. Player.Upgrades.autoShoot = False
+
+
+limit shots like in galaga - DONE
 Limit to only 3 shots a second to prevent spamming?
 
 UPGRADE IDEAS:
-Auto-shoot -> hold mouse to shoot as soon as a laser is avaliable
+Auto-shoot -> hold mouse to shoot as soon as a laser is avaliable  -DONE   BUY FOR 1000 POINTS 
 more shots -> Increase current bullet num cap
 Buy repar -> refil a heart of health
 Shield?
@@ -26,6 +30,10 @@ BUGS BUGS BUGS:
     IndexError: list index out of range
     Problem with asteroidSize. I'm guessing that every time we fire, we need to calculate the size for every single
     asteroid for hitreg? Hold down space for long enough to replicate the error
+
+SHOULD BE FIXED BY LIMITING SHOTS (Mark this section with ur name when read)
+- Isaak
+
 '''
 
 
@@ -210,6 +218,7 @@ class Colours: # All colours (Preferabaly RGB format)
 
 
 class Player:           # Player variables
+    score = 0
     size = int(X * 0.07)
     halfSize = int(size * 0.5)
     health = 100
@@ -224,12 +233,16 @@ class Player:           # Player variables
             Mouse.currentPos[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
         SCREEN.blit(Player.SHIP_SPRITE, (Mouse.currentPos[0] - Player.halfSize, 
             Mouse.currentPos[1] - Player.halfSize))
-
+        
+    class Upgrades:
+        autoShoot = True
+        
     class Lasers:
     	pos = []
     	length = int(Y * 0.05)
     	width = int(X * 0.005) + 1
     	moveStep = int(Y * 0.03)
+    	maxLasers = 1
 
     	def handle_lasers(Lasers, Enemies):
     		# Move Lasers & Delete Offscreen
@@ -282,7 +295,7 @@ class Enemies:
 
 
 # MAIN LOOP
-difficulty = 2 # Increases as player progresses
+difficulty = 0 # Increases as player progresses
 
 while True:
     # Initialise Frame & Frame Dependant Variables
@@ -313,10 +326,21 @@ while True:
     Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
     # Player Lasers
-    if Mouse.leftClick or keys[py.K_SPACE]:
-        Player.Lasers.pos.append(Mouse.currentPos)
+    #if Mouse.leftClick or keys[py.K_SPACE]:
+    if len(Player.Lasers.pos) < Player.Lasers.maxLasers:
+        if Player.Upgrades.autoShoot:
+            if Mouse.B1:
+                Player.Lasers.pos.append(Mouse.currentPos)
+                py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
+                py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+        else:
+            if Mouse.leftClick:
+                Player.Lasers.pos.append(Mouse.currentPos)
+                py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
+                py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
     Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
 
+    # COLLISIONS HELL YEA
     indexOffset = 0
     for i in range(len(Player.Lasers.pos)):
         laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
@@ -340,7 +364,11 @@ while True:
                 del Player.Lasers.pos[i - indexOffset], Enemies.Asteroids.data[n - indexOffset]
                 indexOffset += 1
 
+                Player.score += 50
+
                 break
+    #SCORE TEST
+    SCREEN.blit(py.font.Font(None, int(X*0.05)).render(f"Score: {Player.score}", True, (255,255,255), (100,100,100)), (int(X*0.05), int(X*0.05)))
 
     # Draw Player
     Player.draw_player()
