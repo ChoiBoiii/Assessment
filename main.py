@@ -205,7 +205,12 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
     return Stars.posX
 def intro_screen(playerShip):
     font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
+    textShade = 255
+    textTicks = 0
+    textShadeLimit = (100,255)
+    shipCenter = (int(X*0.5), int(Y*0.7))
     while True:
+        ## INTER-FRAME HANDLING ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
         keys = py.key.get_pressed()
         Mouse.leftClick, Mouse.rightClick = False, False
@@ -226,16 +231,33 @@ def intro_screen(playerShip):
             break
 
         ## DYNAMIC TEXT ##
-        text = font.render("Click the ship to start!", True, (255,255,255), (0,0,0))
+        if textTicks %2 == 0:
+            textShade -= 3
+            if textShade < textShadeLimit[0]:
+                textShade = textShadeLimit[0]
+                textTicks += 1
+        if textTicks %2 == 1:
+            textShade += 3
+            if textShade > textShadeLimit[1]:
+                textShade = textShadeLimit[1]
+                textTicks += 1
+        text = font.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
 
         ## PRINT TO SCREEN + HANDLE STARS ##
         SCREEN.blit(text, (int(X*0.18), int(Y*0.6)))
         Stars.posY = Stars.handle_stars(SCREEN, Stars)
-        SCREEN.blit(playerShip, (int(X*0.5), int(Y*0.7)))
+         #Player ship + jets
+        py.draw.line(SCREEN, (255,60,0), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
+        py.draw.line(SCREEN, (255,255,0), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.01))
+        py.draw.line(SCREEN, (255,255,240), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
+        SCREEN.blit(playerShip, (shipCenter[0]-Player.halfSize, shipCenter[1]-Player.halfSize))
 
         ## UPDATE SCREEN + FRAME DELAY
         py.display.update()
-        clock.tick(30)
+        clock.tick(40)
 
     return Stars.posY
 def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN): # Hyperdrive Animation ~but different~
