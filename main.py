@@ -57,28 +57,33 @@ def initialise_program():
         print("Published under:                                         ")
         print("lab01                                                    ")
         print("=========================================================")
+        print("")
+        print("Some aspects of this game require timing between music and frames,")
+        print("Please exit any applications in the background so that it runs smoothly")
 
     # GAME INSTRUCTIONS
-    print("")
-    print('Enemies                 | 50 points')
-    print('Asteroids               | 10 points')
-    print('Somehow miss everything | -5 Points')
-    print('')
-    print('Use mouse to move, and left click to shoot')
-    print('You only have one life so')
-    print("DON'T GET HIT!")
-    print("")
+    print("""
+    Enemies                 | 50 points
+    Asteroids               | 10 points
+    Somehow miss everything | -5 Points
+
+    Use mouse to move, and left click to shoot
+    You only have one life so
+    DON'T GET HIT!
+    """)
 
     # INITIALISE PYGAME AND ASK FOR SCREEN SIZE
     py.init()
     py.display.set_caption('Untitled Space Thing')               ## PICK A NAME
+    py.mouse.set_visible(0)
     clock = py.time.Clock()
 
     while True:
         try:
-            tempVar = int(input('Enter screen width: '))
+            tempVar = int(input('Enter screen height: '))
             try:
                 if tempVar >= 500:
+                    print("Initializing...")
                     break
                 else:
                     print('  Error: Invalid input v\u0332a\u0332l\u0332u\u0332e\u0332;')
@@ -91,7 +96,8 @@ def initialise_program():
 
     X = int(tempVar * 0.8)
     Y = int(tempVar)
-    SCREEN = py.display.set_mode((X, Y), py.NOFRAME)
+    SCREEN = py.display.set_mode((X, Y), py.NOFRAME | py.FULLSCREEN)
+    py.mouse.set_visible(0)
     return X, Y, SCREEN, clock
 
 X, Y, SCREEN, clock = initialise_program()
@@ -149,9 +155,9 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN):     
             #py.draw.line(SURFACE,(c, c, c),(int(Stars.posX[i]),int(Stars.posY[i]+physMove*0.2*Stars.depth[i])),(int(Stars.posX[i]),int(Stars.posY[i]-physMove*0.2*Stars.depth[i])),int(Stars.depth[i])) 
         # Boosters Animation
         py.draw.line(SURFACE, (0, 220, 255),
-                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(10) + 25)
+                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.01)) + int(Y*0.03))
         py.draw.line(SURFACE, (230, 250, 255),
-                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(7) + 15)
+                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.007)) + int(Y*0.015))
         # Draw Player
         SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize, 
             mousePos[1] - Player.halfSize))
@@ -219,9 +225,9 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
             #py.draw.line(SURFACE,(c, c, c),(int(Stars.posX[i]),int(Stars.posY[i]+physMove*0.2*Stars.depth[i])),(int(Stars.posX[i]),int(Stars.posY[i]-physMove*0.2*Stars.depth[i])),int(Stars.depth[i])) 
         # Boosters Animation
         py.draw.line(SURFACE, (0, 220, 255),
-                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(10) + 25)
+                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.01)) + int(Y*0.03))
         py.draw.line(SURFACE, (230, 250, 255),
-                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(7) + 15)
+                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.007)) + int(Y*0.015))
         # Draw Player
         SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize, 
             mousePos[1] - Player.halfSize))
@@ -302,6 +308,9 @@ class Player:           # Player variables
     class Ammo:
         lasers = 100
         bombs = 0
+    class Upgrades:
+        autoShoot = False
+        maxLasers = 1
 
     def draw_player():
         py.draw.line(SCREEN, (255,60,0), Mouse.currentPos, (Mouse.currentPos[0], 
@@ -312,10 +321,6 @@ class Player:           # Player variables
             Mouse.currentPos[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
         SCREEN.blit(Player.SHIP_SPRITE, (Mouse.currentPos[0] - Player.halfSize, 
             Mouse.currentPos[1] - Player.halfSize))
-        
-    class Upgrades:
-        autoShoot = True
-        maxLasers = 3
         
     class Lasers:
         pos = []
@@ -389,7 +394,6 @@ class Sounds:
 difficulty = 0 # Increase as player progresses
 py.mixer.music.load("Sounds/game_music.wav")
 py.mixer.music.play(-1)
-# Intro Animation
 Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
 while True:
     # Initialise Frame & Frame Dependant Variables
