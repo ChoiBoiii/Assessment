@@ -59,11 +59,15 @@ def initialise_program():
         print("=========================================================")
 
     # GAME INSTRUCTIONS
-    print("""
-Use mouse to move, and left click to shoot
-You only have one life so
-DON'T GET HIT!
-""")
+    print("")
+    print('Enemies                 | 50 points')
+    print('Asteroids               | 10 points')
+    print('Somehow miss everything | -5 Points')
+    print('')
+    print('Use mouse to move, and left click to shoot')
+    print('You only have one life so')
+    print("DON'T GET HIT!")
+    print("")
 
     # INITIALISE PYGAME AND ASK FOR SCREEN SIZE
     py.init()
@@ -113,6 +117,8 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN):     
     fadeAlpha = 0
     if py.mouse.get_pos() == (0,0):
         mousePos = (int(X*0.5), int(Y*0.7))
+    else:
+        mousePos = py.mouse.get_pos()
     for n in range(int(animationLength * 30)):
         # Detect Quit
         for event in py.event.get():
@@ -243,13 +249,13 @@ class Player:           # Player variables
         
     class Upgrades:
         autoShoot = True
+        maxLasers = 1
         
     class Lasers:
         pos = []
         length = int(Y * 0.05)
         width = int(X * 0.005) + 1
         moveStep = int(Y * 0.03)
-        maxLasers = 1
 
         def handle_lasers(Lasers, Enemies):
             # Move Lasers & Delete Offscreen
@@ -313,8 +319,8 @@ py.mixer.music.load("Sounds/game_music.wav")
 #soundEffect = py.mixer.Sound("sound.wav")
 #py.mixer.music.stop()
 #py.mixer.Sound.play(soundEffect)
-py.mixer.music.play(0)
-# Into Aniation
+py.mixer.music.play(-1)
+# Intro Animation
 Stars.posX = hyperdrive_animation(Stars, Player, 7.3)
 while True:
     # Initialise Frame & Frame Dependant Variables
@@ -346,17 +352,19 @@ while True:
 
     # Player Lasers
     #if Mouse.leftClick or keys[py.K_SPACE]:
-    if len(Player.Lasers.pos) < Player.Lasers.maxLasers:
+    if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
         if Player.Upgrades.autoShoot:
             if Mouse.B1:
                 Player.Lasers.pos.append(Mouse.currentPos)
                 py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
                 py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+                py.mixer.Sound.play(Sounds.playerLaser)
         else:
             if Mouse.leftClick:
                 Player.Lasers.pos.append(Mouse.currentPos)
                 py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
                 py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+                py.mixer.Sound.play(Sounds.playerLaser)
     Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
 
     # COLLISIONS HELL YEA
