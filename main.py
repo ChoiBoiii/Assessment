@@ -99,13 +99,11 @@ def initialise_program(): # Set up display and pygame
     # INITIALISE PYGAME AND GET SCREEN SIZE
     py.init()
     py.display.set_caption('Untitled Space Thing')    
-    py.mouse.set_visible(0)
     clock = py.time.Clock()
     X, Y = system_screen_size_input()
 
-    # Initialise display and disable mouse visibility
+    # Initialise display
     SCREEN = py.display.set_mode((X, Y), py.NOFRAME)
-    py.mouse.set_visible(0)
     return X, Y, SCREEN, clock
 
 X, Y, SCREEN, clock = initialise_program()
@@ -205,8 +203,48 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
 
     ## RETURN SHUFFLED STARS POS ##
     return Stars.posX
-# Stars.posX = hyperdrive_animation(Stars, Player)
+def intro_screen(playerShip):
+    font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
+    while True:
+        SCREEN.fill(Colours.BACKGROUND_COLOUR)
+        keys = py.key.get_pressed()
+        Mouse.leftClick, Mouse.rightClick = False, False
+        Mouse.currentPos, Mouse.prevPos, Mouse.movement = calculate_mouse_movement(py.mouse.get_pos(), Mouse.prevPos)
+        for event in py.event.get():
+            if event.type == py.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    Mouse.leftClick = True
+                if event.button == 3:
+                    Mouse.rightClick = True
+            if event.type == py.QUIT:
+                py.display.quit()
+                py.quit()
+        if keys[py.K_ESCAPE]:
+            py.display.quit()
+            py.quit()
+        if Mouse.leftClick:
+            break
+
+        ## DYNAMIC TEXT ##
+        text = font.render("Click the ship to start!", True, (255,255,255), (0,0,0))
+
+        ## PRINT TO SCREEN + HANDLE STARS ##
+        SCREEN.blit(text, (int(X*0.18), int(Y*0.6)))
+        Stars.posY = Stars.handle_stars(SCREEN, Stars)
+        SCREEN.blit(playerShip, (int(X*0.5), int(Y*0.7)))
+
+        ## UPDATE SCREEN + FRAME DELAY
+        py.display.update()
+        clock.tick(30)
+
+    return Stars.posY
 def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN): # Hyperdrive Animation ~but different~
+    ## DISABLE MOUSE VISIBILITY ##
+    py.mouse.set_visible(0) 
+    ## INITIALISE GAME MUSIC ##
+    py.mixer.music.stop()
+    py.mixer.music.load("Sounds/game_music.wav")
+    py.mixer.music.play(-1)
     ## INTRO VARIABELS ##
     physMove = 0
     fadeOut = py.Surface((X, Y))
@@ -334,7 +372,8 @@ class Player: # Player variables
     size = int(X * 0.07)
     halfSize = int(size * 0.5)
     health = 100
-    SHIP_SPRITE = py.transform.scale(py.image.load('Sprites/player.png'), (size, size))
+    SHIP_SPRITE = py.transform.scale(py.image.load('Sprites/player.png').convert_alpha(), (size, size))
+    DEATH_EXPLOSION = py.transform.scale(py.image.load('Sprites/death_explosion.png').convert_alpha(), (int(size*2), int(size*2)))
     class Ammo:
         lasers = 100
         bombs = 0
@@ -389,9 +428,9 @@ class Enemies:
     class Asteroids:
         initialSize = int(X * 0.1)
         initialSpeed = int(X * 0.005) + 1
-        asteroid_1 = py.transform.scale(py.image.load(os.path.join('Sprites', 'asteroid_1.png')), (initialSize, initialSize))
-        asteroid_2 = py.transform.scale(py.image.load(os.path.join('Sprites', 'asteroid_2.png')), (initialSize, initialSize))
-        asteroid_3 = py.transform.scale(py.image.load(os.path.join('Sprites', 'asteroid_3.png')), (initialSize, initialSize))
+        asteroid_1 = py.transform.scale(py.image.load(os.path.join('Sprites', 'asteroid_1.png')).convert_alpha(), (initialSize, initialSize))
+        asteroid_2 = py.transform.scale(py.image.load(os.path.join('Sprites', 'asteroid_2.png')).convert_alpha(), (initialSize, initialSize))
+        asteroid_3 = py.transform.scale(py.image.load(os.path.join('Sprites', 'asteroid_3.png')).convert_alpha(), (initialSize, initialSize))
         data = []    # X, Y, Size, Sprite
 
         def move_and_print(asteroidData):
@@ -430,8 +469,7 @@ class Sounds:
 
 # MAIN LOOP
 difficulty = 0 # Increase as player progresses
-py.mixer.music.load("Sounds/game_music.wav")
-py.mixer.music.play(-1)
+Stars.posY = intro_screen(Player.SHIP_SPRITE) ; del intro_screen
 Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3) ; del intro_hyperdrive_animation # No longer needed -> Memmory management
 while True:
     # Initialise Frame & Frame Dependant Variables
@@ -467,6 +505,8 @@ while True:
 
     #Detect Collisions With Player
     if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
+        SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
+        py.display.update()
         print("collision")
         break
 
