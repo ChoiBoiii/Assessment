@@ -57,7 +57,13 @@ def initialise_program():
         print("Published under:                                         ")
         print("lab01                                                    ")
         print("=========================================================")
-        print('\n'*2)
+
+    # GAME INSTRUCTIONS
+    print("""
+Use mouse to move, and left click to shoot
+You only have one life so
+DON'T GET HIT!
+""")
 
     # INITIALISE PYGAME AND ASK FOR SCREEN SIZE
     py.init()
@@ -100,26 +106,27 @@ def calculate_mouse_movement(currentPos, prevPos):              # Returns relate
     prevPos = currentPos
     return currentPos, prevPos, posDifference
 
-def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Animation
+def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN):        # Hyperdrive Animation
     physMove = 5
-    animationLength = 5
     # Define fade out
     fadeOut = py.Surface((X, Y))
     fadeAlpha = 0
-
+    if py.mouse.get_pos() == (0,0):
+        mousePos = (int(X*0.5), int(Y*0.7))
     for n in range(int(animationLength * 30)):
-        mousePos = py.mouse.get_pos()
         # Detect Quit
         for event in py.event.get():
             if event.type == py.QUIT: 
                 py.quit()
+            if event.type == py.MOUSEMOTION:
+                mousePos = py.mouse.get_pos()
         keys = py.key.get_pressed()
         if keys[py.K_ESCAPE]:
             py.quit()
         # Draw Background
         SURFACE.fill((0, 0, random.randrange(90) + 50))
         # Calculate Star Pos #
-        physMove += 0.5
+        physMove += 0.3
         for i in range(100):
             Stars.posY[i] += physMove * Stars.depth[i]
             if Stars.posY[i] > Y:
@@ -136,9 +143,9 @@ def hyperdrive_animation(Stars, Player, SURFACE=SCREEN):        # Hyperdrive Ani
             #py.draw.line(SURFACE,(c, c, c),(int(Stars.posX[i]),int(Stars.posY[i]+physMove*0.2*Stars.depth[i])),(int(Stars.posX[i]),int(Stars.posY[i]-physMove*0.2*Stars.depth[i])),int(Stars.depth[i])) 
         # Boosters Animation
         py.draw.line(SURFACE, (0, 220, 255),
-                     (mousePos), (mousePos[0], mousePos[1] + Y), random.randrange(10) + 25)
+                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(10) + 25)
         py.draw.line(SURFACE, (230, 250, 255),
-                     (mousePos), (mousePos[0], mousePos[1] + Y), random.randrange(7) + 15)
+                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(7) + 15)
         # Draw Player
         SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize, 
             mousePos[1] - Player.halfSize))
@@ -296,11 +303,19 @@ class Enemies:
                 size,                                                                            # Size
                 sprite)                                                                          # Scaled Sprite
 
+class Sounds:
+    playerLaser = py.mixer.Sound("Sounds/player_laser.wav")
 
 # MAIN LOOP
 difficulty = 0 # Increases as player progresses
-py.mixer.music.load('Sounds/game_music.wav')
+#py.mixer.music.load('Sounds/game_music.wav')
+py.mixer.music.load("Sounds/game_music.wav")
+#soundEffect = py.mixer.Sound("sound.wav")
+#py.mixer.music.stop()
+#py.mixer.Sound.play(soundEffect)
 py.mixer.music.play(0)
+# Into Aniation
+Stars.posX = hyperdrive_animation(Stars, Player, 7.3)
 while True:
     # Initialise Frame & Frame Dependant Variables
     if True:
