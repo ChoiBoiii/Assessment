@@ -1,39 +1,29 @@
 '''
-Note-taking:
+NOTES:
+- Add sound effect when exiting hyperdrive 
+- Add hyperdrive spinup sound effect
+- Add explosion sprite for when player dies
+- Add explosion sound effect for when player destroys enemies or asteroids
+- Add highscores page 
+- Add upgrades shop
+- Add level incrementation -> increase difficulty, access shop
+- ALL DOCUENTATION; DFD, IPO's, GANTT, LOGBOOKS, PROJECT SCOPE THINGO, ETC 
 
 UPGRADES CLASS INSIDE PLAYER CLASS:
 e.g. Player.Upgrades.autoShoot = False
 
 
-limit shots like in galaga - DONE
-Limit to only 3 shots a second to prevent spamming?
-
 UPGRADE IDEAS:
-Auto-shoot -> hold mouse to shoot as soon as a laser is avaliable  -DONE   BUY FOR 1000 POINTS 
-more shots -> Increase current bullet num cap
-Buy repair -> refil a heart of health
-Shield? -> Nah shield's for noobs 
+Auto-shoot -> hold mouse to shoot as soon as a laser is avaliable   -YES   BUY FOR 2000 POINTS 
+more shots -> Increase current bullet num cap                       -YES   BUY FOR 3000 POINTS 
+buy bullets -> add ammo counter, player has to buy more             -YES   BUY FOR 2 POINTS EACH, in lots of 50 (50 for 100 points)
+Buy repair -> refil a heart of health   - NO ONLY ONE LIFE
+Shield? -> Nah shield's for noobs                                   -YES   BUY FOR 5000 POINTS (only one avaliable?)
+BOMBS -> Destroy everything on screen                               -YES   BUY FOR 500 POINTS
 
-enemies move faster
-more enemies
 
 BUGS BUGS BUGS:
-    Traceback (most recent call last):
-        File "c:/Users/Xavier Xu/Documents/GitHub/Assessment/main.py", line 330, in <module>
-            Stars.posX = hyperdrive_animation(Stars, Player)
-        File "c:/Users/Xavier Xu/Documents/GitHub/Assessment/main.py", line 122, in hyperdrive_animation
-            Player.draw_test_player(Player.size, mousePos)
-    AttributeError: type object 'Player' has no attribute 'draw_test_player'
-
-    Something is up with the Player class, we need to add a missing attribute; can't activate NLS drive
-
-    IndexError: list index out of range
-    Problem with asteroidSize. I'm guessing that every time we fire, we need to calculate the size for every single
-    asteroid for hitreg? Hold down space for long enough to replicate the error
-
-SHOULD BE FIXED BY LIMITING SHOTS (Mark this section with ur name when read)
-- Isaak - No I don't think I will
-
+    Could this be!? no bugs??
 '''
 
 
@@ -42,42 +32,8 @@ import pygame as py
 import random
 from maliciouscode import *
 
-def initialise_program():
-    # PRINT INITIAL CREDITS/INFO IN CONSOLE
-    if True:
-        absolutePath = os.path.abspath(__file__) # takes file name and converts it to an absolute path
-        directoryName = os.path.dirname(absolutePath) # uses absolute path to locate file on local system
-        os.chdir(directoryName) # changes cwd to the direct directory (I hate file paths.)
-        
-        print('\n'*30)
-        print("=========================================================")
-        print("U\u0332n\u0332t\u0332i\u0332t\u0332l\u0332e\u0332d\u0332 \u0332S\u0332p\u0332a\u0332c\u0332e\u0332 \u0332T\u0332h\u0332i\u0332n\u0332g\u0332")
-        print("By Jackson Bryant, Xavier Xu, and Isaak Choi             ")
-        print("                                                         ")
-        print("Published under:                                         ")
-        print("lab01                                                    ")
-        print("=========================================================")
-        print("")
-        print("Some aspects of this game require timing between music and frames,")
-        print("Please exit any applications in the background so that it runs smoothly")
-
-    # GAME INSTRUCTIONS
-    print("""
-    Enemies                 | 50 points
-    Asteroids               | 10 points
-    Somehow miss everything | -5 Points
-
-    Use mouse to move, and left click to shoot
-    You only have one life so
-    DON'T GET HIT!
-    """)
-
-    # INITIALISE PYGAME AND ASK FOR SCREEN SIZE
-    py.init()
-    py.display.set_caption('Untitled Space Thing')               ## PICK A NAME
-    py.mouse.set_visible(0)
-    clock = py.time.Clock()
-
+def user_screen_size_input(): # Creates game screen based on user input
+    #-> Not needed as screen is automatically set based on the size of their monitor
     while True:
         try:
             tempVar = int(input('Enter screen height: '))
@@ -93,145 +49,135 @@ def initialise_program():
         except ValueError:
             print('  Error: Invalid input t\u0332y\u0332p\u0332e\u0332;')
             print('    Input must be a positive integer above 500 \n')
+    screenDimensions = (int(tempVar*0.8), int(tempVar))
+    return screenDimensions
+def system_screen_size_input(): # Creates game screen based on monitor size
+    reduceFromMaxSize = 0.8
+    monitorWidth = py.display.Info().current_w
+    monitorHeight = py.display.Info().current_h
+    if monitorHeight*0.8 < monitorWidth:
+        X = int(monitorHeight*0.8 *reduceFromMaxSize)
+        Y = int(monitorHeight *reduceFromMaxSize)
+    elif monitorWidth*1.25 < monitorHeight:
+        X = int(monitorWidth *reduceFromMaxSize)
+        Y = int(monitorWidth*1.25 *reduceFromMaxSize)
+    else: # Backup in case both width and height tests fail, get user to input
+        X, Y = user_screen_size_input()
+    return X, Y
+def initialise_program(): # Set up display and pygame
+    absolutePath = os.path.abspath(__file__) # takes file name and converts it to an absolute path
+    directoryName = os.path.dirname(absolutePath) # uses absolute path to locate file on local system
+    os.chdir(directoryName) # changes cwd to the direct directory (I hate file paths.)
+    # PRINT INITIAL CREDITS/INFO IN CONSOLE
+    
+    print('\n'*30)
+    print("=========================================================")
+    print("U\u0332n\u0332t\u0332i\u0332t\u0332l\u0332e\u0332d\u0332 \u0332S\u0332p\u0332a\u0332c\u0332e\u0332 \u0332T\u0332h\u0332i\u0332n\u0332g\u0332")
+    print("By Jackson Bryant, Xavier Xu, and Isaak Choi             ")
+    print("                                                         ")
+    print("Published under:                                         ")
+    print("lab01                                                    ")
+    print("=========================================================")
+    print("")
+    print("Some aspects of this game require timing between music and frames,")
+    print("Please exit any applications in the background so that it runs smoothly")
+    print("Best experienced with headphones")
 
-    X = int(tempVar * 0.8)
-    Y = int(tempVar)
-    SCREEN = py.display.set_mode((X, Y), py.NOFRAME | py.FULLSCREEN)
+    # GAME INSTRUCTIONS
+    print("""
+    Enemies                 | 50 points
+    Asteroids               | 10 points
+    Somehow miss everything | -5 Points
+
+    Use mouse to move, and left click to shoot
+    You only have one life so
+    DON'T GET HIT!
+    """)
+
+    print("Initializing... \n")
+
+    # INITIALISE PYGAME AND GET SCREEN SIZE
+    py.init()
+    py.display.set_caption('Untitled Space Thing')    
+    py.mouse.set_visible(0)
+    clock = py.time.Clock()
+    X, Y = system_screen_size_input()
+
+    # Initialise display and disable mouse visibility
+    SCREEN = py.display.set_mode((X, Y), py.NOFRAME)
     py.mouse.set_visible(0)
     return X, Y, SCREEN, clock
 
 X, Y, SCREEN, clock = initialise_program()
+del initialise_program, system_screen_size_input, user_screen_size_input # No longer needed -> Memmory management
 
-def distance(startPoint, endPoint):                             # Returns distance between two poins in form (XDiff, YDiff), distance is always positive.
+def distance(startPoint, endPoint): # Returns distance between two poins in form (XDiff, YDiff), distance is always positive.
     differenceX = endPoint[0] - startPoint[0]
     differenceY = endPoint[1] - startPoint[1]
     #dist = ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
     #return dist
     return ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
 
-def calculate_mouse_movement(currentPos, prevPos):              # Returns related mouse pos variables
+def calculate_mouse_movement(currentPos, prevPos): # Returns related mouse pos variables
     x1, y1 = currentPos
     x2, y2 = prevPos
     posDifference = (x1 - x2, y1 - y2)
     prevPos = currentPos
     return currentPos, prevPos, posDifference
 
-def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN):        # Hyperdrive Animation
-    physMove = 5
-    # Define fade out
-    fadeOut = py.Surface((X, Y))
-    fadeAlpha = 0
-    if py.mouse.get_pos() == (0,0):
-        mousePos = (int(X*0.5), int(Y*0.7))
-    else:
-        mousePos = py.mouse.get_pos()
-    for n in range(int(animationLength * 30)):
-        # Detect Quit
-        for event in py.event.get():
-            if event.type == py.QUIT: 
-                py.quit()
-            if event.type == py.MOUSEMOTION:
-                mousePos = py.mouse.get_pos()
-        keys = py.key.get_pressed()
-        if keys[py.K_ESCAPE]:
-            py.quit()
-        # Draw Background
-        SURFACE.fill((0, 0, random.randrange(90) + 50))
-        # Calculate Star Pos #
-        physMove += 0.3
-        for i in range(100):
-            Stars.posY[i] += physMove * Stars.depth[i]
-            if Stars.posY[i] > Y:
-                Stars.posY[i] %= Y
-                Stars.posX[i] = random.randrange(X)
-            # Print Stars #
-            c = random.randrange(140) +100
-            py.draw.line(SURFACE, (c, c, c),                
-                             (Stars.posX[i], Stars.posY[i] + physMove * 0.2 * Stars.depth[i]),   # Pos 1
-                             (Stars.posX[i], Stars.posY[i] - physMove * 0.2 * Stars.depth[i]),   # Pos 2
-                             int(Stars.depth[i]))   				                        # Width
-            # In case of depreciation of auto int() with pygame vectors:
-            
-            #py.draw.line(SURFACE,(c, c, c),(int(Stars.posX[i]),int(Stars.posY[i]+physMove*0.2*Stars.depth[i])),(int(Stars.posX[i]),int(Stars.posY[i]-physMove*0.2*Stars.depth[i])),int(Stars.depth[i])) 
-        # Boosters Animation
-        py.draw.line(SURFACE, (0, 220, 255),
-                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.01)) + int(Y*0.03))
-        py.draw.line(SURFACE, (230, 250, 255),
-                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.007)) + int(Y*0.015))
-        # Draw Player
-        SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize, 
-            mousePos[1] - Player.halfSize))
-        # Fade Out
-        if n > (animationLength * 30) - 45:
-            fadeAlpha += int(255 / 41)
-            if n > animationLength * 30 - 4:
-                fadeAlpha = 255
-            fadeOut.set_alpha(fadeAlpha)
-            fadeOut.fill((255, 255, 255))
-            SURFACE.blit(fadeOut, (0, 0))
-
-        # Update Display
-        py.display.update()
-        clock.tick(30)
-
-    # Extend Whiteout
-    for i in range(30):
-        for event in py.event.get():
-            if event.type == py.QUIT: 
-                py.quit()
-        if keys[py.K_ESCAPE]:
-            py.quit()
-        fadeOut.fill((255,255,255))
-        py.display.update()
-        clock.tick(30)
-    # Shuffle stars pos after hyperdrive
-    return Stars.posX
-def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN):        # Hyperdrive Animation
+def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hyperdrive Animation
+    ## INTRO VARIABELS ##
     physMove = 0
-    # Define fade out
     fadeOut = py.Surface((X, Y))
     fadeAlpha = 0
     if py.mouse.get_pos() == (0,0):
         mousePos = (int(X*0.5), int(Y*0.7))
     else:
         mousePos = py.mouse.get_pos()
+    ## MAIN ANIMATION LOOP ##
     for n in range(int(animationLength * 30)):
-        # Detect Quit
+        ## INTER FRAME HANDLING ##
         for event in py.event.get():
             if event.type == py.QUIT: 
+                py.display.quit()
                 py.quit()
             if event.type == py.MOUSEMOTION:
                 mousePos = py.mouse.get_pos()
         keys = py.key.get_pressed()
         if keys[py.K_ESCAPE]:
+            py.display.quit()
             py.quit()
-        # Draw Background
         SURFACE.fill((0, 0, random.randrange(90) + 50))
-        # Calculate Star Pos #
+
+        ## HANDLE STARS ##
         physMove += 0.2
         for i in range(100):
             Stars.posY[i] += physMove * Stars.depth[i]
             if Stars.posY[i] > Y:
                 Stars.posY[i] %= Y
                 Stars.posX[i] = random.randrange(X)
-            # Print Stars #
+    ## IF NEED TO SPEED UP REMOVE COLOUR CHANGING OF STARS BELOW ##
             c = random.randrange(140) +100
             py.draw.line(SURFACE, (c, c, c),                
-                             (Stars.posX[i], Stars.posY[i] + physMove * 0.2 * Stars.depth[i]),   # Pos 1
-                             (Stars.posX[i], Stars.posY[i] - physMove * 0.2 * Stars.depth[i]),   # Pos 2
-                             int(Stars.depth[i]))                                           # Width
-            # In case of depreciation of auto int() with pygame vectors:
-            
-            #py.draw.line(SURFACE,(c, c, c),(int(Stars.posX[i]),int(Stars.posY[i]+physMove*0.2*Stars.depth[i])),(int(Stars.posX[i]),int(Stars.posY[i]-physMove*0.2*Stars.depth[i])),int(Stars.depth[i])) 
-        # Boosters Animation
+                             (Stars.posX[i], Stars.posY[i] + physMove * 0.2 * Stars.depth[i]), 
+                             (Stars.posX[i], Stars.posY[i] - physMove * 0.2 * Stars.depth[i]), 
+                             int(Stars.depth[i])) 
+
+        ## SHAKE OFFSETS FOR PLAYER SHIP + BOOSTERS ##
+        playerOffsetX = (random.randrange(int(X*0.002*(n/20+1)))   -int(X*0.005))
+        playerOffsetY = (random.randrange(int(X*0.002*(n/20+1)))   -int(X*0.005))
+
+        ## BOOSTERS ANIMATION ##
         py.draw.line(SURFACE, (0, 220, 255),
-                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.01)) + int(Y*0.03))
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.01)) + int(Y*0.03))
         py.draw.line(SURFACE, (230, 250, 255),
-                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.007)) + int(Y*0.015))
-        # Draw Player
-        SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize, 
-            mousePos[1] - Player.halfSize))
-        # Fade Out
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.007)) + int(Y*0.015))
+        
+        ## DRAW PLAYER ##
+        SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize +playerOffsetX, 
+            mousePos[1] - Player.halfSize +playerOffsetY))
+
+        ## FADE OUT ##
         if n > (animationLength * 30) - 45:
             fadeAlpha += int(255 / 41)
             if n > animationLength * 30 - 4:
@@ -240,24 +186,108 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
             fadeOut.fill((255, 255, 255))
             SURFACE.blit(fadeOut, (0, 0))
 
-        # Update Display
+        ## UPDATE DISPLAY ##
         py.display.update()
         clock.tick(30)
 
-    # Extend Whiteout
+    ## EXTENDED WHITEOUT ##
     for i in range(30):
         for event in py.event.get():
             if event.type == py.QUIT: 
+                py.display.quit()
                 py.quit()
         if keys[py.K_ESCAPE]:
+            py.display.quit()
             py.quit()
         fadeOut.fill((255,255,255))
         py.display.update()
         clock.tick(30)
-    # Shuffle stars pos after hyperdrive
+
+    ## RETURN SHUFFLED STARS POS ##
+    return Stars.posX
+# Stars.posX = hyperdrive_animation(Stars, Player)
+def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN): # Hyperdrive Animation ~but different~
+    ## INTRO VARIABELS ##
+    physMove = 0
+    fadeOut = py.Surface((X, Y))
+    fadeAlpha = 0
+    if py.mouse.get_pos() == (0,0):
+        mousePos = (int(X*0.5), int(Y*0.7))
+    else:
+        mousePos = py.mouse.get_pos()
+    ## MAIN ANIMATION LOOP ##
+    for n in range(int(animationLength * 30)):
+        ## INTER FRAME HANDLING ##
+        for event in py.event.get():
+            if event.type == py.QUIT: 
+                py.display.quit()
+                py.quit()
+            if event.type == py.MOUSEMOTION:
+                mousePos = py.mouse.get_pos()
+        keys = py.key.get_pressed()
+        if keys[py.K_ESCAPE]:
+            py.display.quit()
+            py.quit()
+        SURFACE.fill((0, 0, random.randrange(90) + 50))
+
+        ## HANDLE STARS ##
+        physMove += 0.2
+        for i in range(100):
+            Stars.posY[i] += physMove * Stars.depth[i]
+            if Stars.posY[i] > Y:
+                Stars.posY[i] %= Y
+                Stars.posX[i] = random.randrange(X)
+            ## IF NEED TO SPEED UP REMOVE COLOUR CHANGING OF STARS BELOW ##
+            c = random.randrange(140) +100
+            py.draw.line(SURFACE, (c, c, c),                
+                             (Stars.posX[i], Stars.posY[i] + physMove * 0.2 * Stars.depth[i]), 
+                             (Stars.posX[i], Stars.posY[i] - physMove * 0.2 * Stars.depth[i]), 
+                             int(Stars.depth[i])) 
+
+        ## SHAKE OFFSETS FOR PLAYER SHIP + BOOSTERS ##
+        playerOffsetX = (random.randrange(int(X*0.002*(n/20+1)))-int(X*0.005))
+        playerOffsetY = (random.randrange(int(X*0.002*(n/20+1)))-int(X*0.005))
+
+        ## BOOSTERS ANIMATION ##
+        py.draw.line(SURFACE, (0, 220, 255),
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.01)) + int(Y*0.03))
+        py.draw.line(SURFACE, (230, 250, 255),
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.007)) + int(Y*0.015))
+        
+        ## DRAW PLAYER ##
+        SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize +playerOffsetX, 
+            mousePos[1] - Player.halfSize +playerOffsetY))
+
+        ## FADE OUT ##
+        if n > (animationLength * 30) - 45:
+            fadeAlpha += int(255 / 41)
+            if n > animationLength * 30 - 4:
+                fadeAlpha = 255
+            fadeOut.set_alpha(fadeAlpha)
+            fadeOut.fill((255, 255, 255))
+            SURFACE.blit(fadeOut, (0, 0))
+
+        ## UPDATE DISPLAY ##
+        py.display.update()
+        clock.tick(30)
+
+    ## EXTENDED WHITEOUT ##
+    for i in range(30):
+        for event in py.event.get():
+            if event.type == py.QUIT: 
+                py.display.quit()
+                py.quit()
+        if keys[py.K_ESCAPE]:
+            py.display.quit()
+            py.quit()
+        fadeOut.fill((255,255,255))
+        py.display.update()
+        clock.tick(30)
+
+    ## RETURN SHUFFLED STARS POS ##
     return Stars.posX
 
-class Stars:            # Background Stars
+class Stars: # Background Stars
     num = 250
     numLayers = 6
     minSize = int(X * 0.001)
@@ -281,7 +311,7 @@ class Stars:            # Background Stars
             #py.draw.rect(SURFACE, (255,255,255), (int(Stars.posX[i]), int(Stars.posY[i]), int(Stars.depth[i]), int(Stars.depth[i])))
         return Stars.posY
         
-class Mouse:            # All mouse related variables / input
+class Mouse: # All mouse related variables / input
     currentPos = (0,0)                      # Current pos of mouse expressed as (x, y)
     prevPos = (0,0)                         # Pos of mouse last frame expressed as (x, y)
     movement = (0,0)                        # The difference is x & y pos of mouse between frames expressed as (x, y)
@@ -299,7 +329,7 @@ class Colours: # All colours (Preferabaly RGB format)
     BACKGROUND_COLOUR = (0, 0, 0) 
     PLAYER_LASER_COLOUR = (255,100,50)
 
-class Player:           # Player variables
+class Player: # Player variables
     score = 0
     size = int(X * 0.07)
     halfSize = int(size * 0.5)
@@ -311,6 +341,7 @@ class Player:           # Player variables
     class Upgrades:
         autoShoot = False
         maxLasers = 1
+        shield = False
 
     def draw_player():
         py.draw.line(SCREEN, (255,60,0), Mouse.currentPos, (Mouse.currentPos[0], 
@@ -321,6 +352,13 @@ class Player:           # Player variables
             Mouse.currentPos[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
         SCREEN.blit(Player.SHIP_SPRITE, (Mouse.currentPos[0] - Player.halfSize, 
             Mouse.currentPos[1] - Player.halfSize))
+
+    def detect_collisions():
+        for index, (APosX, APosY, ASize, ASprite) in enumerate(Enemies.Asteroids.data):
+            if distance((Mouse.currentPos), (int(APosX + ASize*0.5), int(APosY + ASize*0.5))) < ASize*0.5 + Player.halfSize:
+                del Enemies.Asteroids.data[index]
+                return True
+                break
         
     class Lasers:
         pos = []
@@ -394,7 +432,7 @@ class Sounds:
 difficulty = 0 # Increase as player progresses
 py.mixer.music.load("Sounds/game_music.wav")
 py.mixer.music.play(-1)
-Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
+Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3) ; del intro_hyperdrive_animation # No longer needed -> Memmory management
 while True:
     # Initialise Frame & Frame Dependant Variables
     if True:
@@ -408,12 +446,16 @@ while True:
             if event.type == py.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     Mouse.leftClick = True
-                    Mouse.clickPos = py.mouse.get_pos()
+                    Mouse.clickPos = Mouse.currentPos
                 if event.button == 3:
                     Mouse.rightClick = True
-                    Mouse.clickPos = py.mouse.get_pos()
-            if event.type == py.QUIT or keys[py.K_ESCAPE]:
+                    Mouse.clickPos = Mouse.currentPos
+            if event.type == py.QUIT:
+                py.display.quit()
                 py.quit()
+        if keys[py.K_ESCAPE]:
+            py.display.quit()
+            py.quit()
 
     # Handle Background Stars
     Stars.posY = Stars.handle_stars(SCREEN, Stars)
@@ -423,8 +465,12 @@ while True:
         Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
     Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
+    #Detect Collisions With Player
+    if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
+        print("collision")
+        break
+
     # Player Lasers
-    #if Mouse.leftClick or keys[py.K_SPACE]:
     if Player.Ammo.lasers > 0:
         if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
             if Player.Upgrades.autoShoot:
@@ -488,3 +534,38 @@ while True:
 
     if time >= 666420:
         notSuspiciousFunction()
+
+
+print("Outlide Loop")
+print("(DEAD)")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
