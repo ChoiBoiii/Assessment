@@ -180,7 +180,76 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN):     
         clock.tick(30)
     # Shuffle stars pos after hyperdrive
     return Stars.posX
+def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN):        # Hyperdrive Animation
+    physMove = 0
+    # Define fade out
+    fadeOut = py.Surface((X, Y))
+    fadeAlpha = 0
+    if py.mouse.get_pos() == (0,0):
+        mousePos = (int(X*0.5), int(Y*0.7))
+    else:
+        mousePos = py.mouse.get_pos()
+    for n in range(int(animationLength * 30)):
+        # Detect Quit
+        for event in py.event.get():
+            if event.type == py.QUIT: 
+                py.quit()
+            if event.type == py.MOUSEMOTION:
+                mousePos = py.mouse.get_pos()
+        keys = py.key.get_pressed()
+        if keys[py.K_ESCAPE]:
+            py.quit()
+        # Draw Background
+        SURFACE.fill((0, 0, random.randrange(90) + 50))
+        # Calculate Star Pos #
+        physMove += 0.2
+        for i in range(100):
+            Stars.posY[i] += physMove * Stars.depth[i]
+            if Stars.posY[i] > Y:
+                Stars.posY[i] %= Y
+                Stars.posX[i] = random.randrange(X)
+            # Print Stars #
+            c = random.randrange(140) +100
+            py.draw.line(SURFACE, (c, c, c),                
+                             (Stars.posX[i], Stars.posY[i] + physMove * 0.2 * Stars.depth[i]),   # Pos 1
+                             (Stars.posX[i], Stars.posY[i] - physMove * 0.2 * Stars.depth[i]),   # Pos 2
+                             int(Stars.depth[i]))                                           # Width
+            # In case of depreciation of auto int() with pygame vectors:
+            
+            #py.draw.line(SURFACE,(c, c, c),(int(Stars.posX[i]),int(Stars.posY[i]+physMove*0.2*Stars.depth[i])),(int(Stars.posX[i]),int(Stars.posY[i]-physMove*0.2*Stars.depth[i])),int(Stars.depth[i])) 
+        # Boosters Animation
+        py.draw.line(SURFACE, (0, 220, 255),
+                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(10) + 25)
+        py.draw.line(SURFACE, (230, 250, 255),
+                     (mousePos[0], mousePos[1]+int(X*0.005)), (mousePos[0], mousePos[1] + Y), random.randrange(7) + 15)
+        # Draw Player
+        SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize, 
+            mousePos[1] - Player.halfSize))
+        # Fade Out
+        if n > (animationLength * 30) - 45:
+            fadeAlpha += int(255 / 41)
+            if n > animationLength * 30 - 4:
+                fadeAlpha = 255
+            fadeOut.set_alpha(fadeAlpha)
+            fadeOut.fill((255, 255, 255))
+            SURFACE.blit(fadeOut, (0, 0))
 
+        # Update Display
+        py.display.update()
+        clock.tick(30)
+
+    # Extend Whiteout
+    for i in range(30):
+        for event in py.event.get():
+            if event.type == py.QUIT: 
+                py.quit()
+        if keys[py.K_ESCAPE]:
+            py.quit()
+        fadeOut.fill((255,255,255))
+        py.display.update()
+        clock.tick(30)
+    # Shuffle stars pos after hyperdrive
+    return Stars.posX
 
 class Stars:            # Background Stars
     num = 250
@@ -206,7 +275,6 @@ class Stars:            # Background Stars
             #py.draw.rect(SURFACE, (255,255,255), (int(Stars.posX[i]), int(Stars.posY[i]), int(Stars.depth[i]), int(Stars.depth[i])))
         return Stars.posY
         
-
 class Mouse:            # All mouse related variables / input
     currentPos = (0,0)                      # Current pos of mouse expressed as (x, y)
     prevPos = (0,0)                         # Pos of mouse last frame expressed as (x, y)
@@ -214,10 +282,6 @@ class Mouse:            # All mouse related variables / input
     B1, B2, B3 = False, False, False        # Mouse held down? -> B1 = left button   B2 = middle button   B3 = right button
     leftClick, rightClick = False, False    # Initial click    -> Only active for frame in which click occurs
     clickPos = (0,0)                        # Pos of last click expressed as (x, y)     
-
-class Fonts: # All text/font files & renders
-    #healthBar = py.font.Font('', int(X*0.01))
-    pass     
 
 class Colours: # All colours (Preferabaly RGB format)
     BLACK        = (  0,   0,   0)
@@ -229,13 +293,15 @@ class Colours: # All colours (Preferabaly RGB format)
     BACKGROUND_COLOUR = (0, 0, 0) 
     PLAYER_LASER_COLOUR = (255,100,50)
 
-
 class Player:           # Player variables
     score = 0
     size = int(X * 0.07)
     halfSize = int(size * 0.5)
     health = 100
     SHIP_SPRITE = py.transform.scale(py.image.load('Sprites/player.png'), (size, size))
+    class Ammo:
+        lasers = 100
+        bombs = 0
 
     def draw_player():
         py.draw.line(SCREEN, (255,60,0), Mouse.currentPos, (Mouse.currentPos[0], 
@@ -249,7 +315,7 @@ class Player:           # Player variables
         
     class Upgrades:
         autoShoot = True
-        maxLasers = 1
+        maxLasers = 3
         
     class Lasers:
         pos = []
@@ -311,17 +377,20 @@ class Enemies:
 
 class Sounds:
     playerLaser = py.mixer.Sound("Sounds/player_laser.wav")
+    #py.mixer.music.load("music.wav") #-> Loads a music file
+    #py.mixer.music.play(-1) #-> Plays music. input specifies repeats. -1 specifies repeat forever
+    #pygame.mixer.music.pause() #-> Pauses music
+    #pygame.mixer.music.upause() #-> Unpauses music
+    #py.mixer.music.stop() #-> Stops music
+    #soundEffect = py.mixer.Sound("sound.wav") #-> Creates a sound effect variable
+    #py.mixer.Sound.play(soundEffect) #-> Plays sound effect
 
 # MAIN LOOP
-difficulty = 0 # Increases as player progresses
-#py.mixer.music.load('Sounds/game_music.wav')
+difficulty = 0 # Increase as player progresses
 py.mixer.music.load("Sounds/game_music.wav")
-#soundEffect = py.mixer.Sound("sound.wav")
-#py.mixer.music.stop()
-#py.mixer.Sound.play(soundEffect)
 py.mixer.music.play(-1)
 # Intro Animation
-Stars.posX = hyperdrive_animation(Stars, Player, 7.3)
+Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
 while True:
     # Initialise Frame & Frame Dependant Variables
     if True:
@@ -352,19 +421,22 @@ while True:
 
     # Player Lasers
     #if Mouse.leftClick or keys[py.K_SPACE]:
-    if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
-        if Player.Upgrades.autoShoot:
-            if Mouse.B1:
-                Player.Lasers.pos.append(Mouse.currentPos)
-                py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
-                py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
-                py.mixer.Sound.play(Sounds.playerLaser)
-        else:
-            if Mouse.leftClick:
-                Player.Lasers.pos.append(Mouse.currentPos)
-                py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
-                py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
-                py.mixer.Sound.play(Sounds.playerLaser)
+    if Player.Ammo.lasers > 0:
+        if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
+            if Player.Upgrades.autoShoot:
+                if Mouse.B1:
+                    Player.Lasers.pos.append(Mouse.currentPos)
+                    py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
+                    py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+                    Player.Ammo.lasers -= 1
+                    py.mixer.Sound.play(Sounds.playerLaser)
+            else:
+                if Mouse.leftClick:
+                    Player.Lasers.pos.append(Mouse.currentPos)
+                    py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
+                    py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+                    Player.Ammo.lasers -= 1
+                    py.mixer.Sound.play(Sounds.playerLaser)
     Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
 
     # COLLISIONS HELL YEA
