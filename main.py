@@ -116,13 +116,6 @@ def distance(startPoint, endPoint): # Returns distance between two poins in form
     #return dist
     return ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
 
-def calculate_mouse_movement(currentPos, prevPos): # Returns related mouse pos variables
-    x1, y1 = currentPos
-    x2, y2 = prevPos
-    posDifference = (x1 - x2, y1 - y2)
-    prevPos = currentPos
-    return currentPos, prevPos, posDifference
-
 def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hyperdrive Animation
     ## INTRO VARIABELS ##
     physMove = 0
@@ -268,7 +261,7 @@ def intro_screen(playerShip):
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
         keys = py.key.get_pressed()
         Mouse.leftClick, Mouse.rightClick = False, False
-        Mouse.currentPos, Mouse.prevPos, Mouse.movement = calculate_mouse_movement(py.mouse.get_pos(), Mouse.prevPos)
+        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
         for event in py.event.get():
             if event.type == py.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -425,6 +418,40 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
     py.mixer.Sound.play(Sounds.hyperdriveExit)
     return Stars.posX
 
+def death_transition_screen():
+    pass
+def post_death_screen():
+    print("""
+        Press [ENTER] to play again or [ESCAPE] to quit
+        -print score
+        -notify of score position (top 100?)
+        -if didn't make top 100
+        - print top 10 scores
+        """)
+    while True:
+        SCREEN.fill(Colours.BACKGROUND_COLOUR)
+        keys = py.key.get_pressed()
+        Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
+        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
+        Mouse.leftClick, Mouse.rightClick = False, False
+        for event in py.event.get():
+            if event.type == py.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    Mouse.leftClick = True
+                if event.button == 3:
+                    Mouse.rightClick = True
+            if event.type == py.QUIT:
+                py.quit()
+        if keys[py.K_ESCAPE]:
+            py.quit()
+
+
+        Stars.posY = Stars.handle_stars(SCREEN, Stars, X*0.0005)  
+
+
+        clock.tick(50)
+        py.display.update() 
+
 class Stars: # Background Stars
     num = 250
     numLayers = 6
@@ -456,6 +483,12 @@ class Mouse: # All mouse related variables / input
     B1, B2, B3 = False, False, False        # Mouse held down? -> B1 = left button   B2 = middle button   B3 = right button
     leftClick, rightClick = False, False    # Initial click    -> Only active for frame in which click occurs
     clickPos = (0,0)                        # Pos of last click expressed as (x, y)     
+    def calculate_movement(currentPos, prevPos): # Returns related mouse pos variables
+        x1, y1 = currentPos
+        x2, y2 = prevPos
+        posDifference = (x1 - x2, y1 - y2)
+        prevPos = currentPos
+        return currentPos, prevPos, posDifference
 
 class Colours: # All colours (Preferabaly RGB format)
     BLACK        = (  0,   0,   0)
@@ -575,8 +608,8 @@ class Sounds:
 
 ## PRE-GAME START / INTRO SCREENS ##
 difficulty = 0 # Increase as player progresses
-Stars.posY = intro_screen(Player.SHIP_SPRITE) ; del intro_screen # No longer needed -> Memmory management
-Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3) ; #del intro_hyperdrive_animation # No longer needed -> Memmory management
+Stars.posY = intro_screen(Player.SHIP_SPRITE) 
+Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
 
 ## MAIN LOOP ##
 while True:
@@ -586,7 +619,7 @@ while True:
         keys = py.key.get_pressed()
         Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
         Mouse.leftClick, Mouse.rightClick = False, False
-        Mouse.currentPos, Mouse.prevPos, Mouse.movement = calculate_mouse_movement(py.mouse.get_pos(), Mouse.prevPos)
+        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
 
         for event in py.event.get():
             if event.type == py.MOUSEBUTTONDOWN:
@@ -698,6 +731,7 @@ while True:
 ## END SCREEN + HIGHSCORES ##
 print("Outlide Loop")
 print("(DEAD)")
+post_death_screen()
 
 
 
