@@ -594,9 +594,15 @@ class Sounds:
     playerLaser = py.mixer.Sound("Sounds/player_laser.wav")
     hyperdriveExit = py.mixer.Sound("Sounds/hyperdrive_exit.wav")
     playerDeathExplosion = py.mixer.Sound("Sounds/playerDeathExplosion.wav")
-    asteroidExplosion1 = py.mixer.Sound("Sounds/asteroid_explosions/enemy_explsion_1.wav")
-    #asteroidExplosion2 = py.mixer.Sound("Sounds/enemy_explsion_2.wav")
-    #asteroidExplosion3 = py.mixer.Sound("Sounds/enemy_explsion_3.wav")
+    asteroidExplosion1 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_1.wav")
+    asteroidExplosion2 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_2.wav")
+    asteroidExplosion3 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_3.wav")
+    asteroidExplosion4 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_4.wav")
+    asteroidExplosion5 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_5.wav")
+    asteroidExplosion6 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_6.wav")
+    asteroidExplosion7 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_7.wav")
+    asteroidExplosion8 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_8.wav")
+    enemyShipExplosion = py.mixer.Sound("Sounds/enemy_ship_explosion.wav")
 
     #py.mixer.music.load("music.wav") #-> Loads a music file
     #py.mixer.music.play(-1) #-> Plays music. input specifies repeats. -1 specifies repeat forever
