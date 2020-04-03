@@ -215,7 +215,7 @@ def intro_screen(playerShip):
 
     ## START MUSIC ##
     py.mixer.music.stop()
-    py.mixer.music.load("Sounds/music/intro_screen_music.wav")
+    py.mixer.music.load("Sounds/music/main_page_music.wav")
     py.mixer.music.play(-1)
 
     ## SET UP MAIN TEXT ##
@@ -593,9 +593,9 @@ class Enemies:
                 sprite)                                                                          # Scaled Sprite
 
 class Sounds:
-    playerLaser = py.mixer.Sound("Sounds/player_laser.wav")
-    hyperdriveExit = py.mixer.Sound("Sounds/hyperdrive_exit.wav")
-    playerDeathExplosion = py.mixer.Sound("Sounds/playerDeathExplosion.wav")
+    playerLaser = py.mixer.Sound("Sounds/player_sounds/player_laser.wav")
+    hyperdriveExit = py.mixer.Sound("Sounds/player_sounds/hyperdrive_exit.wav")
+    playerDeathExplosion = py.mixer.Sound("Sounds/player_sounds/playerDeathExplosion.wav")
     enemyShipExplosion = py.mixer.Sound("Sounds/enemy_ship_explosion.wav")
     asteroidExplosions = [py.mixer.Sound("Sounds/asteroid_explosions/explosion_1.wav"),
                             py.mixer.Sound("Sounds/asteroid_explosions/explosion_2.wav"),
