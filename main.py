@@ -560,6 +560,11 @@ class Enemies:
 class Sounds:
     playerLaser = py.mixer.Sound("Sounds/player_laser.wav")
     hyperdriveExit = py.mixer.Sound("Sounds/hyperdrive_exit.wav")
+    playerDeathExplosion = py.mixer.Sound("Sounds/playerDeathExplosion.wav")
+    asteroidExplosion1 = py.mixer.Sound("Sounds/enemy_explsion_1.wav")
+    #asteroidExplosion2 = py.mixer.Sound("Sounds/enemy_explsion_2.wav")
+    #asteroidExplosion3 = py.mixer.Sound("Sounds/enemy_explsion_3.wav")
+
     #py.mixer.music.load("music.wav") #-> Loads a music file
     #py.mixer.music.play(-1) #-> Plays music. input specifies repeats. -1 specifies repeat forever
     #pygame.mixer.music.pause() #-> Pauses music
@@ -614,6 +619,8 @@ while True:
         else:
             SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
             DEATHFRAME = SCREEN.convert()
+            py.mixer.Sound.play(Sounds.playerDeathExplosion)
+            py.mixer.music.stop()
             py.display.update()
             #SCREEN.blit(DEATHFRAME, (0,0))
         break # -> Exits main loop, goto score screen
@@ -637,7 +644,7 @@ while True:
                     py.mixer.Sound.play(Sounds.playerLaser)
     Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
 
-    ## PLAYER LASER COLLISIONS ##
+    ## PLAYER'S LASER COLLISIONS ##
     indexOffset = 0
     for i in range(len(Player.Lasers.pos)):
         laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
@@ -662,6 +669,8 @@ while True:
                 indexOffset += 1
 
                 Player.score += 10
+
+                py.mixer.Sound.play(Sounds.asteroidExplosion1)
 
                 break
 
