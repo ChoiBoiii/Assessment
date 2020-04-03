@@ -215,7 +215,7 @@ def intro_screen(playerShip):
 
     ## START MUSIC ##
     py.mixer.music.stop()
-    py.mixer.music.load("Sounds/intro_screen_music.wav")
+    py.mixer.music.load("Sounds/music/intro_screen_music.wav")
     py.mixer.music.play(-1)
 
     ## SET UP MAIN TEXT ##
@@ -331,7 +331,7 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
     py.mouse.set_visible(0) 
     ## INITIALISE GAME MUSIC ##
     py.mixer.music.stop()
-    py.mixer.music.load("Sounds/game_music.wav")
+    py.mixer.music.load("Sounds/music/game_music.wav")
     py.mixer.music.play(-1)
     ## INTRO VARIABELS ##
     physMove = 0
@@ -428,6 +428,7 @@ def post_death_screen():
         -if didn't make top 100
         - print top 10 scores
         """)
+    starMovement = X * 0.002
     while True:
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
         keys = py.key.get_pressed()
@@ -446,11 +447,12 @@ def post_death_screen():
             py.quit()
 
 
-        Stars.posY = Stars.handle_stars(SCREEN, Stars, X*0.0005)  
+        Stars.posY = Stars.handle_stars(SCREEN, Stars, starMovement)  
 
 
         clock.tick(50)
         py.display.update() 
+        starMovement *= 0.97
 
 class Stars: # Background Stars
     num = 250
@@ -594,16 +596,15 @@ class Sounds:
     playerLaser = py.mixer.Sound("Sounds/player_laser.wav")
     hyperdriveExit = py.mixer.Sound("Sounds/hyperdrive_exit.wav")
     playerDeathExplosion = py.mixer.Sound("Sounds/playerDeathExplosion.wav")
-    asteroidExplosion1 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_1.wav")
-    asteroidExplosion2 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_2.wav")
-    asteroidExplosion3 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_3.wav")
-    asteroidExplosion4 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_4.wav")
-    asteroidExplosion5 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_5.wav")
-    asteroidExplosion6 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_6.wav")
-    asteroidExplosion7 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_7.wav")
-    asteroidExplosion8 = py.mixer.Sound("Sounds/asteroid_explosions/explosion_8.wav")
     enemyShipExplosion = py.mixer.Sound("Sounds/enemy_ship_explosion.wav")
-
+    asteroidExplosions = [py.mixer.Sound("Sounds/asteroid_explosions/explosion_1.wav"),
+                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_2.wav"),
+                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_3.wav"),
+                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_4.wav"),
+                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_5.wav"),
+                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_6.wav"),
+                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_7.wav"),
+                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_8.wav")]
     #py.mixer.music.load("music.wav") #-> Loads a music file
     #py.mixer.music.play(-1) #-> Plays music. input specifies repeats. -1 specifies repeat forever
     #pygame.mixer.music.pause() #-> Pauses music
@@ -613,7 +614,7 @@ class Sounds:
     #py.mixer.Sound.play(soundEffect) #-> Plays sound effect
 
 ## PRE-GAME START / INTRO SCREENS ##
-difficulty = 0 # Increase as player progresses
+difficulty = 2 # Increase as player progresses
 Stars.posY = intro_screen(Player.SHIP_SPRITE) 
 Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
 
@@ -709,7 +710,7 @@ while True:
 
                 Player.score += 10
 
-                py.mixer.Sound.play(Sounds.asteroidExplosion1)
+                py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
 
                 break
 
