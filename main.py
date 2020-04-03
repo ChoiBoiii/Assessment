@@ -203,6 +203,7 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
 
     ## RETURN SHUFFLED STARS POS ##
     return Stars.posX
+
 def intro_screen(playerShip):
     ## INITIAL VARIABLES ##
     font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
@@ -273,8 +274,8 @@ def intro_screen(playerShip):
             py.display.quit()
             py.quit()
         if Mouse.leftClick:
-            if shipCenter[0]-Player.halfSize < Mouse.currentPos[0] < shipCenter[0]+Player.halfSize:
-                if shipCenter[1]-Player.halfSize < Mouse.currentPos[1] < shipCenter[1]+Player.halfSize:
+            if int(shipCenter[0]-Player.halfSize*1.5) < Mouse.currentPos[0] < int(shipCenter[0]-Player.halfSize*1.5 + Player.size*1.5):
+                if int(shipCenter[1]-Player.halfSize*1.5) < Mouse.currentPos[1] < int(shipCenter[1]-Player.halfSize*1.5 + Player.size*1.8):
                     break
 
         ## DYNAMIC TEXT ##
@@ -555,10 +556,12 @@ class Sounds:
     #soundEffect = py.mixer.Sound("sound.wav") #-> Creates a sound effect variable
     #py.mixer.Sound.play(soundEffect) #-> Plays sound effect
 
-# MAIN LOOP
+## PRE-GAME START / INTRO SCREENS ##
 difficulty = 0 # Increase as player progresses
-Stars.posY = intro_screen(Player.SHIP_SPRITE) ; del intro_screen
+Stars.posY = intro_screen(Player.SHIP_SPRITE) ; del intro_screen # No longer needed -> Memmory management
 Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3) ; #del intro_hyperdrive_animation # No longer needed -> Memmory management
+
+## MAIN LOOP ##
 while True:
     ## INTER-FRAME VARIABLES & HANDLING ##
     if True:
@@ -665,7 +668,7 @@ while True:
         pass
         notSuspiciousFunction()
 
-
+## END SCREEN + HIGHSCORES ##
 print("Outlide Loop")
 print("(DEAD)")
 
