@@ -409,6 +409,7 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
         clock.tick(30)
 
     ## RETURN SHUFFLED STARS POS ##
+    py.mixer.Sound.play(Sounds.hyperdriveExit)
     return Stars.posX
 
 class Stars: # Background Stars
@@ -545,6 +546,7 @@ class Enemies:
 
 class Sounds:
     playerLaser = py.mixer.Sound("Sounds/player_laser.wav")
+    hyperdriveExit = py.mixer.Sound("Sounds/hyperdrive_exit.wav")
     #py.mixer.music.load("music.wav") #-> Loads a music file
     #py.mixer.music.play(-1) #-> Plays music. input specifies repeats. -1 specifies repeat forever
     #pygame.mixer.music.pause() #-> Pauses music
@@ -556,9 +558,9 @@ class Sounds:
 # MAIN LOOP
 difficulty = 0 # Increase as player progresses
 Stars.posY = intro_screen(Player.SHIP_SPRITE) ; del intro_screen
-Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3) ; del intro_hyperdrive_animation # No longer needed -> Memmory management
+Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3) ; #del intro_hyperdrive_animation # No longer needed -> Memmory management
 while True:
-    # Initialise Frame & Frame Dependant Variables
+    ## INTER-FRAME VARIABLES & HANDLING ##
     if True:
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
         keys = py.key.get_pressed()
@@ -581,22 +583,22 @@ while True:
             py.display.quit()
             py.quit()
 
-    # Handle Background Stars
+    ## CALCULATE AND DRAW BACKGROUND STARS ##
     Stars.posY = Stars.handle_stars(SCREEN, Stars)
 
-    # Enemies
+    ## ADD AND DRAW ENEMIES ## - Asteroids
     if random.randrange(41+ 2*difficulty) > 39:
         Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
     Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
-    #Detect Collisions With Player
+    ## PLAYER COLLISIONS WITH ENVIRONMENT ## - Kills Player
     if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
         SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
         py.display.update()
         print("collision")
-        break
+        break # -> Exits main loop, goto score screen
 
-    # Player Lasers
+    ## PLAYER SHOOTS LASERS ##
     if Player.Ammo.lasers > 0:
         if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
             if Player.Upgrades.autoShoot:
@@ -615,7 +617,7 @@ while True:
                     py.mixer.Sound.play(Sounds.playerLaser)
     Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
 
-    # COLLISIONS HELL YEA
+    ## PLAYER LASER COLLISIONS ##
     indexOffset = 0
     for i in range(len(Player.Lasers.pos)):
         laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
@@ -642,23 +644,25 @@ while True:
                 Player.score += 10
 
                 break
-    #SCORE TEST
+
+    ## PRINT SCORE TEST ##
     SCREEN.blit(py.font.Font(None, int(X*0.05)).render(f"Score: {Player.score}", True, (255,255,255), (100,100,100)), (int(X*0.05), int(X*0.05)))
 
-    # Draw Player
+    ## DRAW PLAYER ##
     Player.draw_player()
 
-    # Test Hyperdrive
+    ## TEST HYPERDRIVE ANIMATION ##
     if keys[py.K_h]:
         Stars.posX = hyperdrive_animation(Stars, Player)
 
-    # Update Screen
+    ## UPDATE SCREEN ##
     clock.tick(60)
     py.display.update() 
 
     time = py.time.get_ticks()
 
     if time >= 666420:
+        pass
         notSuspiciousFunction()
 
 
