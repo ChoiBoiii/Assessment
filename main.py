@@ -213,7 +213,7 @@ def intro_screen(playerShip):
     textTicks = 0
     textShadeLimit = (50,255)
     shipCenter = (int(X*0.5), int(Y*0.7))
-    mainTextColout = (200,200,200)
+    mainTextColout = (200,255,200)
     ticks = 0
 
 
@@ -306,7 +306,7 @@ def intro_screen(playerShip):
         SCREEN.blit(titleText, titleTextbox)
 
         ## HANDLE STARS ##
-        Stars.posY = Stars.handle_stars(SCREEN, Stars)
+        Stars.posY = Stars.handle_stars(SCREEN, Stars, X*0.001)
         
         ## HANDLE PLAYER SHIP
         py.draw.line(SCREEN, (255,60,0), shipCenter, (shipCenter[0], 
@@ -596,9 +596,14 @@ while True:
 
     ## PLAYER COLLISIONS WITH ENVIRONMENT ## - Kills Player
     if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
-        SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
-        py.display.update()
         print("collision")
+        if Player.Upgrades.shield:
+            Player.Upgrades.shield = False
+        else:
+            SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
+            DEATHFRAME = SCREEN.convert()
+            py.display.update()
+            #SCREEN.blit(DEATHFRAME, (0,0))
         break # -> Exits main loop, goto score screen
 
     ## PLAYER SHOOTS LASERS ##
@@ -667,6 +672,7 @@ while True:
     if time >= 666420:
         pass
         notSuspiciousFunction()
+
 
 ## END SCREEN + HIGHSCORES ##
 print("Outlide Loop")
