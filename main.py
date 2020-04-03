@@ -87,7 +87,7 @@ def initialise_program(): # Set up display and pygame
     print("""
     Enemies                 | 50 points
     Asteroids               | 10 points
-    Somehow miss everything | -5 Points
+    Somehow miss everything | -5 points
 
     Use mouse to move, and left click to shoot
     You only have one life so
@@ -204,11 +204,56 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
     ## RETURN SHUFFLED STARS POS ##
     return Stars.posX
 def intro_screen(playerShip):
+    ## INITIAL VARIABLES ##
     font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
+    titleFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.045))
+    titleColour = (0,255,0)
     textShade = 255
     textTicks = 0
-    textShadeLimit = (100,255)
+    textShadeLimit = (50,255)
     shipCenter = (int(X*0.5), int(Y*0.7))
+    mainTextColout = (200,200,200)
+    ticks = 0
+
+
+    ## SET UP MAIN TEXT ##
+    text1 = font.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
+    textbox1 = text1.get_rect()
+    textbox1.center = (int(X*0.5), int(Y*0.6))
+
+    text2 = font.render("Enemies     | 50 Points", True, mainTextColout, (0,0,0))
+    textbox2 = text2.get_rect()
+    textbox2.center = (int(X*0.5), int(Y*0.4))
+
+    text3 = font.render("Asteroids   | 10 Points", True, mainTextColout, (0,0,0))
+    textbox3 = text3.get_rect()
+    textbox3.center = (int(X*0.5), int(Y*0.45))
+
+    text4 = font.render("Miss        | -5 Points", True, mainTextColout, (0,0,0))
+    textbox4 = text4.get_rect()
+    textbox4.center = (int(X*0.5), int(Y*0.5))
+
+    text5 = font.render("Move with [mouse]", True, mainTextColout, (0,0,0))
+    textbox5 = text5.get_rect()
+    textbox5.center = (int(X*0.5), int(Y*0.25))
+
+    text6 = font.render("Shoot with [left click]", True, mainTextColout, (0,0,0))
+    textbox6 = text6.get_rect()
+    textbox6.center = (int(X*0.5), int(Y*0.3))
+
+    text7 = font.render("You only have one life, so", True, mainTextColout, (0,0,0))
+    textbox7 = text7.get_rect()
+    textbox7.center = (int(X*0.5), int(Y*0.85))
+
+    text8 = font.render("DON'T GET HIT", True, (200,0,0), (0,0,0))
+    textbox8 = text8.get_rect()
+    textbox8.center = (int(X*0.5), int(Y*0.9))
+
+    titleText = titleFont.render("Untitled Space Thing", True, titleColour, (0,0,0))
+    titleTextbox = titleText.get_rect()
+    titleTextbox.center = (int(X*0.5), int(Y*0.1))
+    #######################
+
     while True:
         ## INTER-FRAME HANDLING ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
@@ -228,25 +273,41 @@ def intro_screen(playerShip):
             py.display.quit()
             py.quit()
         if Mouse.leftClick:
-            break
+            if shipCenter[0]-Player.halfSize < Mouse.currentPos[0] < shipCenter[0]+Player.halfSize:
+                if shipCenter[1]-Player.halfSize < Mouse.currentPos[1] < shipCenter[1]+Player.halfSize:
+                    break
 
         ## DYNAMIC TEXT ##
         if textTicks %2 == 0:
-            textShade -= 3
+            textShade -= 4
             if textShade < textShadeLimit[0]:
                 textShade = textShadeLimit[0]
                 textTicks += 1
         if textTicks %2 == 1:
-            textShade += 3
+            textShade += 4
             if textShade > textShadeLimit[1]:
                 textShade = textShadeLimit[1]
                 textTicks += 1
-        text = font.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
+        text1 = font.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
+        if ticks %2 == 0:
+            titleColour = (random.randrange(255),random.randrange(255),random.randrange(255))
+            titleText = titleFont.render("Untitled Space Thing", True, titleColour, (0,0,0))
 
-        ## PRINT TO SCREEN + HANDLE STARS ##
-        SCREEN.blit(text, (int(X*0.18), int(Y*0.6)))
+        ## PRINT TEXT ##
+        SCREEN.blit(text1, textbox1)
+        SCREEN.blit(text2, textbox2)
+        SCREEN.blit(text3, textbox3)
+        SCREEN.blit(text4, textbox4)
+        SCREEN.blit(text5, textbox5)
+        SCREEN.blit(text6, textbox6)
+        SCREEN.blit(text7, textbox7)
+        SCREEN.blit(text8, textbox8)
+        SCREEN.blit(titleText, titleTextbox)
+
+        ## HANDLE STARS ##
         Stars.posY = Stars.handle_stars(SCREEN, Stars)
-         #Player ship + jets
+        
+        ## HANDLE PLAYER SHIP
         py.draw.line(SCREEN, (255,60,0), shipCenter, (shipCenter[0], 
             shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
         py.draw.line(SCREEN, (255,255,0), shipCenter, (shipCenter[0], 
@@ -254,10 +315,13 @@ def intro_screen(playerShip):
         py.draw.line(SCREEN, (255,255,240), shipCenter, (shipCenter[0], 
             shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
         SCREEN.blit(playerShip, (shipCenter[0]-Player.halfSize, shipCenter[1]-Player.halfSize))
+        py.draw.rect(SCREEN, (textShade,textShade,textShade), 
+            (int(shipCenter[0]-Player.halfSize*1.5), int(shipCenter[1]-Player.halfSize*1.5), int(Player.size*1.5), int(Player.size*1.8)), int(X*0.005 +1))
 
-        ## UPDATE SCREEN + FRAME DELAY
+        ## UPDATE SCREEN + FRAME DELAY ##
         py.display.update()
         clock.tick(40)
+        ticks += 1
 
     return Stars.posY
 def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN): # Hyperdrive Animation ~but different~
