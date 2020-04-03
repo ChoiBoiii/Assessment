@@ -167,9 +167,13 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
 
         ## BOOSTERS ANIMATION ##
         py.draw.line(SURFACE, (0, 220, 255),
-                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.01)) + int(Y*0.03))
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), 
+                     (mousePos[0]+playerOffsetX, mousePos[1] + Y), 
+                     random.randrange(int(Y*0.012)) + int(Y*0.028))
         py.draw.line(SURFACE, (230, 250, 255),
-                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.007)) + int(Y*0.015))
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), 
+                     (mousePos[0]+playerOffsetX, mousePos[1] + Y), 
+                     random.randrange(int(Y*0.009)) + int(Y*0.013))
         
         ## DRAW PLAYER ##
         SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize +playerOffsetX, 
@@ -216,6 +220,10 @@ def intro_screen(playerShip):
     mainTextColout = (200,255,200)
     ticks = 0
 
+    ## START MUSIC ##
+    py.mixer.music.stop()
+    py.mixer.music.load("Sounds/intro_screen_music.wav")
+    py.mixer.music.play(-1)
 
     ## SET UP MAIN TEXT ##
     text1 = font.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
@@ -375,9 +383,13 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
 
         ## BOOSTERS ANIMATION ##
         py.draw.line(SURFACE, (0, 220, 255),
-                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.01)) + int(Y*0.03))
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), 
+                     (mousePos[0]+playerOffsetX, mousePos[1] + Y), 
+                     random.randrange(int(Y*0.012)) + int(Y*0.028))
         py.draw.line(SURFACE, (230, 250, 255),
-                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), (mousePos[0], mousePos[1] + Y), random.randrange(int(Y*0.007)) + int(Y*0.015))
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), 
+                     (mousePos[0]+playerOffsetX, mousePos[1] + Y), 
+                     random.randrange(int(Y*0.009)) + int(Y*0.013))
         
         ## DRAW PLAYER ##
         SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize +playerOffsetX, 
