@@ -594,7 +594,7 @@ class Sounds:
     playerLaser = py.mixer.Sound("Sounds/player_laser.wav")
     hyperdriveExit = py.mixer.Sound("Sounds/hyperdrive_exit.wav")
     playerDeathExplosion = py.mixer.Sound("Sounds/playerDeathExplosion.wav")
-    asteroidExplosion1 = py.mixer.Sound("Sounds/enemy_explsion_1.wav")
+    asteroidExplosion1 = py.mixer.Sound("Sounds/asteroid_explosions/enemy_explsion_1.wav")
     #asteroidExplosion2 = py.mixer.Sound("Sounds/enemy_explsion_2.wav")
     #asteroidExplosion3 = py.mixer.Sound("Sounds/enemy_explsion_3.wav")
 
