@@ -27,6 +27,10 @@ BUGS BUGS BUGS:
 '''
 
 
+
+
+
+
 import os
 import pygame as py
 import random
@@ -116,107 +120,33 @@ def distance(startPoint, endPoint): # Returns distance between two poins in form
     #return dist
     return ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
 
-def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hyperdrive Animation
-    ## INTRO VARIABELS ##
-    physMove = 0
-    fadeOut = py.Surface((X, Y))
-    fadeAlpha = 0
-    if py.mouse.get_pos() == (0,0):
-        mousePos = (int(X*0.5), int(Y*0.7))
-    else:
-        mousePos = py.mouse.get_pos()
-    ## MAIN ANIMATION LOOP ##
-    for n in range(int(animationLength * 30)):
-        ## INTER FRAME HANDLING ##
-        for event in py.event.get():
-            if event.type == py.QUIT: 
-                py.display.quit()
-                py.quit()
-            if event.type == py.MOUSEMOTION:
-                mousePos = py.mouse.get_pos()
-        keys = py.key.get_pressed()
-        if keys[py.K_ESCAPE]:
-            py.display.quit()
-            py.quit()
-        SURFACE.fill((0, 0, random.randrange(90) + 50))
-
-        ## HANDLE STARS ##
-        physMove += 0.2
-        for i in range(100):
-            Stars.posY[i] += physMove * Stars.depth[i]
-            if Stars.posY[i] > Y:
-                Stars.posY[i] %= Y
-                Stars.posX[i] = random.randrange(X)
-    ## IF NEED TO SPEED UP REMOVE COLOUR CHANGING OF STARS BELOW ##
-            c = random.randrange(140) +100
-            py.draw.line(SURFACE, (c, c, c),                
-                             (Stars.posX[i], Stars.posY[i] + physMove * 0.2 * Stars.depth[i]), 
-                             (Stars.posX[i], Stars.posY[i] - physMove * 0.2 * Stars.depth[i]), 
-                             int(Stars.depth[i])) 
-
-        ## SHAKE OFFSETS FOR PLAYER SHIP + BOOSTERS ##
-        playerOffsetX = (random.randrange(int(X*0.002*(n/20+1)))   -int(X*0.005))
-        playerOffsetY = (random.randrange(int(X*0.002*(n/20+1)))   -int(X*0.005))
-
-        ## BOOSTERS ANIMATION ##
-        py.draw.line(SURFACE, (0, 220, 255),
-                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), 
-                     (mousePos[0]+playerOffsetX, mousePos[1] + Y), 
-                     random.randrange(int(Y*0.012)) + int(Y*0.028))
-        py.draw.line(SURFACE, (230, 250, 255),
-                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), 
-                     (mousePos[0]+playerOffsetX, mousePos[1] + Y), 
-                     random.randrange(int(Y*0.009)) + int(Y*0.013))
-        
-        ## DRAW PLAYER ##
-        SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize +playerOffsetX, 
-            mousePos[1] - Player.halfSize +playerOffsetY))
-
-        ## FADE OUT ##
-        if n > (animationLength * 30) - 45:
-            fadeAlpha += int(255 / 41)
-            if n > animationLength * 30 - 4:
-                fadeAlpha = 255
-            fadeOut.set_alpha(fadeAlpha)
-            fadeOut.fill((255, 255, 255))
-            SURFACE.blit(fadeOut, (0, 0))
-
-        ## UPDATE DISPLAY ##
-        py.display.update()
-        clock.tick(30)
-
-    ## EXTENDED WHITEOUT ##
-    for i in range(30):
-        for event in py.event.get():
-            if event.type == py.QUIT: 
-                py.display.quit()
-                py.quit()
-        if keys[py.K_ESCAPE]:
-            py.display.quit()
-            py.quit()
-        fadeOut.fill((255,255,255))
-        py.display.update()
-        clock.tick(30)
-
-    ## RETURN SHUFFLED STARS POS ##
-    return Stars.posX
+def colour_loop_RGB(colourPoints, length, currentPoint):
+    sectionLen = int(length / len(colourPoints))
+    i = int(currentPoint/sectionLen) 
+    fadeFrom = colourPoints[i%len(colourPoints)]
+    fadeTo = colourPoints[(i+1)%len(colourPoints)]
+    differenceStep1 = (fadeTo[0]-fadeFrom[0])/sectionLen
+    differenceStep2 = (fadeTo[1]-fadeFrom[1])/sectionLen
+    differenceStep3 = (fadeTo[2]-fadeFrom[2])/sectionLen
+    n = currentPoint%sectionLen
+    return (int(fadeFrom[0] + differenceStep1*n), int(fadeFrom[1] + differenceStep2*n), int(fadeFrom[2] + differenceStep3*n))
 
 def intro_screen(playerShip):
+    ## RGB COLOUR LOOP VARIABLES ##
+    currentPointRGB = 0
+    loopLengthRGB = 250
+    colourPointsRGB = [(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)]
+
     ## INITIAL VARIABLES ##
     font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
     titleFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.045))
-    titleColour = (0,255,0)
+    titleColour = colour_loop_RGB(colourPointsRGB, loopLengthRGB, currentPointRGB)
     textShade = 255
     textTicks = 0
     textShadeLimit = (50,255)
     shipCenter = (int(X*0.5), int(Y*0.7))
     mainTextColout = (200,255,200)
     ticks = 0
-
-    ## START MUSIC ##
-    py.mixer.music.stop()
-    py.mixer.music.load("Sounds/music/main_page_music.wav")
-    py.mixer.music.play(-1)
 
     ## SET UP MAIN TEXT ##
     text1 = font.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
@@ -256,6 +186,12 @@ def intro_screen(playerShip):
     titleTextbox.center = (int(X*0.5), int(Y*0.1))
     #######################
 
+    ## START MUSIC ##
+    py.mixer.music.stop()
+    py.mixer.music.load("Sounds/music/main_page_music.wav")
+    py.mixer.music.play(-1)
+
+    ## MAIN SCREEN LOOP ##
     while True:
         ## INTER-FRAME HANDLING ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
@@ -291,9 +227,9 @@ def intro_screen(playerShip):
                 textShade = textShadeLimit[1]
                 textTicks += 1
         text1 = font.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
-        if ticks %2 == 0:
-            titleColour = (random.randrange(255),random.randrange(255),random.randrange(255))
-            titleText = titleFont.render("Untitled Space Thing", True, titleColour, (0,0,0))
+
+        currentPointRGB = ticks%loopLengthRGB
+        titleText = titleFont.render("Untitled Space Thing", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, currentPointRGB), (0,0,0))
 
         ## PRINT TEXT ##
         SCREEN.blit(text1, textbox1)
@@ -416,6 +352,91 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
 
     ## RETURN SHUFFLED STARS POS ##
     py.mixer.Sound.play(Sounds.hyperdriveExit)
+    return Stars.posX
+
+def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hyperdrive Animation
+    ## INTRO VARIABELS ##
+    physMove = 0
+    fadeOut = py.Surface((X, Y))
+    fadeAlpha = 0
+    if py.mouse.get_pos() == (0,0):
+        mousePos = (int(X*0.5), int(Y*0.7))
+    else:
+        mousePos = py.mouse.get_pos()
+    ## MAIN ANIMATION LOOP ##
+    for n in range(int(animationLength * 30)):
+        ## INTER FRAME HANDLING ##
+        for event in py.event.get():
+            if event.type == py.QUIT: 
+                py.display.quit()
+                py.quit()
+            if event.type == py.MOUSEMOTION:
+                mousePos = py.mouse.get_pos()
+        keys = py.key.get_pressed()
+        if keys[py.K_ESCAPE]:
+            py.display.quit()
+            py.quit()
+        SURFACE.fill((0, 0, random.randrange(90) + 50))
+
+        ## HANDLE STARS ##
+        physMove += 0.2
+        for i in range(100):
+            Stars.posY[i] += physMove * Stars.depth[i]
+            if Stars.posY[i] > Y:
+                Stars.posY[i] %= Y
+                Stars.posX[i] = random.randrange(X)
+    ## IF NEED TO SPEED UP REMOVE COLOUR CHANGING OF STARS BELOW ##
+            c = random.randrange(140) +100
+            py.draw.line(SURFACE, (c, c, c),                
+                             (Stars.posX[i], Stars.posY[i] + physMove * 0.2 * Stars.depth[i]), 
+                             (Stars.posX[i], Stars.posY[i] - physMove * 0.2 * Stars.depth[i]), 
+                             int(Stars.depth[i])) 
+
+        ## SHAKE OFFSETS FOR PLAYER SHIP + BOOSTERS ##
+        playerOffsetX = (random.randrange(int(X*0.002*(n/20+1)))   -int(X*0.005))
+        playerOffsetY = (random.randrange(int(X*0.002*(n/20+1)))   -int(X*0.005))
+
+        ## BOOSTERS ANIMATION ##
+        py.draw.line(SURFACE, (0, 220, 255),
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), 
+                     (mousePos[0]+playerOffsetX, mousePos[1] + Y), 
+                     random.randrange(int(Y*0.012)) + int(Y*0.028))
+        py.draw.line(SURFACE, (230, 250, 255),
+                     (mousePos[0]+playerOffsetX, mousePos[1]+int(X*0.005)+playerOffsetY), 
+                     (mousePos[0]+playerOffsetX, mousePos[1] + Y), 
+                     random.randrange(int(Y*0.009)) + int(Y*0.013))
+        
+        ## DRAW PLAYER ##
+        SCREEN.blit(Player.SHIP_SPRITE, (mousePos[0] - Player.halfSize +playerOffsetX, 
+            mousePos[1] - Player.halfSize +playerOffsetY))
+
+        ## FADE OUT ##
+        if n > (animationLength * 30) - 45:
+            fadeAlpha += int(255 / 41)
+            if n > animationLength * 30 - 4:
+                fadeAlpha = 255
+            fadeOut.set_alpha(fadeAlpha)
+            fadeOut.fill((255, 255, 255))
+            SURFACE.blit(fadeOut, (0, 0))
+
+        ## UPDATE DISPLAY ##
+        py.display.update()
+        clock.tick(30)
+
+    ## EXTENDED WHITEOUT ##
+    for i in range(30):
+        for event in py.event.get():
+            if event.type == py.QUIT: 
+                py.display.quit()
+                py.quit()
+        if keys[py.K_ESCAPE]:
+            py.display.quit()
+            py.quit()
+        fadeOut.fill((255,255,255))
+        py.display.update()
+        clock.tick(30)
+
+    ## RETURN SHUFFLED STARS POS ##
     return Stars.posX
 
 def death_transition_screen():
