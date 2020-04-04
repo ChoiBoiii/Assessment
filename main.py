@@ -1,5 +1,5 @@
 '''
-# HOW TO COPY THE VALUES OF A CLASS AT A GIVEN TIME, NOT BUILD A REFERENCE TO THE CLASS?
+HOW TO COPY THE VALUES OF A CLASS AT A GIVEN TIME, NOT BUILD A REFERENCE TO THE CLASS?
 
 NOTES:
 - Add highscores page 
@@ -16,7 +16,12 @@ Shield? -> Nah shield's for noobs                                   -YES   BUY F
 BOMBS -> Destroy everything on screen                               -YES   BUY FOR 500 POINTS
 
 BUGS BUGS BUGS:
-    Could this be!? no bugs??
+    Could this be!? No bugs?? Ha you wish.
+    After a while the gun just stops working. Idk if I'm out of ammo or what
+    When exiting hyperspace, there's a chance you'll spawn inside an asteroid and PERISH WITH IMMEDIATE EFFECT
+
+    Also when you quit the game, the game actually crashes lmao
+
 '''
 
 import os
@@ -44,10 +49,12 @@ def user_screen_size_input(): # Creates game screen based on user input
             print('    Input must be a positive integer above 500 \n')
     screenDimensions = (int(tempVar*0.8), int(tempVar))
     return screenDimensions
+
 def system_screen_size_input(): # Creates game screen based on monitor size
     reduceFromMaxSize = 0.8
     monitorWidth = py.display.Info().current_w
     monitorHeight = py.display.Info().current_h
+
     if monitorHeight*0.8 < monitorWidth:
         X = int(monitorHeight*0.8 *reduceFromMaxSize)
         Y = int(monitorHeight *reduceFromMaxSize)
@@ -57,10 +64,12 @@ def system_screen_size_input(): # Creates game screen based on monitor size
     else: # Backup in case both width and height tests fail, get user to input
         X, Y = user_screen_size_input()
     return X, Y
+
 def initialise_program(): # Set up display and pygame
     absolutePath = os.path.abspath(__file__) # takes file name and converts it to an absolute path
     directoryName = os.path.dirname(absolutePath) # uses absolute path to locate file on local system
     os.chdir(directoryName) # changes cwd to the direct directory (I hate file paths.)
+
     # PRINT INITIAL CREDITS/INFO IN CONSOLE
     
     print('\n'*30)
@@ -410,6 +419,7 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
             if Stars.posY[i] > Y:
                 Stars.posY[i] %= Y
                 Stars.posX[i] = random.randrange(X)
+
     ## IF NEED TO SPEED UP REMOVE COLOUR CHANGING OF STARS BELOW ##
             c = random.randrange(140) +100
             py.draw.line(SURFACE, (c, c, c),                
@@ -507,6 +517,7 @@ def death_transition_screen(): # Transition into post-death screen / game summar
 
    	## RETURN VARIABLES ##
     return Stars.posY, STAR_BACKGROUND
+    
 def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboard
     ## ENABLE MOUSE VISIBILITY ##
     py.mouse.set_visible(1) 
@@ -677,6 +688,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
             if textShade < textShadeLimit[0]:
                 textShade = textShadeLimit[0]
                 textTicks += 1
+
         if textTicks %2 == 1:
             textShade += 4
             if textShade > textShadeLimit[1]:
@@ -687,8 +699,10 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         # Player Score
         scoreText = titleScoreFont.render(f"You scored: {Player.score}", True, (textShade,textShade,textShade), (0,0,0))
         SCREEN.blit(scoreText, scoreTextbox)
+
         # Leaderboard Title
         leaderboardTitleText = titleLeaderboardFont.render("Leaderboard", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+
         # Leaderboard Positions
         SCREEN.blit(leaderboardTitleText, leaderboardTitleTextbox)
         SCREEN.blit(HSPos1T, (int(X*0.2), int(Y*0.25)))
@@ -701,6 +715,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         SCREEN.blit(HSPos8T, (int(X*0.2), int(Y*0.46)))
         SCREEN.blit(HSPos9T, (int(X*0.2), int(Y*0.49)))
         SCREEN.blit(HSPos10T, (int(X*0.2), int(Y*0.52)))
+
         # Leaderboard Scores
         if highscoresLen >= 1:
             SCREEN.blit(HSPos1ST, (int(X*0.35), int(Y*0.25)))
@@ -750,6 +765,7 @@ class Stars: # Background Stars
     posX = []
     posY = []
     depth = []
+
     for i in range(num):
         posX.append(random.randrange(X))
         posY.append(random.randrange(Y))
@@ -772,6 +788,7 @@ class Mouse: # All mouse related variables / input
     B1, B2, B3 = False, False, False        # Mouse held down? -> B1 = left button   B2 = middle button   B3 = right button
     leftClick, rightClick = False, False    # Initial click    -> Only active for frame in which click occurs
     clickPos = (0,0)                        # Pos of last click expressed as (x, y)     
+
     def calculate_movement(currentPos, prevPos): # Returns related mouse pos variables
         x1, y1 = currentPos
         x2, y2 = prevPos
@@ -798,7 +815,7 @@ class Player: # Player variables
     SHIP_SPRITE = py.transform.scale(py.image.load('Sprites/player.png').convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load('Sprites/death_explosion.png').convert_alpha(), (int(size*2), int(size*2)))
     class Ammo:
-        lasers = 100
+        lasers = 100 # Even if you change it to zero it does nothing
         bombs = 0
     class Upgrades:
         autoShoot = False
@@ -846,7 +863,8 @@ class Player: # Player variables
 
             return Lasers, Enemies
 
-class Enemies: # All enemy variables (Asteroids, shpis, etc)
+
+class Enemies: # All enemy variables (Asteroids, ships, etc)
 
     class Asteroids:
         initialSize = int(X * 0.1)
@@ -880,19 +898,33 @@ class Enemies: # All enemy variables (Asteroids, shpis, etc)
                 size,                                                                            # Size
                 sprite)                                                                          # Scaled Sprite # Class for enemies (Asteroids, ships, etc)
 
+    # This is where Xavier steps in to do his work at 4:39am
+    class enemyShips:
+        initialShipSize = int(X * 0.1)
+        initialShipSpeed = int(X * 0.005) + 1
+        pirate2 = py.transform.scale(py.image.load(os.path.join('Sprites', 'pirate2.png')).convert_alpha(), (initialShipSize, initialShipSize))
+        shipData = []
+
+        def spawnEnemyShip():
+            size = int(Enemies.EnShips.initialShipSize)
+            return py.transform.scale(Enemies.EnShips.pirate2, (size, size))
+
+
+
 class Sounds: # Storage for all music and SFX
-    playerLaser = py.mixer.Sound("Sounds/player_sounds/player_laser.wav")
-    hyperdriveExit = py.mixer.Sound("Sounds/player_sounds/hyperdrive_exit.wav")
-    playerDeathExplosion = py.mixer.Sound("Sounds/player_sounds/playerDeathExplosion.wav")
-    enemyShipExplosion = py.mixer.Sound("Sounds/enemy_ship_explosion.wav")
-    asteroidExplosions = [py.mixer.Sound("Sounds/asteroid_explosions/explosion_1.wav"),
-                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_2.wav"),
-                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_3.wav"),
-                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_4.wav"),
-                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_5.wav"),
-                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_6.wav"),
-                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_7.wav"),
-                            py.mixer.Sound("Sounds/asteroid_explosions/explosion_8.wav")]
+    playerLaser = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "player_laser.wav"))
+    hyperdriveExit = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "hyperdrive_exit.wav"))
+    playerDeathExplosion = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "player_death_explosion.wav"))
+    enemyShipExplosion = py.mixer.Sound(os.path.join("Sounds", "enemy_ship_explosion.wav"))
+    asteroidExplosions = [py.mixer.Sound(os.path.join("Sounds", "asteroid_explosions", "explosion_1.wav")),
+                            py.mixer.Sound(os.path.join("Sounds", "asteroid_explosions", "explosion_2.wav")),
+                            py.mixer.Sound(os.path.join("Sounds", "asteroid_explosions", "explosion_3.wav")),
+                            py.mixer.Sound(os.path.join("Sounds", "asteroid_explosions", "explosion_4.wav")),
+                            py.mixer.Sound(os.path.join("Sounds", "asteroid_explosions", "explosion_5.wav")),
+                            py.mixer.Sound(os.path.join("Sounds", "asteroid_explosions", "explosion_6.wav")),
+                            py.mixer.Sound(os.path.join("Sounds", "asteroid_explosions", "explosion_7.wav")),
+                            py.mixer.Sound(os.path.join("Sounds", "asteroid_explosions", "explosion_8.wav"))
+                        ]
     #py.mixer.music.load("music.wav") #-> Loads a music file
     #py.mixer.music.play(-1) #-> Plays music. input specifies repeats. -1 specifies repeat forever
     #pygame.mixer.music.pause() #-> Pauses music
@@ -1041,34 +1073,3 @@ while True:
     ## END SCREEN + HIGHSCORES ##
     Stars.posY, STAR_BACKGROUND = death_transition_screen()
     post_death_screen()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
