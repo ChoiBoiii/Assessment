@@ -1,6 +1,5 @@
 '''
 # HOW TO COPY THE VALUES OF A CLASS AT A GIVEN TIME, NOT BUILD A REFERENCE TO THE CLASS?
-# 559, 297, 662
 
 NOTES:
 - Add highscores page 
@@ -124,7 +123,7 @@ def colour_loop_RGB(colourPoints, length, currentPoint):
     n = currentPoint%sectionLen
     return (int(fadeFrom[0] + differenceStep1*n), int(fadeFrom[1] + differenceStep2*n), int(fadeFrom[2] + differenceStep3*n)) # produce ordered colour-points via an RGB gradient generated from given colour-points
 
-def handle_highscores():
+def handle_highscores(): # Pull scores from file, add player score, sort, return top 10 + re-write to file
     ## READ FILE ##
     highscores = []
     for line in open('highscores.txt'):
@@ -151,7 +150,7 @@ def handle_highscores():
     ## RETURN TOP 10 ##
     return highscores, highscoresLen
 
-def intro_screen(playerShip):
+def intro_screen(playerShip): # Intoduction to basic game overview + controls 
     global firstRun
 
     ## RGB COLOUR LOOP VARIABLES ##
@@ -285,7 +284,7 @@ def intro_screen(playerShip):
         clock.tick(40)
         ticks += 1
 
-    return Stars.posY # Intoduction to basic game overview + controls
+    return Stars.posY 
 
 def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN): # Hyperdrive Animation ~but different~
     ## DISABLE MOUSE VISIBILITY ##
