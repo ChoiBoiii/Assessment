@@ -286,6 +286,7 @@ def intro_screen(playerShip):
         ticks += 1
 
     return Stars.posY # Intoduction to basic game overview + controls
+
 def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN): # Hyperdrive Animation ~but different~
     ## DISABLE MOUSE VISIBILITY ##
     py.mouse.set_visible(0) 
@@ -464,7 +465,7 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
     return Stars.posX
 
 def death_transition_screen(): # Transition into post-death screen / game summary
-	## INITIAL VARIABLES ##
+    ## INITIAL VARIABLES ##
     starMovement = X * 0.002
     font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
     while True:
@@ -481,8 +482,10 @@ def death_transition_screen(): # Transition into post-death screen / game summar
                 if event.button == 3:
                     Mouse.rightClick = True
             if event.type == py.QUIT:
+                py.display.quit()
                 py.quit()
         if keys[py.K_ESCAPE]:
+            py.display.quit()
             py.quit()
 
         ## PRINT STAR BACKGROUND ##
@@ -508,30 +511,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     ## ENABLE MOUSE VISIBILITY ##
     py.mouse.set_visible(1) 
 
-    ## HIGH SCORES ##
-    # Read In Highscores File #
-    #highscores = []
-    #for line in open('highscores.txt'):
-    #    highscores.append(int(line.strip()))
-    ## Add Player Score #
-    #highscores.append(Player.score)
-    ## Sort Scores In Order #
-    #highscores = sorted(highscores)
-    #highscores = highscores[::-1]
-    #highscoresLen = len(highscores)
-    ## Remove Scores Below Top 10 #
-    #if highscoresLen > 10:
-    #    highscores = highscores[:10]
-    #    highscoresLen = 10
-
-    ### HANDLE SAVING OF SCORES TO HIGHSCORES FILE ##
-    #with open("highscores.txt", 'w') as file:
-    #    for i, score in enumerate(highscores):
-    #        if i < highscoresLen:
-    #            file.write(f'{score}\n')
-    #        else:
-    #            file.write(f'{score}')
-
+    ## HANDLE HIGHSCORE FILES ##
     highscores, highscoresLen = handle_highscores()
 
     ## INITIAL VARIABLES / FONTS ##
@@ -611,15 +591,38 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     destroyedShipsText =     destroyedTextFont.render(f"Ships     | {Player.destroyedShips}", True, mainTextColour, (0,0,0))
 
     ## CREATE BUTTONS ##
+    # Universal
+    BUTTONFONT = destroyedTitleFont
     BUTTONSIZE = (int(X*0.3), int(Y*0.1))
+    BUTTON_BACKGROUND_ALPHA = 150
+    BUTTON_SELECTED_ALPHA = 255
+
+    # Continue Button
     continueButton = py.Surface(BUTTONSIZE)
     continueButton.fill((0,200,0))
-    continueButton.set_alpha(100)
+    continueButton.set_alpha(BUTTON_BACKGROUND_ALPHA)
     continueButtonPos = (int(X*0.1), int(Y*0.8))
+    continueButtonRect = py.Rect(continueButtonPos, BUTTONSIZE)
+    continueButtonText = BUTTONFONT.render(f"RETRY", True, (255,255,255), (0,200,0))
+    continueButtonTextbox = continueButtonText.get_rect()
+    continueButtonTextbox.center = (int(BUTTONSIZE[0]*0.5), int(BUTTONSIZE[1]*0.5))
+    continueButton.blit(continueButtonText, continueButtonTextbox)
+
+    # Quit Button
     quitButton = py.Surface(BUTTONSIZE)
     quitButton.fill((200,0,0))
-    quitButton.set_alpha(100)
+    quitButton.set_alpha(BUTTON_BACKGROUND_ALPHA)
     quitButtonPos = (int(X*0.6), int(Y*0.8))
+    quitButtonRect = py.Rect(quitButtonPos, BUTTONSIZE)
+    quitButtonText = BUTTONFONT.render(f"QUIT", True, (255,255,255), (200,0,0))
+    quitButtonTextbox = quitButtonText.get_rect()
+    quitButtonTextbox.center = (int(BUTTONSIZE[0]*0.5), int(BUTTONSIZE[1]*0.5))
+    quitButton.blit(quitButtonText, quitButtonTextbox)
+
+    ## DEFINE SCREEN UPDATE POSITIONS ##
+    updateRects = [scoreTextbox, leaderboardTitleTextbox, quitButtonRect, continueButtonRect]
+    if scoreOnLeaderboard:
+    	updateRects.append(onLeaderboardTextbox)
 
     ## RESTART INTRO MUSIC ##
     py.mixer.music.stop()
@@ -639,11 +642,34 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
                 if event.button == 3:
                     Mouse.rightClick = True
             if event.type == py.QUIT:
+                py.display.quit()
                 py.quit()
         if keys[py.K_ESCAPE]:
+            py.display.quit()
             py.quit()
         if keys[py.K_RETURN]:
             break
+
+        ## DETECT MOUSE COLLISIONS ##
+        # BUTTONS #
+        if continueButtonPos[1] < Mouse.currentPos[1] < continueButtonPos[1] + BUTTONSIZE[1]: 
+            #-> QUIT and CONTINUE buttons share the same y-pos and size, thus only need to detect this once for optimisation
+            if continueButtonPos[0] < Mouse.currentPos[0] < continueButtonPos[0] + BUTTONSIZE[0]:
+                continueButton.set_alpha(BUTTON_SELECTED_ALPHA)
+                if Mouse.leftClick:
+                	break
+            else:
+                continueButton.set_alpha(BUTTON_BACKGROUND_ALPHA)
+            if quitButtonPos[0] < Mouse.currentPos[0] < quitButtonPos[0] + BUTTONSIZE[0]:
+                quitButton.set_alpha(BUTTON_SELECTED_ALPHA)
+                if Mouse.leftClick:
+                	py.display.quit()
+                	py.quit()
+            else:
+                quitButton.set_alpha(BUTTON_BACKGROUND_ALPHA)
+        else:
+            continueButton.set_alpha(BUTTON_BACKGROUND_ALPHA)
+            quitButton.set_alpha(BUTTON_BACKGROUND_ALPHA)
 
         ## DYNAMIC TEXT CHANGE -> White Fade In-Out ##
         if textTicks %2 == 0:
@@ -656,6 +682,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
             if textShade > textShadeLimit[1]:
                 textShade = textShadeLimit[1]
                 textTicks += 1
+
         ## DISPLAY TEXT ##
         # Player Score
         scoreText = titleScoreFont.render(f"You scored: {Player.score}", True, (textShade,textShade,textShade), (0,0,0))
@@ -710,7 +737,8 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
 
         ## UPDATE SCREEN + INTER-FRAME VARIABLES ##
         clock.tick(50)
-        py.display.update() 
+        #py.display.update()
+        py.display.update(updateRects)
         ticks += 1
 
 class Stars: # Background Stars
