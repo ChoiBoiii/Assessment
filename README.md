@@ -1,7 +1,6 @@
 ### CONTROLS
 - **Movement**  \| \[Mouse]
 - **Shoot**     \| \[Left Click]
-- **Bomb**      \| \[SPACE]
 - **Exit**      \| \[ESCAPE]
 
 
