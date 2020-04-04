@@ -477,8 +477,21 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     ## ENABLE MOUSE VISIBILITY ##
     py.mouse.set_visible(1) 
 
-    ## READ IN TOP 10 SCORES ##
-
+    ## HIGH SCORES ##
+    # Read In Top 10 Scores #
+    highscores = []
+    for line in open('highscores.txt'):
+        highscores.append(int(line.strip()))
+    # Add Player Score #
+    highscores.append(Player.score)
+    # Sort Scores In Order #
+    highscores = sorted(highscores)
+    highscores = highscores[::-1]
+    highscoresLen = len(highscores)
+    # Remove Scores Below Top 10 #
+    if highscoresLen > 10:
+        highscores = highscores[:10]
+        highscoresLen = 10
 
     ## INITIAL VARIABLES / FONTS ##
     mainTextColour = (200,255,200)
@@ -501,22 +514,10 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     leaderboardTitleTextbox = leaderboardTitleText.get_rect()
     leaderboardTitleTextbox.center = (int(X*0.5), int(Y*0.2))
 
-    ## for below; ERROR -> 'pygame.surface object is not iterable' (And so I made them manualy, the bane of my existance)
+    ## for below; ERROR -> 'pygame.surface object is not iterable'  #-> (And so I made them manualy, the bane of my existance)
     #highscoresPositioningText = []
-    #for i in range(10):
-    #    highscoresPositioningText.extend(normalFont.render(f"{i+1} |", True, mainTextColour, (0,0,0)))
-
-    highscores = []
-    for line in open('highscores.txt'):
-        highscores.append(int(line.strip()))
-    ## ADD PLAYER SCORE ##
-    highscores.append(Player.score)
-    highscores = sorted(highscores)
-    highscores = highscores[::-1]
-    highscoresLen = len(highscores)
-    if highscoresLen > 10:
-        highscores = highscores[:10]
-        highscoresLen = 10
+    #for i in range(1,11):
+    #    highscoresPositioningText.extend(normalFont.render(f"{i} |", True, mainTextColour, (0,0,0)))
 
     if highscoresLen >= 1:
         HSPos1ST = normalFont.render(f"{highscores[0]}", True, mainTextColour, (0,0,0))
@@ -603,7 +604,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         SCREEN.blit(HSPos8T, (int(X*0.2), int(Y*0.46)))
         SCREEN.blit(HSPos9T, (int(X*0.2), int(Y*0.49)))
         SCREEN.blit(HSPos10T, (int(X*0.2), int(Y*0.52)))
-        # Leaderboard scores
+        # Leaderboard Scores
         if highscoresLen >= 1:
             SCREEN.blit(HSPos1ST, (int(X*0.35), int(Y*0.25)))
         if highscoresLen >= 2:
@@ -624,6 +625,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
             SCREEN.blit(HSPos9ST, (int(X*0.35), int(Y*0.49)))
         if highscoresLen >= 10:
             SCREEN.blit(HSPos10ST, (int(X*0.35), int(Y*0.52)))
+        # User Control Options
 
         ## UPDATE SCREEN + INTER-FRAME VARIABLES ##
         clock.tick(50)
