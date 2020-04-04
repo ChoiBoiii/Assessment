@@ -499,13 +499,14 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     normalFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
     titleLeaderboardFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.06))
     titleScoreFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.05))
+    destroyedTitleFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.04))
+    destroyedTextFont = normalFont
     loopLengthRGB = 250
     colourPointsRGB = [(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)]
     textShade = 255
     textTicks = 0
     textShadeLimit = (50,255)
 
-    #scoreText = titleScoreFont.render(f"You scored: {Player.score}", True, (textShade,textShade,textShade), (0,0,0))
     scoreText = titleScoreFont.render(f"You scored: {Player.score}", True, (textShade,textShade,textShade), (0,0,0))
     scoreTextbox = scoreText.get_rect()
     scoreTextbox.center = (int(X*0.5), int(Y*0.1))
@@ -551,6 +552,23 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     HSPos9T = normalFont.render("9 |", True, mainTextColour, (0,0,0))
     HSPos10T = normalFont.render("10|", True, mainTextColour, (0,0,0))
 
+    # User Score On Leaderboard?
+    scoreOnLeaderboard = False
+    for score in highscores:
+        if Player.score == score:
+            scoreOnLeaderboard = True
+            onLeaderboardText = normalFont.render(f"You're on the leaderboard!", True, (textShade,textShade,textShade), (0,0,0))
+            onLeaderboardTextbox = onLeaderboardText.get_rect()
+            onLeaderboardTextbox.center = (int(X*0.5), int(Y*0.57))
+            break
+
+    # Num Of Destroyed Enemies
+    destroyedTitleText = destroyedTitleFont.render(f"Enemies Destroyed", True, mainTextColour, (0,0,0))
+    destroyedTitleTextbox = destroyedTitleText.get_rect()
+    destroyedTitleTextbox.center = (int(X*0.5), int(Y*0.63))
+    destroyedAsteroidsText = destroyedTextFont.render(f"Asteroids | {Player.destroyedAsteroids}", True, mainTextColour, (0,0,0))
+    destroyedShipsText =     destroyedTextFont.render(f"Ships     | {Player.destroyedShips}", True, mainTextColour, (0,0,0))
+
     ## RESTART INTRO MUSIC ##
     py.mixer.music.stop()
     py.mixer.music.load("Sounds/music/main_page_music.wav")
@@ -575,7 +593,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         if keys[py.K_RETURN]:
             break
 
-        ## DYNAMIC TEXT CHANGE ##
+        ## DYNAMIC TEXT CHANGE -> White Fade In-Out ##
         if textTicks %2 == 0:
             textShade -= 4
             if textShade < textShadeLimit[0]:
@@ -587,7 +605,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
                 textShade = textShadeLimit[1]
                 textTicks += 1
         ## DISPLAY TEXT ##
-        # Player score
+        # Player Score
         scoreText = titleScoreFont.render(f"You scored: {Player.score}", True, (textShade,textShade,textShade), (0,0,0))
         SCREEN.blit(scoreText, scoreTextbox)
         # Leaderboard Title
@@ -625,7 +643,14 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
             SCREEN.blit(HSPos9ST, (int(X*0.35), int(Y*0.49)))
         if highscoresLen >= 10:
             SCREEN.blit(HSPos10ST, (int(X*0.35), int(Y*0.52)))
-        # User Control Options
+        # User On Leaderboard?
+        if scoreOnLeaderboard:
+            onLeaderboardText = normalFont.render(f"You're on the leaderboard!", True, (textShade,textShade,textShade), (0,0,0))
+            SCREEN.blit(onLeaderboardText, onLeaderboardTextbox)
+        # Game Stats / Destroyed Enemies
+        SCREEN.blit(destroyedTitleText, destroyedTitleTextbox)
+        SCREEN.blit(destroyedAsteroidsText, (int(X*0.25), int(Y*0.66)))
+        SCREEN.blit(destroyedShipsText, (int(X*0.25), int(Y*0.69)))
 
         ## UPDATE SCREEN + INTER-FRAME VARIABLES ##
         clock.tick(50)
@@ -633,10 +658,8 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         ticks += 1
 
     ## HANDLE SAVING OF SCORE TO SCORES FILE ##
-    with open("highscores.txt") as file:
+    with open("highscores.txt", 'w') as file:
         for i in range(highscoresLen):
-            print(highscores[i])
-            file.write('test') ## THERES A PROBLEM WITH THE FILE, CANT WRITE ANYTHING TO IT
             if i < highscoresLen:
                 file.write(f'{str(highscores[i])}\n')
             else:
