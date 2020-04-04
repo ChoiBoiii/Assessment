@@ -82,7 +82,11 @@ def initialise_program(): # Set up display and pygame
     Asteroids               | 10 points
     Somehow miss everything | -5 points
 
-    Use mouse to move, and left click to shoot
+    Move   | [Mouse]
+    Shoot  | [Left Click]
+    Quit   | [ESCAPE]
+    Bomb   | [SPACE]
+
     You only have one life so
     DON'T GET HIT!
     """)
@@ -119,6 +123,33 @@ def colour_loop_RGB(colourPoints, length, currentPoint):
     differenceStep3 = (fadeTo[2]-fadeFrom[2])/sectionLen
     n = currentPoint%sectionLen
     return (int(fadeFrom[0] + differenceStep1*n), int(fadeFrom[1] + differenceStep2*n), int(fadeFrom[2] + differenceStep3*n)) # produce ordered colour-points via an RGB gradient generated from given colour-points
+
+def handle_highscores():
+    ## READ FILE ##
+    highscores = []
+    for line in open('highscores.txt'):
+        highscores.append(int(line.strip()))
+    # Add Player Score #
+    highscores.append(Player.score)
+    # Sort Scores In Order #
+    highscores = sorted(highscores)
+    highscores = highscores[::-1]
+    highscoresLen = len(highscores)
+    # Remove Scores Below Top 10 #
+    if highscoresLen > 10:
+        highscores = highscores[:10]
+        highscoresLen = 10
+
+    ## HANDLE SAVING OF SCORES TO HIGHSCORES FILE ##
+    with open("highscores.txt", 'w') as file:
+        for i, score in enumerate(highscores):
+            if i < highscoresLen:
+                file.write(f'{score}\n')
+            else:
+                file.write(f'{score}')
+
+    ## RETURN TOP 10 ##
+    return highscores, highscoresLen
 
 def intro_screen(playerShip):
     global firstRun
@@ -478,20 +509,30 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     py.mouse.set_visible(1) 
 
     ## HIGH SCORES ##
-    # Read In Top 10 Scores #
-    highscores = []
-    for line in open('highscores.txt'):
-        highscores.append(int(line.strip()))
-    # Add Player Score #
-    highscores.append(Player.score)
-    # Sort Scores In Order #
-    highscores = sorted(highscores)
-    highscores = highscores[::-1]
-    highscoresLen = len(highscores)
-    # Remove Scores Below Top 10 #
-    if highscoresLen > 10:
-        highscores = highscores[:10]
-        highscoresLen = 10
+    # Read In Highscores File #
+    #highscores = []
+    #for line in open('highscores.txt'):
+    #    highscores.append(int(line.strip()))
+    ## Add Player Score #
+    #highscores.append(Player.score)
+    ## Sort Scores In Order #
+    #highscores = sorted(highscores)
+    #highscores = highscores[::-1]
+    #highscoresLen = len(highscores)
+    ## Remove Scores Below Top 10 #
+    #if highscoresLen > 10:
+    #    highscores = highscores[:10]
+    #    highscoresLen = 10
+
+    ### HANDLE SAVING OF SCORES TO HIGHSCORES FILE ##
+    #with open("highscores.txt", 'w') as file:
+    #    for i, score in enumerate(highscores):
+    #        if i < highscoresLen:
+    #            file.write(f'{score}\n')
+    #        else:
+    #            file.write(f'{score}')
+
+    highscores, highscoresLen = handle_highscores()
 
     ## INITIAL VARIABLES / FONTS ##
     mainTextColour = (200,255,200)
@@ -568,6 +609,17 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     destroyedTitleTextbox.center = (int(X*0.5), int(Y*0.63))
     destroyedAsteroidsText = destroyedTextFont.render(f"Asteroids | {Player.destroyedAsteroids}", True, mainTextColour, (0,0,0))
     destroyedShipsText =     destroyedTextFont.render(f"Ships     | {Player.destroyedShips}", True, mainTextColour, (0,0,0))
+
+    ## CREATE BUTTONS ##
+    BUTTONSIZE = (int(X*0.3), int(Y*0.1))
+    continueButton = py.Surface(BUTTONSIZE)
+    continueButton.fill((0,200,0))
+    continueButton.set_alpha(100)
+    continueButtonPos = (int(X*0.1), int(Y*0.8))
+    quitButton = py.Surface(BUTTONSIZE)
+    quitButton.fill((200,0,0))
+    quitButton.set_alpha(100)
+    quitButtonPos = (int(X*0.6), int(Y*0.8))
 
     ## RESTART INTRO MUSIC ##
     py.mixer.music.stop()
@@ -652,18 +704,14 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         SCREEN.blit(destroyedAsteroidsText, (int(X*0.25), int(Y*0.66)))
         SCREEN.blit(destroyedShipsText, (int(X*0.25), int(Y*0.69)))
 
+        ## CONTINUE & QUIT BUTTONS ##
+        SCREEN.blit(continueButton, continueButtonPos)
+        SCREEN.blit(quitButton, quitButtonPos)
+
         ## UPDATE SCREEN + INTER-FRAME VARIABLES ##
         clock.tick(50)
         py.display.update() 
         ticks += 1
-
-    ## HANDLE SAVING OF SCORE TO SCORES FILE ##
-    with open("highscores.txt", 'w') as file:
-        for i in range(highscoresLen):
-            if i < highscoresLen:
-                file.write(f'{str(highscores[i])}\n')
-            else:
-                file.write(f'{str(highscores[i])}')
 
 class Stars: # Background Stars
     num = 250

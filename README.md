@@ -3,9 +3,10 @@ Self-explanatory
 
 
 CONTROLS
-Movement  | [mouse]
-Shoot     | [left click]
+Movement  | [Mouse]
+Shoot     | [Left Click]
 Bomb      | [SPACE]
+Exit      | [ESCAPE]
 
 
 HOW TO PLAY
