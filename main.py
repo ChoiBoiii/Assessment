@@ -458,21 +458,123 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
         py.display.update()
         clock.tick(30)
 
-    ## EXTENDED WHITEOUT ##
-    for i in range(30):
+    ## PLAY EXIT SFX ##
+    py.mixer.Sound.play(Sounds.hyperdriveExit)
+
+    ## RETURN SHUFFLED STARS POS ##
+    return Stars.posX
+
+def shop_screen():
+    ## MAKE MOUSE VISIBLE ##
+    py.mouse.set_visible(1)
+    ticks = 0
+
+    ## INITIALISE TEXT & BUTTONS ##
+    BUTTONSIZE = (int(X*0.4), int(Y*0.15))
+    # Buy Shield Button #
+    # Buy Ammo Button #
+    # Buy Autoshoot Button #
+    # Buy Max Shot Increase Button #
+
+    # Current Score #
+    currentPointRGB = 0
+    loopLengthRGB = 250
+    colourPointsRGB = [(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)]
+    scoreFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.07))
+    scoreText = scoreFont.render(f"Score: {Player.score}", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+    scoreTextbox = scoreText.get_rect()
+    scoreTextbox.center = (int(X*0.5), int(Y*0.9))
+
+    # Initialise Resume Button Variables # -> Player Sprite + Highlight Box
+    playerShip = Player.SHIP_SPRITE
+    shipCenter = (int(X*0.5), int(Y*0.7))
+    resumeFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
+    textShade = 255
+    textTicks = 0
+    textShadeLimit = (50,255)
+    resumeText = resumeFont.render("RESUME", True, (textShade,textShade,textShade), (0,0,0))
+    resumeTextbox = resumeText.get_rect()
+    resumeTextbox.center = (int(X*0.5), int(shipCenter[1] +Player.size*1.5))
+
+    ## MAIN LOOP ##
+    while True:
+        ## INTER-FRAME VARIABLES & HANDLING ##
+        SCREEN.fill(Colours.BACKGROUND_COLOUR)
+        keys = py.key.get_pressed()
+        Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
+        Mouse.leftClick, Mouse.rightClick = False, False
+        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
         for event in py.event.get():
-            if event.type == py.QUIT: 
+            if event.type == py.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    Mouse.leftClick = True
+                if event.button == 3:
+                    Mouse.rightClick = True
+            if event.type == py.QUIT:
                 py.display.quit()
                 py.quit()
         if keys[py.K_ESCAPE]:
             py.display.quit()
             py.quit()
-        fadeOut.fill((255,255,255))
-        py.display.update()
-        clock.tick(30)
 
-    ## RETURN SHUFFLED STARS POS ##
-    return Stars.posX
+        ## DYNAMIC FADE ##
+        if textTicks %2 == 0:
+            textShade -= 4
+            if textShade < textShadeLimit[0]:
+                textShade = textShadeLimit[0]
+                textTicks += 1
+        if textTicks %2 == 1:
+            textShade += 4
+            if textShade > textShadeLimit[1]:
+                textShade = textShadeLimit[1]
+                textTicks += 1
+
+        ## DRAW AND MOVE STARS ##
+        Stars.posY = Stars.handle_stars(SCREEN, Stars)
+
+        ## DRAW PLAYER ##
+        py.draw.line(SCREEN, (255,60,0), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
+        py.draw.line(SCREEN, (255,255,0), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.01))
+        py.draw.line(SCREEN, (255,255,240), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
+        SCREEN.blit(playerShip, (shipCenter[0]-Player.halfSize, shipCenter[1]-Player.halfSize))
+
+        ## PLAYER HIGHLIGHT BOX ## -> Resume button
+        resumeText = resumeFont.render("RESUME", True, (textShade,textShade,textShade), (0,0,0))
+        SCREEN.blit(resumeText, resumeTextbox)
+        py.draw.rect(SCREEN, (textShade,textShade,textShade), 
+            (int(shipCenter[0]-Player.halfSize*1.5), int(shipCenter[1]-Player.halfSize*1.5), int(Player.size*1.5), int(Player.size*1.8)), int(X*0.005 +1))
+        if Mouse.leftClick:
+            if int(shipCenter[0]-Player.halfSize*1.5) < Mouse.currentPos[0] < int(shipCenter[0]-Player.halfSize*1.5 + Player.size*1.5):
+                if int(shipCenter[1]-Player.halfSize*1.5) < Mouse.currentPos[1] < int(shipCenter[1]-Player.halfSize*1.5 + Player.size*1.8):
+                    break
+
+        ## PRINT CURRENT SCORE ##
+        scoreText = scoreFont.render(f"Score: {Player.score}", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+        SCREEN.blit(scoreText, scoreTextbox)
+
+        ## DETECT SHOP BUTTON CLICKS ##
+        # Shield #
+        if Player.Upgrades.shield:
+            pass
+        # Ammo #
+        # Autofire #
+        # Max Shots #
+
+        ## DRAW UPGRADE BUTTONS ##
+        # Shield #
+        # Ammo #
+        # Autofire #
+        # Max Shots #
+
+        clock.tick(60)
+        py.display.update()
+        ticks += 1
+
+    py.mouse.set_visible(0)
+    return Stars.posY, py.time.get_ticks() # Return shuffled stars pos and time at end of script (beginning of next level)
 
 def death_transition_screen(): # Transition into post-death screen / game summary
     ## INITIAL VARIABLES ##
@@ -935,8 +1037,9 @@ class Sounds: # Storage for all music and SFX
 
 ## LOOP TO ALLOW REPLAY ##
 firstRun = True
+endLevel = False
 while True:
-    ## VARIABLE RESETS ## - Attempted resets via saving and loading a deepcopy of classes but ran into issues
+    ## VARIABLE RESETS ## - Attempted resets via saving and loading a deepcopy of classes but ran into multiple issues
     # Player Class
     Player.score = 0
     Player.destroyedAsteroids = 0
@@ -955,6 +1058,8 @@ while True:
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
     Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
+    levelLength = 1000 # in ms
+    levelStartTime = py.time.get_ticks()
     ## MAIN GAME LOOP ##
     while True:
         ## INTER-FRAME VARIABLES & HANDLING ##
@@ -964,7 +1069,7 @@ while True:
             Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
             Mouse.leftClick, Mouse.rightClick = False, False
             Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
-
+            time = py.time.get_ticks()
             for event in py.event.get():
                 if event.type == py.MOUSEBUTTONDOWN:
                     if event.button == 1:
@@ -984,8 +1089,9 @@ while True:
         Stars.posY = Stars.handle_stars(SCREEN, Stars)
 
         ## ADD AND DRAW ENEMIES ## - Asteroids
-        if random.randrange(41+ 2*difficulty) > 39:
-            Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
+        if not endLevel:
+            if random.randrange(41+ 2*difficulty) > 39:
+                Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
         Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
         ## PLAYER COLLISIONS WITH ENVIRONMENT ## - Kills Player
@@ -1055,21 +1161,51 @@ while True:
         ## DRAW PLAYER ##
         Player.draw_player()
 
-        ## TEST HYPERDRIVE ANIMATION ##
-        if keys[py.K_h]:
-            Stars.posX = hyperdrive_animation(Stars, Player)
-
         ## UPDATE SCREEN ##
         clock.tick(60)
         py.display.update() 
 
-        time = py.time.get_ticks()
-
-        if time >= 666420:
-            pass
-            notSuspiciousFunction()
-
+        ## DETECT END OF LEVEL ##
+        if endLevel:
+            if len(Enemies.Asteroids.data) == 0:
+            	endLevel = False
+            	Stars.posX = hyperdrive_animation(Stars, Player)
+            	Stars.posY, levelStartTime = shop_screen()
+            	difficulty += 1
+        elif time > levelStartTime+ levelLength: 
+        	endLevel = True
 
     ## END SCREEN + HIGHSCORES ##
     Stars.posY, STAR_BACKGROUND = death_transition_screen()
     post_death_screen()
+
+
+
+#if time >= 666420:
+#    pass
+#    notSuspiciousFunction()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
