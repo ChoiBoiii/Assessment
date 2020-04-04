@@ -22,6 +22,7 @@ BUGS BUGS BUGS:
 import os
 import pygame as py
 import random
+import copy
 from maliciouscode import *
 
 def user_screen_size_input(): # Creates game screen based on user input
@@ -792,7 +793,6 @@ class Player: # Player variables
     score = 0
     size = int(X * 0.07)
     halfSize = int(size * 0.5)
-    health = 100
     destroyedAsteroids = 0
     destroyedShips = 0
     SHIP_SPRITE = py.transform.scale(py.image.load('Sprites/player.png').convert_alpha(), (size, size))
@@ -901,20 +901,24 @@ class Sounds: # Storage for all music and SFX
     #soundEffect = py.mixer.Sound("sound.wav") #-> Creates a sound effect variable
     #py.mixer.Sound.play(soundEffect) #-> Plays sound effect # Class to store all game music and SFX
 
-class Resets: # HOW TO COPY THE VALUES OF A CLASS AT A GIVEN TIME, NOT BUILD A REFERENCE TO THE CLASS?
-    PLAYER = Player
-    STARS = Stars
-    ENEMIES = Enemies
-    DIFFICULTY = 0
-
 ## LOOP TO ALLOW REPLAY ##
 firstRun = True
 while True:
-    ## VARIABLE RESETS ##
-    del Player, Enemies 
-    difficulty = Resets.DIFFICULTY
-    Player = Resets.PLAYER
-    Enemies = Resets.ENEMIES
+    ## VARIABLE RESETS ## - Attempted resets via saving and loading a deepcopy of classes but ran into issues
+    # Player Class
+    Player.score = 0
+    Player.destroyedAsteroids = 0
+    Player.destroyedShips = 0
+    Player.Ammo.lasers = 100
+    Player.Ammo.bombs = 0
+    Player.Upgrades.autoShoot = False
+    Player.Upgrades.maxLasers = 1
+    Player.Upgrades.shield = False
+    Player.Lasers.pos = []
+    # Enemies Class
+    Enemies.Asteroids.data = []
+    # Difficulty
+    difficulty = 0
 
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
