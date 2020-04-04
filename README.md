@@ -2,7 +2,7 @@
 Self-explanatory
 
 
-CONTROLS
+CONTROLS \n
 Movement  | [Mouse]
 Shoot     | [Left Click]
 Bomb      | [SPACE]
