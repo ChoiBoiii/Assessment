@@ -14,6 +14,6 @@ you only have *one life*, so DONT GET HIT!
 Made by: Isaak Choi, Xavier Xu, and Jackson Bryant
 
 ```
-**License:** lab01
-**Created:** Mar-Apr 2020
+License: lab01
+Created: Mar-Apr 2020
 ```
