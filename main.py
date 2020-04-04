@@ -448,18 +448,8 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
         py.display.update()
         clock.tick(30)
 
-    ## EXTENDED WHITEOUT ##
-    for i in range(30):
-        for event in py.event.get():
-            if event.type == py.QUIT: 
-                py.display.quit()
-                py.quit()
-        if keys[py.K_ESCAPE]:
-            py.display.quit()
-            py.quit()
-        fadeOut.fill((255,255,255))
-        py.display.update()
-        clock.tick(30)
+    ## PLAY EXIT SFX ##
+    py.mixer.Sound.play(Sounds.hyperdriveExit)
 
     ## RETURN SHUFFLED STARS POS ##
     return Stars.posX
