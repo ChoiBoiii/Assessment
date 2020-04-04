@@ -7,7 +7,7 @@
 
 
 ### HOW TO PLAY
-Use your mouse to dodge and weave aroud incoming enemies. Shoot using leftclick, and destroy objects to score points. Be careful, you have a limited supply of ammo. At the end of each level you are given the option to buy upgrades and re-stock ammo, but this costs POINTS, so be smart about what you buy.
+Use your mouse to dodge and weave aroud incoming enemies. Shoot using left\-click, and destroy objects to score points. Be careful, you have a limited supply of ammo. At the end of each level you are given the option to buy upgrades and re-stock ammo, but this costs POINTS, so be smart about what you buy.
 
 you only have *one life*, so DONT GET HIT!
 
