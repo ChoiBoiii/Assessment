@@ -1,17 +1,12 @@
 '''
+# HOW TO COPY THE VALUES OF A CLASS AT A GIVEN TIME, NOT BUILD A REFERENCE TO THE CLASS?
+# 559, 297, 662
+
 NOTES:
-- Add sound effect when exiting hyperdrive 
-- Add hyperdrive spinup sound effect
-- Add explosion sprite for when player dies
-- Add explosion sound effect for when player destroys enemies or asteroids
 - Add highscores page 
 - Add upgrades shop
 - Add level incrementation -> increase difficulty, access shop
 - ALL DOCUENTATION; DFD, IPO's, GANTT, LOGBOOKS, PROJECT SCOPE THINGO, ETC 
-
-UPGRADES CLASS INSIDE PLAYER CLASS:
-e.g. Player.Upgrades.autoShoot = False
-
 
 UPGRADE IDEAS:
 Auto-shoot -> hold mouse to shoot as soon as a laser is avaliable   -YES   BUY FOR 2000 POINTS 
@@ -21,15 +16,9 @@ Buy repair -> refil a heart of health   - NO ONLY ONE LIFE
 Shield? -> Nah shield's for noobs                                   -YES   BUY FOR 5000 POINTS (only one avaliable?)
 BOMBS -> Destroy everything on screen                               -YES   BUY FOR 500 POINTS
 
-
 BUGS BUGS BUGS:
     Could this be!? no bugs??
 '''
-
-
-
-
-
 
 import os
 import pygame as py
@@ -129,9 +118,11 @@ def colour_loop_RGB(colourPoints, length, currentPoint):
     differenceStep2 = (fadeTo[1]-fadeFrom[1])/sectionLen
     differenceStep3 = (fadeTo[2]-fadeFrom[2])/sectionLen
     n = currentPoint%sectionLen
-    return (int(fadeFrom[0] + differenceStep1*n), int(fadeFrom[1] + differenceStep2*n), int(fadeFrom[2] + differenceStep3*n))
+    return (int(fadeFrom[0] + differenceStep1*n), int(fadeFrom[1] + differenceStep2*n), int(fadeFrom[2] + differenceStep3*n)) # produce ordered colour-points via an RGB gradient generated from given colour-points
 
 def intro_screen(playerShip):
+    global firstRun
+
     ## RGB COLOUR LOOP VARIABLES ##
     currentPointRGB = 0
     loopLengthRGB = 250
@@ -145,7 +136,7 @@ def intro_screen(playerShip):
     textTicks = 0
     textShadeLimit = (50,255)
     shipCenter = (int(X*0.5), int(Y*0.7))
-    mainTextColout = (200,255,200)
+    mainTextColour = (200,255,200)
     ticks = 0
 
     ## SET UP MAIN TEXT ##
@@ -153,27 +144,27 @@ def intro_screen(playerShip):
     textbox1 = text1.get_rect()
     textbox1.center = (int(X*0.5), int(Y*0.6))
 
-    text2 = font.render("Enemies     | 50 Points", True, mainTextColout, (0,0,0))
+    text2 = font.render("Enemies     | 50 Points", True, mainTextColour, (0,0,0))
     textbox2 = text2.get_rect()
     textbox2.center = (int(X*0.5), int(Y*0.4))
 
-    text3 = font.render("Asteroids   | 10 Points", True, mainTextColout, (0,0,0))
+    text3 = font.render("Asteroids   | 10 Points", True, mainTextColour, (0,0,0))
     textbox3 = text3.get_rect()
     textbox3.center = (int(X*0.5), int(Y*0.45))
 
-    text4 = font.render("Miss        | -5 Points", True, mainTextColout, (0,0,0))
+    text4 = font.render("Miss        | -5 Points", True, mainTextColour, (0,0,0))
     textbox4 = text4.get_rect()
     textbox4.center = (int(X*0.5), int(Y*0.5))
 
-    text5 = font.render("Move with [mouse]", True, mainTextColout, (0,0,0))
+    text5 = font.render("Move with [mouse]", True, mainTextColour, (0,0,0))
     textbox5 = text5.get_rect()
     textbox5.center = (int(X*0.5), int(Y*0.25))
 
-    text6 = font.render("Shoot with [left click]", True, mainTextColout, (0,0,0))
+    text6 = font.render("Shoot with [left click]", True, mainTextColour, (0,0,0))
     textbox6 = text6.get_rect()
     textbox6.center = (int(X*0.5), int(Y*0.3))
 
-    text7 = font.render("You only have one life, so", True, mainTextColout, (0,0,0))
+    text7 = font.render("You only have one life, so", True, mainTextColour, (0,0,0))
     textbox7 = text7.get_rect()
     textbox7.center = (int(X*0.5), int(Y*0.85))
 
@@ -187,9 +178,11 @@ def intro_screen(playerShip):
     #######################
 
     ## START MUSIC ##
-    py.mixer.music.stop()
-    py.mixer.music.load("Sounds/music/main_page_music.wav")
-    py.mixer.music.play(-1)
+    if firstRun:
+        py.mixer.music.stop()
+        py.mixer.music.load("Sounds/music/main_page_music.wav")
+        py.mixer.music.play(-1)
+        firstRun = False
 
     ## MAIN SCREEN LOOP ##
     while True:
@@ -261,7 +254,7 @@ def intro_screen(playerShip):
         clock.tick(40)
         ticks += 1
 
-    return Stars.posY
+    return Stars.posY # Intoduction to basic game overview + controls
 def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN): # Hyperdrive Animation ~but different~
     ## DISABLE MOUSE VISIBILITY ##
     py.mouse.set_visible(0) 
@@ -302,8 +295,8 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
             ## IF NEED TO SPEED UP REMOVE COLOUR CHANGING OF STARS BELOW ##
             c = random.randrange(140) +100
             py.draw.line(SURFACE, (c, c, c),                
-                             (Stars.posX[i], Stars.posY[i] + physMove * 0.2 * Stars.depth[i]), 
-                             (Stars.posX[i], Stars.posY[i] - physMove * 0.2 * Stars.depth[i]), 
+                             (Stars.posX[i], int(Stars.posY[i] + physMove * 0.2 * Stars.depth[i])), 
+                             (Stars.posX[i], int(Stars.posY[i] - physMove * 0.2 * Stars.depth[i])), 
                              int(Stars.depth[i])) 
 
         ## SHAKE OFFSETS FOR PLAYER SHIP + BOOSTERS ##
@@ -439,18 +432,12 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
     ## RETURN SHUFFLED STARS POS ##
     return Stars.posX
 
-def death_transition_screen():
-    pass
-def post_death_screen():
-    print("""
-        Press [ENTER] to play again or [ESCAPE] to quit
-        -print score
-        -notify of score position (top 100?)
-        -if didn't make top 100
-        - print top 10 scores
-        """)
+def death_transition_screen(): # Transition into post-death screen / game summary
+	## INITIAL VARIABLES ##
     starMovement = X * 0.002
+    font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
     while True:
+        ## INTER-FRAME HANDLING & VARIABLES ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
         keys = py.key.get_pressed()
         Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
@@ -467,13 +454,191 @@ def post_death_screen():
         if keys[py.K_ESCAPE]:
             py.quit()
 
-
+        ## PRINT STAR BACKGROUND ##
         Stars.posY = Stars.handle_stars(SCREEN, Stars, starMovement)  
 
-
+        ## UPDATE SCREEN + INTER-FRAME VARIABLES ##
         clock.tick(50)
         py.display.update() 
-        starMovement *= 0.97
+        starMovement *= 0.98
+        if starMovement < X*0.0001:
+            break
+
+    ## CREATE DARKENED STAR BACKGROUND ##
+    tempSurface = py.Surface((X, Y))
+    tempSurface.fill(Colours.BACKGROUND_COLOUR)
+    tempSurface.set_alpha(150)
+    SCREEN.blit(tempSurface, (0, 0))
+    STAR_BACKGROUND = SCREEN.convert()
+
+   	## RETURN VARIABLES ##
+    return Stars.posY, STAR_BACKGROUND
+def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboard
+    ## ENABLE MOUSE VISIBILITY ##
+    py.mouse.set_visible(1) 
+
+    ## READ IN TOP 10 SCORES ##
+
+
+    ## INITIAL VARIABLES / FONTS ##
+    mainTextColour = (200,255,200)
+    ticks = 0
+    normalFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
+    titleLeaderboardFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.06))
+    titleScoreFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.05))
+    loopLengthRGB = 250
+    colourPointsRGB = [(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)]
+    textShade = 255
+    textTicks = 0
+    textShadeLimit = (50,255)
+
+    #scoreText = titleScoreFont.render(f"You scored: {Player.score}", True, (textShade,textShade,textShade), (0,0,0))
+    scoreText = titleScoreFont.render(f"You scored: {Player.score}", True, (textShade,textShade,textShade), (0,0,0))
+    scoreTextbox = scoreText.get_rect()
+    scoreTextbox.center = (int(X*0.5), int(Y*0.1))
+
+    leaderboardTitleText = titleLeaderboardFont.render("Leaderboard", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+    leaderboardTitleTextbox = leaderboardTitleText.get_rect()
+    leaderboardTitleTextbox.center = (int(X*0.5), int(Y*0.2))
+
+    ## for below; ERROR -> 'pygame.surface object is not iterable' (And so I made them manualy, the bane of my existance)
+    #highscoresPositioningText = []
+    #for i in range(10):
+    #    highscoresPositioningText.extend(normalFont.render(f"{i+1} |", True, mainTextColour, (0,0,0)))
+
+    highscores = []
+    for line in open('highscores.txt'):
+        highscores.append(int(line.strip()))
+    ## ADD PLAYER SCORE ##
+    highscores.append(Player.score)
+    highscores = sorted(highscores)
+    highscores = highscores[::-1]
+    highscoresLen = len(highscores)
+    if highscoresLen > 10:
+        highscores = highscores[:10]
+        highscoresLen = 10
+
+    if highscoresLen >= 1:
+        HSPos1ST = normalFont.render(f"{highscores[0]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 2:
+        HSPos2ST = normalFont.render(f"{highscores[1]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 3:
+        HSPos3ST = normalFont.render(f"{highscores[2]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 4:
+        HSPos4ST = normalFont.render(f"{highscores[3]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 5:
+        HSPos5ST = normalFont.render(f"{highscores[4]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 6:
+        HSPos6ST = normalFont.render(f"{highscores[5]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 7:
+        HSPos7ST = normalFont.render(f"{highscores[6]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 8:
+        HSPos8ST = normalFont.render(f"{highscores[7]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 9:
+        HSPos9ST = normalFont.render(f"{highscores[8]}", True, mainTextColour, (0,0,0))
+    if highscoresLen >= 10:
+        HSPos10ST = normalFont.render(f"{highscores[9]}", True, mainTextColour, (0,0,0))
+
+    HSPos1T = normalFont.render("1 |", True, mainTextColour, (0,0,0))
+    HSPos2T = normalFont.render("2 |", True, mainTextColour, (0,0,0))
+    HSPos3T = normalFont.render("3 |", True, mainTextColour, (0,0,0))
+    HSPos4T = normalFont.render("4 |", True, mainTextColour, (0,0,0))
+    HSPos5T = normalFont.render("5 |", True, mainTextColour, (0,0,0))
+    HSPos6T = normalFont.render("6 |", True, mainTextColour, (0,0,0))
+    HSPos7T = normalFont.render("7 |", True, mainTextColour, (0,0,0))
+    HSPos8T = normalFont.render("8 |", True, mainTextColour, (0,0,0))
+    HSPos9T = normalFont.render("9 |", True, mainTextColour, (0,0,0))
+    HSPos10T = normalFont.render("10|", True, mainTextColour, (0,0,0))
+
+    ## RESTART INTRO MUSIC ##
+    py.mixer.music.stop()
+    py.mixer.music.load("Sounds/music/main_page_music.wav")
+    py.mixer.music.play(-1)
+    while True:
+        ## INTER-FRAME HANDLING & VARIABLES ##
+        SCREEN.blit(STAR_BACKGROUND, (0,0)) #-> Sets stationary stars with transparent black overlay as background
+        keys = py.key.get_pressed()
+        Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
+        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
+        Mouse.leftClick, Mouse.rightClick = False, False
+        for event in py.event.get():
+            if event.type == py.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    Mouse.leftClick = True
+                if event.button == 3:
+                    Mouse.rightClick = True
+            if event.type == py.QUIT:
+                py.quit()
+        if keys[py.K_ESCAPE]:
+            py.quit()
+        if keys[py.K_RETURN]:
+            break
+
+        ## DYNAMIC TEXT CHANGE ##
+        if textTicks %2 == 0:
+            textShade -= 4
+            if textShade < textShadeLimit[0]:
+                textShade = textShadeLimit[0]
+                textTicks += 1
+        if textTicks %2 == 1:
+            textShade += 4
+            if textShade > textShadeLimit[1]:
+                textShade = textShadeLimit[1]
+                textTicks += 1
+        ## DISPLAY TEXT ##
+        # Player score
+        scoreText = titleScoreFont.render(f"You scored: {Player.score}", True, (textShade,textShade,textShade), (0,0,0))
+        SCREEN.blit(scoreText, scoreTextbox)
+        # Leaderboard Title
+        leaderboardTitleText = titleLeaderboardFont.render("Leaderboard", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+        # Leaderboard Positions
+        SCREEN.blit(leaderboardTitleText, leaderboardTitleTextbox)
+        SCREEN.blit(HSPos1T, (int(X*0.2), int(Y*0.25)))
+        SCREEN.blit(HSPos2T, (int(X*0.2), int(Y*0.28)))
+        SCREEN.blit(HSPos3T, (int(X*0.2), int(Y*0.31)))
+        SCREEN.blit(HSPos4T, (int(X*0.2), int(Y*0.34)))
+        SCREEN.blit(HSPos5T, (int(X*0.2), int(Y*0.37)))
+        SCREEN.blit(HSPos6T, (int(X*0.2), int(Y*0.40)))
+        SCREEN.blit(HSPos7T, (int(X*0.2), int(Y*0.43)))
+        SCREEN.blit(HSPos8T, (int(X*0.2), int(Y*0.46)))
+        SCREEN.blit(HSPos9T, (int(X*0.2), int(Y*0.49)))
+        SCREEN.blit(HSPos10T, (int(X*0.2), int(Y*0.52)))
+        # Leaderboard scores
+        if highscoresLen >= 1:
+            SCREEN.blit(HSPos1ST, (int(X*0.35), int(Y*0.25)))
+        if highscoresLen >= 2:
+            SCREEN.blit(HSPos2ST, (int(X*0.35), int(Y*0.28)))
+        if highscoresLen >= 3:
+            SCREEN.blit(HSPos3ST, (int(X*0.35), int(Y*0.31)))
+        if highscoresLen >= 4:
+            SCREEN.blit(HSPos4ST, (int(X*0.35), int(Y*0.34)))
+        if highscoresLen >= 5:
+            SCREEN.blit(HSPos5ST, (int(X*0.35), int(Y*0.37)))
+        if highscoresLen >= 6:
+            SCREEN.blit(HSPos6ST, (int(X*0.35), int(Y*0.40)))
+        if highscoresLen >= 7:
+            SCREEN.blit(HSPos7ST, (int(X*0.35), int(Y*0.43)))
+        if highscoresLen >= 8:
+            SCREEN.blit(HSPos8ST, (int(X*0.35), int(Y*0.46)))
+        if highscoresLen >= 9:
+            SCREEN.blit(HSPos9ST, (int(X*0.35), int(Y*0.49)))
+        if highscoresLen >= 10:
+            SCREEN.blit(HSPos10ST, (int(X*0.35), int(Y*0.52)))
+
+        ## UPDATE SCREEN + INTER-FRAME VARIABLES ##
+        clock.tick(50)
+        py.display.update() 
+        ticks += 1
+
+    ## HANDLE SAVING OF SCORE TO SCORES FILE ##
+    with open("highscores.txt") as file:
+        for i in range(highscoresLen):
+            print(highscores[i])
+            file.write('test') ## THERES A PROBLEM WITH THE FILE, CANT WRITE ANYTHING TO IT
+            if i < highscoresLen:
+                file.write(f'{str(highscores[i])}\n')
+            else:
+                file.write(f'{str(highscores[i])}')
 
 class Stars: # Background Stars
     num = 250
@@ -494,11 +659,11 @@ class Stars: # Background Stars
         for i in range(Stars.num):
             Stars.posY[i] += movementMultiplier * Stars.depth[i] * 0.5
             Stars.posY[i] %= Y
-            py.draw.rect(SURFACE, (200,200,200), (Stars.posX[i], Stars.posY[i], Stars.depth[i], Stars.depth[i]))
+            py.draw.rect(SURFACE, (200,200,200), (Stars.posX[i], int(Stars.posY[i]), int(Stars.depth[i]), int(Stars.depth[i])))
             # In case of depreciation of auto int() with pygame vectors:
             #py.draw.rect(SURFACE, (255,255,255), (int(Stars.posX[i]), int(Stars.posY[i]), int(Stars.depth[i]), int(Stars.depth[i])))
         return Stars.posY
-        
+
 class Mouse: # All mouse related variables / input
     currentPos = (0,0)                      # Current pos of mouse expressed as (x, y)
     prevPos = (0,0)                         # Pos of mouse last frame expressed as (x, y)
@@ -528,6 +693,8 @@ class Player: # Player variables
     size = int(X * 0.07)
     halfSize = int(size * 0.5)
     health = 100
+    destroyedAsteroids = 0
+    destroyedShips = 0
     SHIP_SPRITE = py.transform.scale(py.image.load('Sprites/player.png').convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load('Sprites/death_explosion.png').convert_alpha(), (int(size*2), int(size*2)))
     class Ammo:
@@ -579,7 +746,7 @@ class Player: # Player variables
 
             return Lasers, Enemies
 
-class Enemies:
+class Enemies: # All enemy variables (Asteroids, shpis, etc)
 
     class Asteroids:
         initialSize = int(X * 0.1)
@@ -595,7 +762,7 @@ class Enemies:
                 newY = y + Enemies.Asteroids.initialSpeed * (1 + difficulty * 0.1)
                 if not newY > Y:
                     tempList.append((x, newY, size, sprite))
-                    SCREEN.blit(sprite, (x, newY))
+                    SCREEN.blit(sprite, (x, int(newY)))
             return tempList
 
         def create_new():
@@ -611,9 +778,9 @@ class Enemies:
                 random.randrange(X + Enemies.Asteroids.initialSize) - Enemies.Asteroids.initialSize, # X
                 -size,                                                                           # Y
                 size,                                                                            # Size
-                sprite)                                                                          # Scaled Sprite
+                sprite)                                                                          # Scaled Sprite # Class for enemies (Asteroids, ships, etc)
 
-class Sounds:
+class Sounds: # Storage for all music and SFX
     playerLaser = py.mixer.Sound("Sounds/player_sounds/player_laser.wav")
     hyperdriveExit = py.mixer.Sound("Sounds/player_sounds/hyperdrive_exit.wav")
     playerDeathExplosion = py.mixer.Sound("Sounds/player_sounds/playerDeathExplosion.wav")
@@ -632,134 +799,144 @@ class Sounds:
     #pygame.mixer.music.upause() #-> Unpauses music
     #py.mixer.music.stop() #-> Stops music
     #soundEffect = py.mixer.Sound("sound.wav") #-> Creates a sound effect variable
-    #py.mixer.Sound.play(soundEffect) #-> Plays sound effect
+    #py.mixer.Sound.play(soundEffect) #-> Plays sound effect # Class to store all game music and SFX
 
-## PRE-GAME START / INTRO SCREENS ##
-difficulty = 2 # Increase as player progresses
-Stars.posY = intro_screen(Player.SHIP_SPRITE) 
-Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
+class Resets: # HOW TO COPY THE VALUES OF A CLASS AT A GIVEN TIME, NOT BUILD A REFERENCE TO THE CLASS?
+    PLAYER = Player
+    STARS = Stars
+    ENEMIES = Enemies
+    DIFFICULTY = 0
 
-## MAIN LOOP ##
+## LOOP TO ALLOW REPLAY ##
+firstRun = True
 while True:
-    ## INTER-FRAME VARIABLES & HANDLING ##
-    if True:
-        SCREEN.fill(Colours.BACKGROUND_COLOUR)
-        keys = py.key.get_pressed()
-        Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
-        Mouse.leftClick, Mouse.rightClick = False, False
-        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
+    ## VARIABLE RESETS ##
+    del Player, Enemies 
+    difficulty = Resets.DIFFICULTY
+    Player = Resets.PLAYER
+    Enemies = Resets.ENEMIES
 
-        for event in py.event.get():
-            if event.type == py.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    Mouse.leftClick = True
-                    Mouse.clickPos = Mouse.currentPos
-                if event.button == 3:
-                    Mouse.rightClick = True
-                    Mouse.clickPos = Mouse.currentPos
-            if event.type == py.QUIT:
+    ## PRE-GAME START / INTRO SCREENS ##
+    Stars.posY = intro_screen(Player.SHIP_SPRITE) 
+    Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
+    ## MAIN GAME LOOP ##
+    while True:
+        ## INTER-FRAME VARIABLES & HANDLING ##
+        if True:
+            SCREEN.fill(Colours.BACKGROUND_COLOUR)
+            keys = py.key.get_pressed()
+            Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
+            Mouse.leftClick, Mouse.rightClick = False, False
+            Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
+
+            for event in py.event.get():
+                if event.type == py.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        Mouse.leftClick = True
+                        Mouse.clickPos = Mouse.currentPos
+                    if event.button == 3:
+                        Mouse.rightClick = True
+                        Mouse.clickPos = Mouse.currentPos
+                if event.type == py.QUIT:
+                    py.display.quit()
+                    py.quit()
+            if keys[py.K_ESCAPE]:
                 py.display.quit()
                 py.quit()
-        if keys[py.K_ESCAPE]:
-            py.display.quit()
-            py.quit()
 
-    ## CALCULATE AND DRAW BACKGROUND STARS ##
-    Stars.posY = Stars.handle_stars(SCREEN, Stars)
+        ## CALCULATE AND DRAW BACKGROUND STARS ##
+        Stars.posY = Stars.handle_stars(SCREEN, Stars)
 
-    ## ADD AND DRAW ENEMIES ## - Asteroids
-    if random.randrange(41+ 2*difficulty) > 39:
-        Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
-    Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
+        ## ADD AND DRAW ENEMIES ## - Asteroids
+        if random.randrange(41+ 2*difficulty) > 39:
+            Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
+        Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
-    ## PLAYER COLLISIONS WITH ENVIRONMENT ## - Kills Player
-    if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
-        print("collision")
-        if Player.Upgrades.shield:
-            Player.Upgrades.shield = False
-        else:
-            SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
-            DEATHFRAME = SCREEN.convert()
-            py.mixer.Sound.play(Sounds.playerDeathExplosion)
-            py.mixer.music.stop()
-            py.display.update()
-            #SCREEN.blit(DEATHFRAME, (0,0))
-        break # -> Exits main loop, goto score screen
-
-    ## PLAYER SHOOTS LASERS ##
-    if Player.Ammo.lasers > 0:
-        if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
-            if Player.Upgrades.autoShoot:
-                if Mouse.B1:
-                    Player.Lasers.pos.append(Mouse.currentPos)
-                    py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
-                    py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
-                    Player.Ammo.lasers -= 1
-                    py.mixer.Sound.play(Sounds.playerLaser)
+        ## PLAYER COLLISIONS WITH ENVIRONMENT ## - Kills Player
+        if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
+            if Player.Upgrades.shield:
+                Player.Upgrades.shield = False
             else:
-                if Mouse.leftClick:
-                    Player.Lasers.pos.append(Mouse.currentPos)
-                    py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
-                    py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
-                    Player.Ammo.lasers -= 1
-                    py.mixer.Sound.play(Sounds.playerLaser)
-    Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
+                SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
+                #DEATHFRAME = SCREEN.convert()
+                py.mixer.Sound.play(Sounds.playerDeathExplosion)
+                py.mixer.music.stop()
+                py.display.update()
+                #SCREEN.blit(DEATHFRAME, (0,0))
+            break # -> Exits main loop, goto score screen
 
-    ## PLAYER'S LASER COLLISIONS ##
-    indexOffset = 0
-    for i in range(len(Player.Lasers.pos)):
-        laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
+        ## PLAYER SHOOTS LASERS ##
+        if Player.Ammo.lasers > 0:
+            if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
+                if Player.Upgrades.autoShoot:
+                    if Mouse.B1:
+                        Player.Lasers.pos.append(Mouse.currentPos)
+                        py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
+                        py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+                        Player.Ammo.lasers -= 1
+                        py.mixer.Sound.play(Sounds.playerLaser)
+                else:
+                    if Mouse.leftClick:
+                        Player.Lasers.pos.append(Mouse.currentPos)
+                        py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
+                        py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+                        Player.Ammo.lasers -= 1
+                        py.mixer.Sound.play(Sounds.playerLaser)
+        Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
 
-        for n in range(len(Enemies.Asteroids.data)):
-            try: # TEMPORARY
-                asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
-            except IndexError:
-                print("\nSomething broke.\n")
-                raise idiot
-                
-            asteroidPosX, asteroidPosY = Enemies.Asteroids.data[n-indexOffset][0:2]
-            asteroidCenter = ((asteroidPosX + asteroidSize * 0.5), (asteroidPosY + asteroidSize * 0.5))
+        ## PLAYER'S LASER COLLISIONS ##
+        indexOffset = 0
+        for i in range(len(Player.Lasers.pos)):
+            laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
 
-            #print(asteroidSize) # prints out numbers
+            for n in range(len(Enemies.Asteroids.data)):
+                try: # TEMPORARY
+                    asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
+                except IndexError:
+                    print("\nSomething broke.\n")
+                    raise idiot
 
-            if distance(asteroidCenter, laserTopPos) < Enemies.Asteroids.data[n - indexOffset][2] * 0.6:
-                py.draw.circle(SCREEN, (255,200,200), laserTopPos, int(Y * 0.01))
-                py.draw.circle(SCREEN, Colours.RED, laserTopPos, int(Y * 0.007))
+                asteroidPosX, asteroidPosY = Enemies.Asteroids.data[n-indexOffset][0:2]
+                asteroidCenter = ((asteroidPosX + asteroidSize * 0.5), (asteroidPosY + asteroidSize * 0.5))
 
-                del Player.Lasers.pos[i - indexOffset], Enemies.Asteroids.data[n - indexOffset]
-                indexOffset += 1
+                if distance(asteroidCenter, laserTopPos) < Enemies.Asteroids.data[n - indexOffset][2] * 0.6:
+                    py.draw.circle(SCREEN, (255,200,200), laserTopPos, int(Y * 0.01))
+                    py.draw.circle(SCREEN, Colours.RED, laserTopPos, int(Y * 0.007))
 
-                Player.score += 10
+                    del Player.Lasers.pos[i - indexOffset], Enemies.Asteroids.data[n - indexOffset]
+                    indexOffset += 1
 
-                py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
+                    Player.score += 10
+                    Player.destroyedAsteroids += 1
 
-                break
+                    py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
 
-    ## PRINT SCORE TEST ##
-    SCREEN.blit(py.font.Font(None, int(X*0.05)).render(f"Score: {Player.score}", True, (255,255,255), (100,100,100)), (int(X*0.05), int(X*0.05)))
+                    break
 
-    ## DRAW PLAYER ##
-    Player.draw_player()
+        ## PRINT SCORE TEST ##
+        SCREEN.blit(py.font.Font(None, int(X*0.05)).render(f"Score: {Player.score}", True, (255,255,255), (100,100,100)), (int(X*0.05), int(X*0.05)))
 
-    ## TEST HYPERDRIVE ANIMATION ##
-    if keys[py.K_h]:
-        Stars.posX = hyperdrive_animation(Stars, Player)
+        ## DRAW PLAYER ##
+        Player.draw_player()
 
-    ## UPDATE SCREEN ##
-    clock.tick(60)
-    py.display.update() 
+        ## TEST HYPERDRIVE ANIMATION ##
+        if keys[py.K_h]:
+            Stars.posX = hyperdrive_animation(Stars, Player)
 
-    time = py.time.get_ticks()
+        ## UPDATE SCREEN ##
+        clock.tick(60)
+        py.display.update() 
 
-    if time >= 666420:
-        pass
-        notSuspiciousFunction()
+        time = py.time.get_ticks()
+
+        if time >= 666420:
+            pass
+            notSuspiciousFunction()
 
 
-## END SCREEN + HIGHSCORES ##
-print("Outlide Loop")
-print("(DEAD)")
-post_death_screen()
+    ## END SCREEN + HIGHSCORES ##
+    Stars.posY, STAR_BACKGROUND = death_transition_screen()
+    post_death_screen()
 
 
 
