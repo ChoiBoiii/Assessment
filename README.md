@@ -1,4 +1,4 @@
-###### Open and run 'main.py'
+###### Open and run 'Untitled Space Thing.py'
 ###### Made using Python 3 and Pygame 3.8
 
 ### CONTROLS
