@@ -319,8 +319,8 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
                              int(Stars.depth[i])) 
 
         ## SHAKE OFFSETS FOR PLAYER SHIP + BOOSTERS ##
-        playerOffsetX = (random.randrange(int(X*0.002*(n/20+1)))-int(X*0.005))
-        playerOffsetY = (random.randrange(int(X*0.002*(n/20+1)))-int(X*0.005))
+        playerOffsetX = (random.randrange(int(X*0.002*(n/20)) +1)-int(X*0.005))
+        playerOffsetY = (random.randrange(int(X*0.002*(n/20)) +1)-int(X*0.005))
 
         ## BOOSTERS ANIMATION ##
         py.draw.line(SURFACE, (0, 220, 255),
@@ -406,8 +406,8 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
                              int(Stars.depth[i])) 
 
         ## SHAKE OFFSETS FOR PLAYER SHIP + BOOSTERS ##
-        playerOffsetX = (random.randrange(int(X*0.002*(n/20+1)))   -int(X*0.005))
-        playerOffsetY = (random.randrange(int(X*0.002*(n/20+1)))   -int(X*0.005))
+        playerOffsetX = (random.randrange(int(X*0.002*(n/20) +1))   -int(X*0.005))
+        playerOffsetY = (random.randrange(int(X*0.002*(n/20) +1))   -int(X*0.005))
 
         ## BOOSTERS ANIMATION ##
         py.draw.line(SURFACE, (0, 220, 255),
@@ -486,7 +486,7 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
     MAX_SHOT_BUTTON_DATA = (MAX_SHOT_BUTTON_POS[0], MAX_SHOT_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1])
     MAX_SHOT_BUTTON_COLOUR = (100,100,100) # Changed Later
     MAX_SHOT_BUTTON_TEXT_COLOUR = (200,200,200) # Changed Later
-    MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (3000p)", True, MAX_SHOT_BUTTON_TEXT_COLOUR, MAX_SHOT_BUTTON_COLOUR)
+    MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (1000p)", True, MAX_SHOT_BUTTON_TEXT_COLOUR, MAX_SHOT_BUTTON_COLOUR)
     MAX_SHOT_BUTTON_TEXTBOX = MAX_SHOT_BUTTON_TEXT.get_rect()
     MAX_SHOT_BUTTON_TEXTBOX.center = (int(MAX_SHOT_BUTTON_POS[0] + BUTTON_SIZE[0]*0.5), int(MAX_SHOT_BUTTON_POS[1] +BUTTON_SIZE[1]*0.5))
 
@@ -495,7 +495,7 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
     SHIELD_BUTTON_DATA = (SHIELD_BUTTON_POS[0], SHIELD_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1])
     SHIELD_BUTTON_COLOUR = (100,100,100) # Changed Later
     SHIELD_BUTTON_TEXT_COLOUR = (200,200,200) # Changed Later
-    SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (5000p)", True, SHIELD_BUTTON_TEXT_COLOUR, SHIELD_BUTTON_COLOUR)
+    SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (3000p)", True, SHIELD_BUTTON_TEXT_COLOUR, SHIELD_BUTTON_COLOUR)
     SHIELD_BUTTON_TEXTBOX = SHIELD_BUTTON_TEXT.get_rect()
     SHIELD_BUTTON_TEXTBOX.center =  (int(SHIELD_BUTTON_POS[0] + BUTTON_SIZE[0]*0.5), int(SHIELD_BUTTON_POS[1] +BUTTON_SIZE[1]*0.5))
 
@@ -518,66 +518,65 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
 
     ## MAIN LOOP ##
     while True:
-        if True:
-            ## INTER-FRAME VARIABLES & HANDLING ##
-            SCREEN.fill(Colours.BACKGROUND_COLOUR)
-            keys = py.key.get_pressed()
-            Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
-            Mouse.leftClick, Mouse.rightClick = False, False
-            Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
-            for event in py.event.get():
-                if event.type == py.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        Mouse.leftClick = True
-                    if event.button == 3:
-                        Mouse.rightClick = True
-                if event.type == py.QUIT:
-                    py.display.quit()
-                    py.quit()
-            if keys[py.K_ESCAPE]:
+        ## INTER-FRAME VARIABLES & HANDLING ##
+        SCREEN.fill(Colours.BACKGROUND_COLOUR)
+        keys = py.key.get_pressed()
+        Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
+        Mouse.leftClick, Mouse.rightClick = False, False
+        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
+        for event in py.event.get():
+            if event.type == py.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    Mouse.leftClick = True
+                if event.button == 3:
+                    Mouse.rightClick = True
+            if event.type == py.QUIT:
                 py.display.quit()
                 py.quit()
+        if keys[py.K_ESCAPE]:
+            py.display.quit()
+            py.quit()
 
-            ## DYNAMIC FADE ##
-            if textTicks %2 == 0:
-                textShade -= 4
-                if textShade < textShadeLimit[0]:
-                    textShade = textShadeLimit[0]
-                    textTicks += 1
-            if textTicks %2 == 1:
-                textShade += 4
-                if textShade > textShadeLimit[1]:
-                    textShade = textShadeLimit[1]
-                    textTicks += 1
+        ## DYNAMIC FADE ##
+        if textTicks %2 == 0:
+            textShade -= 4
+            if textShade < textShadeLimit[0]:
+                textShade = textShadeLimit[0]
+                textTicks += 1
+        if textTicks %2 == 1:
+            textShade += 4
+            if textShade > textShadeLimit[1]:
+                textShade = textShadeLimit[1]
+                textTicks += 1
 
-            ## PRINT CURRENT SCORE ##
-            SCREEN.blit(scoreText, scoreTextbox)
+        ## PRINT CURRENT SCORE ##
+        SCREEN.blit(scoreText, scoreTextbox)
 
-            ## DRAW AND MOVE STARS ##
-            Stars.posY = Stars.handle_stars(SCREEN, Stars)
+        ## DRAW AND MOVE STARS ##
+        Stars.posY = Stars.handle_stars(SCREEN, Stars)
 
-            ## DRAW PLAYER ##
-            py.draw.line(SCREEN, (255,60,0), shipCenter, (shipCenter[0], 
-                shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
-            py.draw.line(SCREEN, (255,255,0), shipCenter, (shipCenter[0], 
-                shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.01))
-            py.draw.line(SCREEN, (255,255,240), shipCenter, (shipCenter[0], 
-                shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
-            SCREEN.blit(playerShip, (shipCenter[0]-Player.halfSize, shipCenter[1]-Player.halfSize))
+        ## DRAW PLAYER ##
+        py.draw.line(SCREEN, (255,60,0), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
+        py.draw.line(SCREEN, (255,255,0), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.01))
+        py.draw.line(SCREEN, (255,255,240), shipCenter, (shipCenter[0], 
+            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
+        SCREEN.blit(playerShip, (shipCenter[0]-Player.halfSize, shipCenter[1]-Player.halfSize))
 
-            ## PLAYER HIGHLIGHT BOX ## -> Resume button
-            resumeText = resumeFont.render("RESUME", True, (textShade,textShade,textShade), (0,0,0))
-            SCREEN.blit(resumeText, resumeTextbox)
-            py.draw.rect(SCREEN, (textShade,textShade,textShade), 
-                (int(shipCenter[0]-Player.halfSize*1.5), int(shipCenter[1]-Player.halfSize*1.5), int(Player.size*1.5), int(Player.size*1.8)), int(X*0.005 +1))
-            if Mouse.leftClick:
-                if int(shipCenter[0]-Player.halfSize*1.5) < Mouse.currentPos[0] < int(shipCenter[0]-Player.halfSize*1.5 + Player.size*1.5):
-                    if int(shipCenter[1]-Player.halfSize*1.5) < Mouse.currentPos[1] < int(shipCenter[1]-Player.halfSize*1.5 + Player.size*1.8):
-                        break
-            
-            ## PRINT 'UPGRADES!'' ##
-            upgradesTitleText = upgradesTitleFont.render("UPGRADES!", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
-            SCREEN.blit(upgradesTitleText, upgradesTitleTextbox)
+        ## PLAYER HIGHLIGHT BOX ## -> Resume button
+        resumeText = resumeFont.render("RESUME", True, (textShade,textShade,textShade), (0,0,0))
+        SCREEN.blit(resumeText, resumeTextbox)
+        py.draw.rect(SCREEN, (textShade,textShade,textShade), 
+            (int(shipCenter[0]-Player.halfSize*1.5), int(shipCenter[1]-Player.halfSize*1.5), int(Player.size*1.5), int(Player.size*1.8)), int(X*0.005 +1))
+        if Mouse.leftClick:
+            if int(shipCenter[0]-Player.halfSize*1.5) < Mouse.currentPos[0] < int(shipCenter[0]-Player.halfSize*1.5 + Player.size*1.5):
+                if int(shipCenter[1]-Player.halfSize*1.5) < Mouse.currentPos[1] < int(shipCenter[1]-Player.halfSize*1.5 + Player.size*1.8):
+                    break
+        
+        ## PRINT 'UPGRADES!'' ##
+        upgradesTitleText = upgradesTitleFont.render("UPGRADES!", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+        SCREEN.blit(upgradesTitleText, upgradesTitleTextbox)
 
         ## DETECT SHOP BUTTON CLICKS + HANDLE MOUSE COLLISION ##
         # Ammo #
@@ -633,20 +632,20 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
 
         # Max Shots #
         if (MAX_SHOT_BUTTON_POS[0] < Mouse.currentPos[0] < MAX_SHOT_BUTTON_POS[0] + BUTTON_SIZE[0]) and (MAX_SHOT_BUTTON_POS[1] < Mouse.currentPos[1] < MAX_SHOT_BUTTON_POS[1] + BUTTON_SIZE[1]):
-            if Player.score >= 3000:
+            if Player.score >= 1000:
                 MAX_SHOT_BUTTON_COLOUR = (0,255,0)
                 MAX_SHOT_BUTTON_TEXT_COLOUR = (255,255,255)
                 if Mouse.leftClick:
-                    Player.score -= 3000
+                    Player.score -= 1000
                     scoreText = scoreFont.render(f"Score: {Player.score}p", True, (0,255,255), (0,0,0))
                     Player.Upgrades.maxLasers += 1
-                    if Player.score < 3000:
+                    if Player.score < 1000:
                         MAX_SHOT_BUTTON_COLOUR = (255,0,0)
                         MAX_SHOT_BUTTON_TEXT_COLOUR = (255,255,255)
             else:
                 MAX_SHOT_BUTTON_COLOUR = (255,0,0)
                 MAX_SHOT_BUTTON_TEXT_COLOUR = (255,255,255)
-        elif Player.score >= 3000:
+        elif Player.score >= 1000:
             MAX_SHOT_BUTTON_COLOUR = (0,200,0)
             MAX_SHOT_BUTTON_TEXT_COLOUR = (150,150,150)
         else:
@@ -659,20 +658,20 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
             SHIELD_BUTTON_COLOUR = (100,100,100)
         else:
             if (SHIELD_BUTTON_POS[0] < Mouse.currentPos[0] < SHIELD_BUTTON_POS[0] + BUTTON_SIZE[0]) and (SHIELD_BUTTON_POS[1] < Mouse.currentPos[1] < SHIELD_BUTTON_POS[1] + BUTTON_SIZE[1]):
-                if Player.score >= 5000:
+                if Player.score >= 3000:
                     SHIELD_BUTTON_COLOUR = (0,255,0)
                     SHIELD_BUTTON_TEXT_COLOUR = (255,255,255)
                     if Mouse.leftClick:
-                        Player.score -= 5000
+                        Player.score -= 3000
                         scoreText = scoreFont.render(f"Score: {Player.score}p", True, (0,255,255), (0,0,0))
                         Player.Upgrades.shield = True
-                        if Player.score < 5000:
+                        if Player.score < 3000:
                             SHIELD_BUTTON_COLOUR = (255,0,0)
                             SHIELD_BUTTON_TEXT_COLOUR = (255,255,255)
                 else:
                     SHIELD_BUTTON_COLOUR = (255,0,0)
                     SHIELD_BUTTON_TEXT_COLOUR = (255,255,255)
-            elif Player.score >= 5000:
+            elif Player.score >= 3000:
                 SHIELD_BUTTON_COLOUR = (0,200,0)
                 SHIELD_BUTTON_TEXT_COLOUR = (150,150,150)
             else:
@@ -689,11 +688,11 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
         py.draw.rect(SCREEN, AUTOSHOOT_BUTTON_COLOUR, AUTOSHOOT_BUTTON_DATA)
         SCREEN.blit(AUTOSHOOT_BUTTON_TEXT, AUTOSHOOT_BUTTON_TEXTBOX)
         # Max Shots #
-        MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (3000p)", True, MAX_SHOT_BUTTON_TEXT_COLOUR, MAX_SHOT_BUTTON_COLOUR)
+        MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (1000p)", True, MAX_SHOT_BUTTON_TEXT_COLOUR, MAX_SHOT_BUTTON_COLOUR)
         py.draw.rect(SCREEN, MAX_SHOT_BUTTON_COLOUR, MAX_SHOT_BUTTON_DATA)
         SCREEN.blit(MAX_SHOT_BUTTON_TEXT, MAX_SHOT_BUTTON_TEXTBOX)
         # Shield #
-        SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (5000p)", True, SHIELD_BUTTON_TEXT_COLOUR, SHIELD_BUTTON_COLOUR)
+        SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (3000p)", True, SHIELD_BUTTON_TEXT_COLOUR, SHIELD_BUTTON_COLOUR)
         py.draw.rect(SCREEN, SHIELD_BUTTON_COLOUR, SHIELD_BUTTON_DATA)
         SCREEN.blit(SHIELD_BUTTON_TEXT, SHIELD_BUTTON_TEXTBOX)
 
@@ -1043,6 +1042,8 @@ class Colours: # All colours (Preferabaly RGB format)
     PLAYER_LASER_COLOUR = (255,100,50)
     HUD_LIGHT = (100,100,100)
     HUD_DARK = (50,50,50)
+    HUD_TITLE = (200,200,200)
+    HUD_TEXT = (255,255,255)
 
 
 class Player: # Player variables
@@ -1054,6 +1055,31 @@ class Player: # Player variables
     SCORE_FONT = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.04))
     SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player.png')).convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load(os.path.join('Sprites', 'death_explosion.png')).convert_alpha(), (int(size*2), int(size*2)))
+
+    ## Create Pre-Loaded HUD (More efficient)
+    HUD_surface = py.Surface((X, int(Y*0.11)))
+    ## Draw HUD Background
+    py.draw.rect(HUD_surface, Colours.HUD_LIGHT, (0, int(Y*0.02), X, int(Y*0.1)))
+    py.draw.rect(HUD_surface, Colours.HUD_DARK, (0, 0, X, int(Y*0.03)))
+
+    tempFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.02))
+    tempText = tempFont.render("Ammo", True, Colours.HUD_TITLE, Colours.HUD_DARK)
+    tempTextbox = tempText.get_rect()
+    tempTextbox.center = (int(X*0.18), int(Y*0.018))
+    HUD_surface.blit(tempText, tempTextbox)
+
+    tempText = tempFont.render("Score", True, Colours.HUD_TITLE, Colours.HUD_DARK)
+    tempTextbox = tempText.get_rect()
+    tempTextbox.center = (int(X*0.5), int(Y*0.018))
+    HUD_surface.blit(tempText, tempTextbox)
+
+    tempText = tempFont.render("Level", True, Colours.HUD_TITLE, Colours.HUD_DARK)
+    tempTextbox = tempText.get_rect()
+    tempTextbox.center = (int(X*0.82), int(Y*0.018))
+    HUD_surface.blit(tempText, tempTextbox)
+
+    del tempText, tempTextbox #need Player.?
+
 
     class Ammo:
         lasers = 100 # Even if you change it to zero it does nothing
@@ -1077,15 +1103,13 @@ class Player: # Player variables
             py.draw.circle(SCREEN, (200,200,255), (Mouse.currentPos), int(Player.size * 0.8), int(X*0.005 +1))
 
     def draw_hud(): # Draws the HUD over the screen
-        ## HUD Background
-        py.draw.rect(SCREEN, Colours.HUD_DARK, (0, int(Y*0.9), X, int(Y*0.05)))
-        py.draw.rect(SCREEN, Colours.HUD_LIGHT, (0, int(Y*0.92), X, int(Y*0.1)))
-
         ## HUD Info
         scoreText = Player.SCORE_FONT.render(f"{Player.score}", True, (255,255,255), Colours.HUD_LIGHT)
         scoreTextbox = scoreText.get_rect()
         scoreTextbox.center = (int(X*0.5), int(Y*0.95))
         SCREEN.blit(scoreText, scoreTextbox)
+
+        SCREEN.blit(Player.HUD_surface, (0, int(Y*0.9)))
 
     def detect_collisions(): # Detects collisions with enemies
         for index, (APosX, APosY, ASize, ASprite) in enumerate(Enemies.Asteroids.data):
@@ -1209,34 +1233,35 @@ while True:
     difficulty = 0
 
     ## PRE-GAME START / INTRO SCREENS ##
-    Stars.posY = intro_screen(Player.SHIP_SPRITE) 
-    Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
     levelLength = 30000 # 30s per level
     levelStartTime = py.time.get_ticks()
+    Stars.posY = intro_screen(Player.SHIP_SPRITE) 
+    #Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
     ## MAIN GAME LOOP ##
     while True:
         ## INTER-FRAME VARIABLES & HANDLING ##
-        if True:
-            SCREEN.fill(Colours.BACKGROUND_COLOUR)
-            keys = py.key.get_pressed()
-            Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
-            Mouse.leftClick, Mouse.rightClick = False, False
-            Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
-            time = py.time.get_ticks()
-            for event in py.event.get():
-                if event.type == py.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        Mouse.leftClick = True
-                        Mouse.clickPos = Mouse.currentPos
-                    if event.button == 3:
-                        Mouse.rightClick = True
-                        Mouse.clickPos = Mouse.currentPos
-                if event.type == py.QUIT:
-                    py.display.quit()
-                    py.quit()
-            if keys[py.K_ESCAPE]:
+        SCREEN.fill(Colours.BACKGROUND_COLOUR)
+        keys = py.key.get_pressed()
+        Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
+        Mouse.leftClick, Mouse.rightClick = False, False
+        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
+        time = py.time.get_ticks()
+        for event in py.event.get():
+            if event.type == py.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    Mouse.leftClick = True
+                    Mouse.clickPos = Mouse.currentPos
+                if event.button == 3:
+                    Mouse.rightClick = True
+                    Mouse.clickPos = Mouse.currentPos
+            if event.type == py.QUIT:
                 py.display.quit()
                 py.quit()
+        if keys[py.K_ESCAPE]:
+            py.display.quit()
+            py.quit()
+        if Mouse.currentPos[1] > Y*0.9: # Prevents glitches with objects overlaying the HUD
+            Mouse.currentPos = (Mouse.currentPos[0], int(Y*0.9))
 
         ## CALCULATE AND DRAW BACKGROUND STARS ##
         Stars.posY = Stars.handle_stars(SCREEN, Stars)
