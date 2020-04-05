@@ -7,7 +7,6 @@ BUGS BUGS BUGS:
 import os
 import pygame as py
 import random
-import copy
 from easterEgg import *
 
 def user_screen_size_input(): # Creates game screen based on user input
@@ -101,7 +100,7 @@ def distance(startPoint, endPoint): # Returns distance between two poins in form
     #return dist
     return ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
 
-def colour_loop_RGB(colourPoints, length, currentPoint): # produce ordered colour-points via an RGB gradient generated from given colour-points
+def colour_loop_RGB(currentPoint, colourPoints, length): # produce ordered colour-points via an RGB gradient generated from given colour-points
     sectionLen = int(length / len(colourPoints))
     i = int(currentPoint/sectionLen) 
     fadeFrom = colourPoints[i%len(colourPoints)]
@@ -150,7 +149,7 @@ def intro_screen(playerShip): # Intoduction to basic game overview + controls
     ## INITIAL VARIABLES ##
     font = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.03))
     titleFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.045))
-    titleColour = colour_loop_RGB(colourPointsRGB, loopLengthRGB, currentPointRGB)
+    titleColour = colour_loop_RGB(currentPointRGB, colourPointsRGB, loopLengthRGB)
     textShade = 255
     textTicks = 0
     textShadeLimit = (50,255)
@@ -240,7 +239,7 @@ def intro_screen(playerShip): # Intoduction to basic game overview + controls
         text1 = font.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
 
         currentPointRGB = ticks%loopLengthRGB
-        titleText = titleFont.render("Untitled Space Thing", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, currentPointRGB), (0,0,0))
+        titleText = titleFont.render("Untitled Space Thing", True, colour_loop_RGB(currentPointRGB, colourPointsRGB, loopLengthRGB), (0,0,0))
 
         ## PRINT TEXT ##
         SCREEN.blit(text1, textbox1)
@@ -459,7 +458,7 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
     loopLengthRGB = 250
     colourPointsRGB = [(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)]
     upgradesTitleFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.06))
-    upgradesTitleText = upgradesTitleFont.render("UPGRADES!", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+    upgradesTitleText = upgradesTitleFont.render("UPGRADES!", True, colour_loop_RGB(ticks%loopLengthRGB, colourPointsRGB, loopLengthRGB), (0,0,0))
     upgradesTitleTextbox = upgradesTitleText.get_rect()
     upgradesTitleTextbox.center = (int(X*0.5), int(Y*0.1))
 
@@ -575,7 +574,7 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
                     break
         
         ## PRINT 'UPGRADES!'' ##
-        upgradesTitleText = upgradesTitleFont.render("UPGRADES!", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+        upgradesTitleText = upgradesTitleFont.render("UPGRADES!", True, colour_loop_RGB(ticks%loopLengthRGB, colourPointsRGB, loopLengthRGB), (0,0,0))
         SCREEN.blit(upgradesTitleText, upgradesTitleTextbox)
 
         ## DETECT SHOP BUTTON CLICKS + HANDLE MOUSE COLLISION ##
@@ -773,7 +772,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     scoreTextbox = scoreText.get_rect()
     scoreTextbox.center = (int(X*0.5), int(Y*0.1))
 
-    leaderboardTitleText = titleLeaderboardFont.render("Leaderboard", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+    leaderboardTitleText = titleLeaderboardFont.render("Leaderboard", True, colour_loop_RGB(ticks%loopLengthRGB, colourPointsRGB, loopLengthRGB), (0,0,0))
     leaderboardTitleTextbox = leaderboardTitleText.get_rect()
     leaderboardTitleTextbox.center = (int(X*0.5), int(Y*0.2))
 
@@ -932,7 +931,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         SCREEN.blit(scoreText, scoreTextbox)
 
         # Leaderboard Title
-        leaderboardTitleText = titleLeaderboardFont.render("Leaderboard", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+        leaderboardTitleText = titleLeaderboardFont.render("Leaderboard", True, colour_loop_RGB(ticks%loopLengthRGB, colourPointsRGB, loopLengthRGB), (0,0,0))
 
         # Leaderboard Positions
         SCREEN.blit(leaderboardTitleText, leaderboardTitleTextbox)
@@ -1046,6 +1045,7 @@ class Colours: # All colours (Preferabaly RGB format)
     HUD_DARK     = (20,20,20)
     HUD_TITLE    = (200,200,200)
     HUD_TEXT     = (220,220,220)
+    LEVEL_COMPLETION_BAR = (255,255,0)
 
 
 class Player: # Player variables
@@ -1121,10 +1121,14 @@ class Player: # Player variables
         scoreTextbox.center = (int(X*0.5), Y097)
         SCREEN.blit(scoreText, scoreTextbox)
 
-        levelText = Player.SCORE_FONT.render(f"{difficulty +1}", True, Colours.HUD_TEXT, Colours.HUD_LIGHT) # Difficulty is representative of the level, so I don't need a new level variable
+        levelText = Player.SCORE_FONT.render(f"{difficulty +1}", True, Colours.HUD_TEXT, Colours.HUD_LIGHT) # Difficulty is representative of the level, thus I don't need a new level variable
         levelTextbox = levelText.get_rect()
         levelTextbox.center = (int(X*0.85), Y097)
         SCREEN.blit(levelText, levelTextbox)
+
+        ## Level Progression Meter
+        #completionLen = X*(time/(levelStartTime+levelLength))
+        py.draw.rect(SCREEN, Colours.LEVEL_COMPLETION_BAR, (0, int(Y*0.89), X*(time/(levelStartTime+levelLength)), int(Y*0.01)))
 
 
     def detect_collisions(): # Detects collisions with enemies
