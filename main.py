@@ -36,21 +36,12 @@ def system_screen_size_input(): # Creates game screen based on monitor size
     monitorHeight = py.display.Info().current_h
 
     if monitorHeight*0.8 < monitorWidth:
-<<<<<<< HEAD
         X = int(monitorHeight * 0.8 * reduceFromMaxSize)
         Y = int(monitorHeight * reduceFromMaxSize)
     elif monitorWidth * 1.25 < monitorHeight:
         X = int(monitorWidth * reduceFromMaxSize)
         Y = int(monitorWidth * 1.25 * reduceFromMaxSize)
     else: # Backup in case both width and height tests fail, get user to input
-=======
-        X = int(monitorHeight*0.8 *reduceFromMaxSize)
-        Y = int(monitorHeight *reduceFromMaxSize)
-    elif monitorWidth*1.25 < monitorHeight:
-        X = int(monitorWidth *reduceFromMaxSize)
-        Y = int(monitorWidth*1.25 *reduceFromMaxSize)
-    else: # Backup in case both width and height tests fail, get user to input screen dimensions
->>>>>>> bb12eecaa691f3562eeae65b98c6d178c23cd851
         X, Y = user_screen_size_input()
     return X, Y
 
