@@ -1115,7 +1115,7 @@ class Player:
         moveStep = int(Y * 0.03)
 
         # Handle laser movement
-        def handle_lasers(Lasers, Enemies):
+        def handle_movement(Lasers, Enemies):
             # Move Lasers & Delete Offscreen
             global Player
             tempList = []
@@ -1134,7 +1134,7 @@ class Player:
             return Lasers, Enemies
 
         # Detects and handles player laser collisions with asteroids
-        def laser_collisions():
+        def handle_collisions():
             global Player 
 
             indexOffset = 0
@@ -1203,13 +1203,28 @@ class Player:
         ## Level Progression Meter
         py.draw.rect(SCREEN, colour_loop_RGB(ticks), (0, int(Y*0.89), int(X*((time-levelStartTime)/levelLength)), int(Y*0.01)))
 
-    # Detects collisions with enemies
+    # Detects collisions with enemies / environment
     def detect_collisions(): 
         for index, (APosX, APosY, ASize, ASprite) in enumerate(Enemies.Asteroids.data):
             if distance((Mouse.currentPos), (int(APosX + ASize*0.5), int(APosY + ASize*0.5))) < ASize*0.5 + Player.halfSize:
                 del Enemies.Asteroids.data[index]
                 return True
                 break
+
+    # Handles player collisions with environment
+    def handle_collisions():
+        runSession = True
+        if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
+            if Player.Upgrades.shield:
+                Player.Upgrades.shield = False
+                py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
+            else:
+                SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
+                py.mixer.Sound.play(Sounds.playerDeathExplosion)
+                py.mixer.music.stop()
+                py.display.update()
+                runSession = False # -> Exits main loop, goto score screen
+        return runSession
 
 
 # All enemy variables (Asteroids, ships, etc)
@@ -1305,6 +1320,7 @@ while True:
     difficulty = 0
     # Other
     ticks = 0
+    runSession = True
 
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
@@ -1312,7 +1328,7 @@ while True:
 
     ## MAIN GAME LOOP ##
     levelStartTime = py.time.get_ticks()
-    while True:
+    while runSession:
         ## INTER-FRAME VARIABLES & PROCESS HANDLING ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
         keys = py.key.get_pressed()
@@ -1347,16 +1363,7 @@ while True:
         Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
         ## PLAYER COLLISIONS WITH ENVIRONMENT ## - Kills Player
-        if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
-            if Player.Upgrades.shield:
-                Player.Upgrades.shield = False
-                py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
-            else:
-                SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
-                py.mixer.Sound.play(Sounds.playerDeathExplosion)
-                py.mixer.music.stop()
-                py.display.update()
-                break # -> Exits main loop, goto score screen
+        runSession = Player.handle_collisions()
 
         ## PLAYER SHOOTS LASERS ##
         if Player.Ammo.lasers > 0:
@@ -1375,10 +1382,10 @@ while True:
                         py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
                         Player.Ammo.lasers -= 1
                         py.mixer.Sound.play(Sounds.playerLaser)
-        Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
+        Player.Lasers, Enemies = Player.Lasers.handle_movement(Player.Lasers, Enemies)
 
         ## PLAYER'S LASER COLLISIONS ##
-        Player.Lasers.laser_collisions()
+        Player.Lasers.handle_collisions()
 
         ## DRAW PLAYER ##
         Player.draw_player()
