@@ -9,7 +9,9 @@ import pygame as py
 import random
 from easterEgg import *
 
-def user_screen_size_input(): # Creates game screen based on user input
+
+# Creates game screen based on user input
+def user_screen_size_input(): 
     #-> Not needed as screen is automatically set based on the size of their monitor
     while True:
         try: 
@@ -29,7 +31,8 @@ def user_screen_size_input(): # Creates game screen based on user input
     screenDimensions = (int(tempVar*0.8), int(tempVar))
     return screenDimensions
 
-def system_screen_size_input(): # Creates game screen based on monitor size
+# Creates game screen based on monitor size
+def system_screen_size_input(): 
     reduceFromMaxSize = 0.8
     monitorWidth = py.display.Info().current_w
     monitorHeight = py.display.Info().current_h
@@ -44,7 +47,8 @@ def system_screen_size_input(): # Creates game screen based on monitor size
         X, Y = user_screen_size_input()
     return X, Y
 
-def initialise_program(): # Set up display and pygame
+# Set up display and pygame
+def initialise_program(): 
     absolutePath = os.path.abspath(__file__) # takes file name and converts it to an absolute path
     directoryName = os.path.dirname(absolutePath) # uses absolute path to locate file on local system
     os.chdir(directoryName) # changes cwd to the direct directory
@@ -93,14 +97,16 @@ def initialise_program(): # Set up display and pygame
 X, Y, SCREEN, clock = initialise_program() # Creates display screen
 del initialise_program, system_screen_size_input, user_screen_size_input # No longer needed -> Memmory management
 
-def distance(startPoint, endPoint): # Returns distance between two poins in form (XDiff, YDiff), distance is always positive.
+# Returns distance between two poins in form (XDiff, YDiff), distance is always positive
+def distance(startPoint, endPoint):
     differenceX = endPoint[0] - startPoint[0]
     differenceY = endPoint[1] - startPoint[1]
     #dist = ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
     #return dist
     return ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
 
-def colour_loop_RGB(currentPoint, colourPoints, length): # produce ordered colour-points via an RGB gradient generated from given colour-points
+# produce ordered colour-points via an RGB gradient generated from given colour-points
+def colour_loop_RGB(currentPoint, colourPoints, length): 
     sectionLen = int(length / len(colourPoints))
     i = int(currentPoint/sectionLen) 
     fadeFrom = colourPoints[i%len(colourPoints)]
@@ -111,7 +117,8 @@ def colour_loop_RGB(currentPoint, colourPoints, length): # produce ordered colou
     n = currentPoint % sectionLen
     return (int(fadeFrom[0] + differenceStep1 * n), int(fadeFrom[1] + differenceStep2 * n), int(fadeFrom[2] + differenceStep3 * n)) 
 
-def handle_highscores(): # Pull scores from file, add player score, sort, return top 10 + re-write to file
+# Pull scores from file, add player score, sort, return top 10 + re-write to file
+def handle_highscores(): 
     ## READ FILE ##
     highscores = []
     for line in open(os.path.join('highscores.txt')):
@@ -138,7 +145,8 @@ def handle_highscores(): # Pull scores from file, add player score, sort, return
     ## RETURN TOP 10 ##
     return highscores, highscoresLen
 
-def intro_screen(playerShip): # Intoduction to basic game overview + controls 
+# Intoduction to basic game overview + controls
+def intro_screen(playerShip):  
     global firstRun
 
     ## RGB COLOUR LOOP VARIABLES ##
@@ -273,7 +281,8 @@ def intro_screen(playerShip): # Intoduction to basic game overview + controls
 
     return Stars.posY 
 
-def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN): # Hyperdrive Animation ~but different~
+# Hyperdrive Animation ~but different~
+def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREEN):
     ## DISABLE MOUSE VISIBILITY ##
     py.mouse.set_visible(0) 
     ## INITIALISE GAME MUSIC ##
@@ -365,7 +374,8 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
     py.mixer.Sound.play(Sounds.hyperdriveExit)
     return Stars.posX
 
-def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hyperdrive Animation
+# Hyperdrive Animation
+def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): 
     ## INTRO VARIABELS ##
     physMove = 0
     fadeOut = py.Surface((X, Y))
@@ -441,7 +451,8 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
     ## RETURN SHUFFLED STARS POS ##
     return Stars.posX
 
-def shop_screen(): # Screen in between levels; gives player option to buy upgrades with points
+# Screen in between levels; gives player option to buy upgrades with points
+def shop_screen(): 
     ## GLOBALS ##
     global Player
 
@@ -703,7 +714,8 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
     py.mouse.set_visible(0)
     return Stars.posY, py.time.get_ticks() # Return shuffled stars pos and time at end of script (beginning of next level)
 
-def death_transition_screen(): # Transition into post-death screen / game summary
+# Transition into post-death screen / game summary
+def death_transition_screen(): 
     ## INITIAL VARIABLES ##
     starMovement = X * 0.002
     font = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.03))
@@ -746,8 +758,9 @@ def death_transition_screen(): # Transition into post-death screen / game summar
 
    	## RETURN VARIABLES ##
     return Stars.posY, STAR_BACKGROUND
-    
-def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboard
+
+# Death Screen; Shows game stats, score, and leaderboard
+def post_death_screen(): 
     ## ENABLE MOUSE VISIBILITY ##
     py.mouse.set_visible(1) 
 
@@ -988,7 +1001,8 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         ticks += 1
 
 
-class Stars: # Background Stars
+# Background Stars
+class Stars:
     num = 250
     numLayers = 6
     minSize = int(X * 0.001)
@@ -1014,7 +1028,8 @@ class Stars: # Background Stars
         return Stars.posY
 
 
-class Mouse: # All mouse related variables / input
+# All mouse related variables / input
+class Mouse: 
     currentPos = (0,0)                      # Current pos of mouse expressed as (x, y)
     prevPos = (0,0)                         # Pos of mouse last frame expressed as (x, y)
     movement = (0,0)                        # The difference is x & y pos of mouse between frames expressed as (x, y)
@@ -1030,7 +1045,8 @@ class Mouse: # All mouse related variables / input
         return currentPos, prevPos, posDifference
 
 
-class Colours: # All colours (Preferabaly RGB format)
+# All colours (Preferabaly RGB format)
+class Colours:
     BLACK        = (  0,   0,   0)
     WHITE        = (255, 255, 255)
     RED          = (255,   0,   0)
@@ -1048,7 +1064,8 @@ class Colours: # All colours (Preferabaly RGB format)
     LEVEL_COMPLETION_BAR = (255,255,0)
 
 
-class Player: # Player variables
+# Player variables
+class Player:
     score = 0
     size = int(X * 0.07)
     halfSize = int(size * 0.5)
@@ -1162,7 +1179,8 @@ class Player: # Player variables
             return Lasers, Enemies
 
 
-class Enemies: # All enemy variables (Asteroids, ships, etc)
+# All enemy variables (Asteroids, ships, etc)
+class Enemies: 
 
     class Asteroids:
         initialSize = int(X * 0.1)
@@ -1208,7 +1226,8 @@ class Enemies: # All enemy variables (Asteroids, ships, etc)
             return py.transform.scale(Enemies.EnShips.pirate2, (size, size))
 
 
-class Sounds: # Class to store all game music and SFX
+# Class to store all game music and SFX
+class Sounds: 
     playerLaser = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "player_laser.wav"))
     hyperdriveExit = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "hyperdrive_exit.wav"))
     playerDeathExplosion = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "player_death_explosion.wav"))
