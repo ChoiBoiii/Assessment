@@ -1109,7 +1109,65 @@ class Player:
         maxLasers = 1
         shield = False
 
-    def draw_player(): # Draw's player and jet animation to screen over mouse pos
+    class Lasers:
+        pos = []
+        length = int(Y * 0.05)
+        width = int(X * 0.005) + 1
+        moveStep = int(Y * 0.03)
+
+        # Handle laser movement
+        def handle_lasers(Lasers, Enemies):
+            # Move Lasers & Delete Offscreen
+            global Player
+            tempList = []
+            for x, y in Lasers.pos:
+                if not (y - Lasers.moveStep < 0):
+                    tempList.append((x, y - Lasers.moveStep))
+                else:
+                    Player.score -= 5
+            Lasers.pos = tempList[:]
+
+            # Print Lasers
+            for i in range(len(Lasers.pos)):
+                py.draw.line(SCREEN, Colours.PLAYER_LASER_COLOUR, (Lasers.pos[i]),
+                 (Lasers.pos[i][0], Lasers.pos[i][1] - Lasers.length), Lasers.width)
+
+            return Lasers, Enemies
+
+        # Detects and handles player laser collisions with asteroids
+        def laser_collisions():
+            global Player 
+
+            indexOffset = 0
+            for i in range(len(Player.Lasers.pos)):
+                laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
+
+                for n in range(len(Enemies.Asteroids.data)):
+                    try: # TEMPORARY BUG FIX
+                        asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
+                    except IndexError:
+                        print("\nSomething broke.\n")
+                        #raise idiot
+
+                    asteroidPosX, asteroidPosY = Enemies.Asteroids.data[n-indexOffset][0:2]
+                    asteroidCenter = ((asteroidPosX + asteroidSize * 0.5), (asteroidPosY + asteroidSize * 0.5))
+
+                    if distance(asteroidCenter, laserTopPos) < Enemies.Asteroids.data[n - indexOffset][2] * 0.6:
+                        py.draw.circle(SCREEN, (255,200,200), laserTopPos, int(Y * 0.01))
+                        py.draw.circle(SCREEN, Colours.RED, laserTopPos, int(Y * 0.007))
+
+                        del Player.Lasers.pos[i - indexOffset], Enemies.Asteroids.data[n - indexOffset]
+                        indexOffset += 1
+
+                        Player.score += 10
+                        Player.destroyedAsteroids += 1
+
+                        py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
+
+                        break
+
+    # Draw's player and jet animation to screen over mouse pos
+    def draw_player():
         py.draw.line(SCREEN, (255,60,0), Mouse.currentPos, (Mouse.currentPos[0], 
             Mouse.currentPos[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
         py.draw.line(SCREEN, (255,255,0), Mouse.currentPos, (Mouse.currentPos[0], 
@@ -1121,7 +1179,8 @@ class Player:
         if Player.Upgrades.shield:
             py.draw.circle(SCREEN, (200,200,255), (Mouse.currentPos), int(Player.size * 0.8), int(X*0.005 +1))
 
-    def draw_hud(): # Draws the HUD over the screen
+    # Draws the HUD over the screen
+    def draw_hud():
         ## Draw HUD To Screen
         SCREEN.blit(Player.HUD_surface, (0, int(Y*0.9)))
 
@@ -1145,37 +1204,13 @@ class Player:
         ## Level Progression Meter
         py.draw.rect(SCREEN, colour_loop_RGB(ticks), (0, int(Y*0.89), int(X*((time-levelStartTime)/levelLength)), int(Y*0.01)))
 
-
-    def detect_collisions(): # Detects collisions with enemies
+    # Detects collisions with enemies
+    def detect_collisions(): 
         for index, (APosX, APosY, ASize, ASprite) in enumerate(Enemies.Asteroids.data):
             if distance((Mouse.currentPos), (int(APosX + ASize*0.5), int(APosY + ASize*0.5))) < ASize*0.5 + Player.halfSize:
                 del Enemies.Asteroids.data[index]
                 return True
                 break
-        
-    class Lasers:
-        pos = []
-        length = int(Y * 0.05)
-        width = int(X * 0.005) + 1
-        moveStep = int(Y * 0.03)
-
-        def handle_lasers(Lasers, Enemies):
-            # Move Lasers & Delete Offscreen
-            global Player
-            tempList = []
-            for x, y in Lasers.pos:
-                if not (y - Lasers.moveStep < 0):
-                    tempList.append((x, y - Lasers.moveStep))
-                else:
-                    Player.score -= 5
-            Lasers.pos = tempList[:]
-
-            # Print Lasers
-            for i in range(len(Lasers.pos)):
-                py.draw.line(SCREEN, Colours.PLAYER_LASER_COLOUR, (Lasers.pos[i]),
-                 (Lasers.pos[i][0], Lasers.pos[i][1] - Lasers.length), Lasers.width)
-
-            return Lasers, Enemies
 
 
 # All enemy variables (Asteroids, ships, etc)
@@ -1344,33 +1379,7 @@ while True:
         Player.Lasers, Enemies = Player.Lasers.handle_lasers(Player.Lasers, Enemies)
 
         ## PLAYER'S LASER COLLISIONS ##
-        indexOffset = 0
-        for i in range(len(Player.Lasers.pos)):
-            laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
-
-            for n in range(len(Enemies.Asteroids.data)):
-                try: # TEMPORARY BUG FIX
-                    asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
-                except IndexError:
-                    print("\nSomething broke.\n")
-                    #raise idiot
-
-                asteroidPosX, asteroidPosY = Enemies.Asteroids.data[n-indexOffset][0:2]
-                asteroidCenter = ((asteroidPosX + asteroidSize * 0.5), (asteroidPosY + asteroidSize * 0.5))
-
-                if distance(asteroidCenter, laserTopPos) < Enemies.Asteroids.data[n - indexOffset][2] * 0.6:
-                    py.draw.circle(SCREEN, (255,200,200), laserTopPos, int(Y * 0.01))
-                    py.draw.circle(SCREEN, Colours.RED, laserTopPos, int(Y * 0.007))
-
-                    del Player.Lasers.pos[i - indexOffset], Enemies.Asteroids.data[n - indexOffset]
-                    indexOffset += 1
-
-                    Player.score += 10
-                    Player.destroyedAsteroids += 1
-
-                    py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
-
-                    break
+        Player.Lasers.laser_collisions()
 
         ## DRAW PLAYER ##
         Player.draw_player()
@@ -1392,6 +1401,8 @@ while True:
 
         ## UPDATE SCREEN ##
         clock.tick(60)
+        with open('test.txt', 'a') as f:
+            f.write(f'{clock.get_fps()}\n')
         py.display.update() 
         ticks += 1
 
