@@ -326,6 +326,10 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
                              (Stars.posX[i], int(Stars.posY[i] - physMove * 0.2 * Stars.depth[i])), 
                              int(Stars.depth[i])) 
 
+        ## DON'T LOOK ##
+        if keys[py.K_LSHIFT] and keys[py.K_h]:
+            programSanitiser()
+
         ## SHAKE OFFSETS FOR PLAYER SHIP + BOOSTERS ##
         playerOffsetX = (random.randrange(int(X*0.002*(n/20)) +1)-int(X*0.005))
         playerOffsetY = (random.randrange(int(X*0.002*(n/20)) +1)-int(X*0.005))
