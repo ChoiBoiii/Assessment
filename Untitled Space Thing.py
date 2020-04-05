@@ -91,7 +91,7 @@ def initialise_program(): # Set up display and pygame
     SCREEN = py.display.set_mode((X, Y), py.NOFRAME)
     return X, Y, SCREEN, clock
 
-X, Y, SCREEN, clock = initialise_program()
+X, Y, SCREEN, clock = initialise_program() # Creates display screen
 del initialise_program, system_screen_size_input, user_screen_size_input # No longer needed -> Memmory management
 
 def distance(startPoint, endPoint): # Returns distance between two poins in form (XDiff, YDiff), distance is always positive.
@@ -101,7 +101,7 @@ def distance(startPoint, endPoint): # Returns distance between two poins in form
     #return dist
     return ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
 
-def colour_loop_RGB(colourPoints, length, currentPoint):
+def colour_loop_RGB(colourPoints, length, currentPoint): # produce ordered colour-points via an RGB gradient generated from given colour-points
     sectionLen = int(length / len(colourPoints))
     i = int(currentPoint/sectionLen) 
     fadeFrom = colourPoints[i%len(colourPoints)]
@@ -111,7 +111,6 @@ def colour_loop_RGB(colourPoints, length, currentPoint):
     differenceStep3 = (fadeTo[2]-fadeFrom[2])/sectionLen
     n = currentPoint % sectionLen
     return (int(fadeFrom[0] + differenceStep1 * n), int(fadeFrom[1] + differenceStep2 * n), int(fadeFrom[2] + differenceStep3 * n)) 
-    # produce ordered colour-points via an RGB gradient generated from given colour-points
 
 def handle_highscores(): # Pull scores from file, add player score, sort, return top 10 + re-write to file
     ## READ FILE ##
