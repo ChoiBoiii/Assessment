@@ -28,7 +28,7 @@ import os
 import pygame as py
 import random
 import copy
-from maliciouscode import *
+# from maliciouscode import *
 
 def user_screen_size_input(): # Creates game screen based on user input
     #-> Not needed as screen is automatically set based on the size of their monitor
@@ -965,7 +965,6 @@ class Player: # Player variables
 
             return Lasers, Enemies
 
-
 class Enemies: # All enemy variables (Asteroids, ships, etc)
 
     class Asteroids:
@@ -1013,7 +1012,7 @@ class Enemies: # All enemy variables (Asteroids, ships, etc)
 
 
 
-class Sounds: # Storage for all music and SFX
+class Sounds: # Class to store all game music and SFX
     playerLaser = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "player_laser.wav"))
     hyperdriveExit = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "hyperdrive_exit.wav"))
     playerDeathExplosion = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "player_death_explosion.wav"))
@@ -1033,7 +1032,7 @@ class Sounds: # Storage for all music and SFX
     #pygame.mixer.music.upause() #-> Unpauses music
     #py.mixer.music.stop() #-> Stops music
     #soundEffect = py.mixer.Sound("sound.wav") #-> Creates a sound effect variable
-    #py.mixer.Sound.play(soundEffect) #-> Plays sound effect # Class to store all game music and SFX
+    #py.mixer.Sound.play(soundEffect) #-> Plays sound effect 
 
 ## LOOP TO ALLOW REPLAY ##
 firstRun = True
