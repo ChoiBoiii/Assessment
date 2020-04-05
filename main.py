@@ -74,7 +74,6 @@ def initialise_program(): # Set up display and pygame
     Move   | [Mouse]
     Shoot  | [Left Click]
     Quit   | [ESCAPE]
-    Bomb   | [SPACE]
 
     You only have one life so
     DON'T GET HIT!
@@ -1040,12 +1039,14 @@ class Colours: # All colours (Preferabaly RGB format)
     GREEN        = (  0, 255,   0)
     BLUE         = (  0,   0, 255)
     GREY         = (170, 170, 170)
-    BACKGROUND_COLOUR = (0, 0, 0) 
+    BACKGROUND_COLOUR   = (0, 0, 0) 
     PLAYER_LASER_COLOUR = (255,100,50)
-    HUD_LIGHT = (100,100,100)
-    HUD_DARK = (50,50,50)
-    HUD_TITLE = (200,200,200)
-    HUD_TEXT = (255,255,255)
+
+    # HUD Colours
+    HUD_LIGHT    = (30,30,30)
+    HUD_DARK     = (20,20,20)
+    HUD_TITLE    = (200,200,200)
+    HUD_TEXT     = (220,220,220)
 
 
 class Player: # Player variables
@@ -1058,16 +1059,16 @@ class Player: # Player variables
     SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player.png')).convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load(os.path.join('Sprites', 'death_explosion.png')).convert_alpha(), (int(size*2), int(size*2)))
 
-    ## Create Pre-Loaded HUD (More efficient)
+    ## Create Pre-Loaded HUD (More efficient) 
     HUD_surface = py.Surface((X, int(Y*0.11)))
-    ## Draw HUD Background
+    # Draw HUD Background
     py.draw.rect(HUD_surface, Colours.HUD_LIGHT, (0, int(Y*0.02), X, int(Y*0.1)))
     py.draw.rect(HUD_surface, Colours.HUD_DARK, (0, 0, X, int(Y*0.03)))
 
     tempFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.02))
     tempText = tempFont.render("Ammo", True, Colours.HUD_TITLE, Colours.HUD_DARK)
     tempTextbox = tempText.get_rect()
-    tempTextbox.center = (int(X*0.18), int(Y*0.018))
+    tempTextbox.center = (int(X*0.15), int(Y*0.018))
     HUD_surface.blit(tempText, tempTextbox)
 
     tempText = tempFont.render("Score", True, Colours.HUD_TITLE, Colours.HUD_DARK)
@@ -1077,10 +1078,11 @@ class Player: # Player variables
 
     tempText = tempFont.render("Level", True, Colours.HUD_TITLE, Colours.HUD_DARK)
     tempTextbox = tempText.get_rect()
-    tempTextbox.center = (int(X*0.82), int(Y*0.018))
+    tempTextbox.center = (int(X*0.85), int(Y*0.018))
     HUD_surface.blit(tempText, tempTextbox)
 
-    del tempText, tempTextbox #need Player.?
+    # Delete un-needed variables
+    del tempText, tempTextbox 
 
 
     class Ammo:
@@ -1105,13 +1107,26 @@ class Player: # Player variables
             py.draw.circle(SCREEN, (200,200,255), (Mouse.currentPos), int(Player.size * 0.8), int(X*0.005 +1))
 
     def draw_hud(): # Draws the HUD over the screen
+        ## Draw HUD To Screen
+        SCREEN.blit(Player.HUD_surface, (0, int(Y*0.9)))
+
         ## HUD Info
-        scoreText = Player.SCORE_FONT.render(f"{Player.score}", True, (255,255,255), Colours.HUD_LIGHT)
+        Y097 = int(Y*0.97) # Saved and re-used for efficientcy
+        ammoText = Player.SCORE_FONT.render(f"{Player.Ammo.lasers}", True, Colours.HUD_TEXT, Colours.HUD_LIGHT)
+        ammoTextbox = ammoText.get_rect()
+        ammoTextbox.center = (int(X*0.15), Y097)
+        SCREEN.blit(ammoText, ammoTextbox)
+
+        scoreText = Player.SCORE_FONT.render(f"{Player.score}", True, Colours.HUD_TEXT, Colours.HUD_LIGHT)
         scoreTextbox = scoreText.get_rect()
-        scoreTextbox.center = (int(X*0.5), int(Y*0.95))
+        scoreTextbox.center = (int(X*0.5), Y097)
         SCREEN.blit(scoreText, scoreTextbox)
 
-        SCREEN.blit(Player.HUD_surface, (0, int(Y*0.9)))
+        levelText = Player.SCORE_FONT.render(f"{difficulty +1}", True, Colours.HUD_TEXT, Colours.HUD_LIGHT) # Difficulty is representative of the level, so I don't need a new level variable
+        levelTextbox = levelText.get_rect()
+        levelTextbox.center = (int(X*0.85), Y097)
+        SCREEN.blit(levelText, levelTextbox)
+
 
     def detect_collisions(): # Detects collisions with enemies
         for index, (APosX, APosY, ASize, ASprite) in enumerate(Enemies.Asteroids.data):
@@ -1239,7 +1254,7 @@ while True:
     levelStartTime = py.time.get_ticks()
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
     #Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
-    
+
     ## MAIN GAME LOOP ##
     while True:
         ## INTER-FRAME VARIABLES & HANDLING ##
