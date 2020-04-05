@@ -1055,9 +1055,6 @@ class Player: # Player variables
     SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player.png')).convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load(os.path.join('Sprites', 'death_explosion.png')).convert_alpha(), (int(size*2), int(size*2)))
 
-    HUD_TOP = py.transform.scale(py.image.load(os.path.join('Sprites', 'HUD_top.png')).convert_alpha(), (X, int(Y*0.05)))
-    HUD_BOTTOM = py.transform.scale(py.image.load(os.path.join('Sprites', 'HUD_bottom.png')).convert_alpha(), (X, int(Y*0.1)))
-
     class Ammo:
         lasers = 100 # Even if you change it to zero it does nothing
         bombs = 0 # Not included anymore
@@ -1083,8 +1080,6 @@ class Player: # Player variables
         ## HUD Background
         py.draw.rect(SCREEN, Colours.HUD_DARK, (0, int(Y*0.9), X, int(Y*0.05)))
         py.draw.rect(SCREEN, Colours.HUD_LIGHT, (0, int(Y*0.92), X, int(Y*0.1)))
-        #SCREEN.blit(Player.HUD_TOP, (0, int(Y*0.9)))
-        #SCREEN.blit(Player.HUD_BOTTOM, (0, int(Y*0.92)))
 
         ## HUD Info
         scoreText = Player.SCORE_FONT.render(f"{Player.score}", True, (255,255,255), Colours.HUD_LIGHT)
