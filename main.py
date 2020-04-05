@@ -136,7 +136,7 @@ def colour_loop_RGB(colourPoints, length, currentPoint):
 def handle_highscores(): # Pull scores from file, add player score, sort, return top 10 + re-write to file
     ## READ FILE ##
     highscores = []
-    for line in open('highscores.txt'):
+    for line in open(os.path.join('highscores.txt')):
         highscores.append(int(line.strip()))
     # Add Player Score #
     highscores.append(Player.score)
@@ -150,7 +150,7 @@ def handle_highscores(): # Pull scores from file, add player score, sort, return
         highscoresLen = 10
 
     ## HANDLE SAVING OF SCORES TO HIGHSCORES FILE ##
-    with open("highscores.txt", 'w') as file:
+    with open(os.path.join("highscores.txt"), 'w') as file:
         for i, score in enumerate(highscores):
             if i < highscoresLen:
                 file.write(f'{score}\n')
@@ -169,8 +169,8 @@ def intro_screen(playerShip): # Intoduction to basic game overview + controls
     colourPointsRGB = [(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)]
 
     ## INITIAL VARIABLES ##
-    font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
-    titleFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.045))
+    font = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.03))
+    titleFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.045))
     titleColour = colour_loop_RGB(colourPointsRGB, loopLengthRGB, currentPointRGB)
     textShade = 255
     textTicks = 0
@@ -220,7 +220,7 @@ def intro_screen(playerShip): # Intoduction to basic game overview + controls
     ## START MUSIC ##
     if firstRun:
         py.mixer.music.stop()
-        py.mixer.music.load("Sounds/music/main_page_music.wav")
+        py.mixer.music.load(os.path.join('Sounds', 'music', 'main_page_music.wav'))
         py.mixer.music.play(-1)
         firstRun = False
 
@@ -301,7 +301,7 @@ def intro_hyperdrive_animation(Stars, Player, animationLength=7.3, SURFACE=SCREE
     py.mouse.set_visible(0) 
     ## INITIALISE GAME MUSIC ##
     py.mixer.music.stop()
-    py.mixer.music.load("Sounds/music/game_music.wav")
+    py.mixer.music.load(os.path.join('Sounds', 'music', 'game_music.wav'))
     py.mixer.music.play(-1)
     ## INTRO VARIABELS ##
     physMove = 0
@@ -480,7 +480,7 @@ def shop_screen():
     currentPointRGB = 0
     loopLengthRGB = 250
     colourPointsRGB = [(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)]
-    scoreFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.07))
+    scoreFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.07))
     scoreText = scoreFont.render(f"Score: {Player.score}", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
     scoreTextbox = scoreText.get_rect()
     scoreTextbox.center = (int(X*0.5), int(Y*0.9))
@@ -488,7 +488,7 @@ def shop_screen():
     # Initialise Resume Button Variables # -> Player Sprite + Highlight Box
     playerShip = Player.SHIP_SPRITE
     shipCenter = (int(X*0.5), int(Y*0.7))
-    resumeFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
+    resumeFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.03))
     textShade = 255
     textTicks = 0
     textShadeLimit = (50,255)
@@ -579,7 +579,7 @@ def shop_screen():
 def death_transition_screen(): # Transition into post-death screen / game summary
     ## INITIAL VARIABLES ##
     starMovement = X * 0.002
-    font = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
+    font = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.03))
     while True:
         ## INTER-FRAME HANDLING & VARIABLES ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
@@ -630,10 +630,10 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     ## INITIAL VARIABLES / FONTS ##
     mainTextColour = (200,255,200)
     ticks = 0
-    normalFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.03))
-    titleLeaderboardFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.06))
-    titleScoreFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.05))
-    destroyedTitleFont = py.font.Font('Fonts/arcadeText.ttf', int(X*0.04))
+    normalFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.03))
+    titleLeaderboardFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.06))
+    titleScoreFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.05))
+    destroyedTitleFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.04))
     destroyedTextFont = normalFont
     loopLengthRGB = 250
     colourPointsRGB = [(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)]
@@ -739,7 +739,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
 
     ## RESTART INTRO MUSIC ##
     py.mixer.music.stop()
-    py.mixer.music.load("Sounds/music/main_page_music.wav")
+    py.mixer.music.load(os.path.join('Sounds', 'music', 'main_page_music.wav'))
     py.mixer.music.play(-1)
     while True:
         ## INTER-FRAME HANDLING & VARIABLES ##
@@ -914,8 +914,8 @@ class Player: # Player variables
     halfSize = int(size * 0.5)
     destroyedAsteroids = 0
     destroyedShips = 0
-    SHIP_SPRITE = py.transform.scale(py.image.load('Sprites/player.png').convert_alpha(), (size, size))
-    DEATH_EXPLOSION = py.transform.scale(py.image.load('Sprites/death_explosion.png').convert_alpha(), (int(size*2), int(size*2)))
+    SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player.png')).convert_alpha(), (size, size))
+    DEATH_EXPLOSION = py.transform.scale(py.image.load(os.path.join('Sprites', 'death_explosion.png')).convert_alpha(), (int(size*2), int(size*2)))
     class Ammo:
         lasers = 100 # Even if you change it to zero it does nothing
         bombs = 0
@@ -992,7 +992,7 @@ class Enemies: # All enemy variables (Asteroids, ships, etc)
             elif randSelect == 1:
                 sprite = py.transform.scale(Enemies.Asteroids.asteroid_2, (size, size))
             else:
-                sprite = py.transform.scale(Enemies.Asteroids.asteroid_3, (size, size))                                                                       #Scaled Sprite
+                sprite = py.transform.scale(Enemies.Asteroids.asteroid_3, (size, size))
             return (
                 random.randrange(X + Enemies.Asteroids.initialSize) - Enemies.Asteroids.initialSize, # X
                 -size,                                                                           # Y
@@ -1009,8 +1009,6 @@ class Enemies: # All enemy variables (Asteroids, ships, etc)
         def spawnEnemyShip():
             size = int(Enemies.EnShips.initialShipSize)
             return py.transform.scale(Enemies.EnShips.pirate2, (size, size))
-
-
 
 class Sounds: # Class to store all game music and SFX
     playerLaser = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "player_laser.wav"))
@@ -1131,7 +1129,7 @@ while True:
             laserTopPos = (Player.Lasers.pos[i - indexOffset][0], Player.Lasers.pos[i - indexOffset][1] - Player.Lasers.length)
 
             for n in range(len(Enemies.Asteroids.data)):
-                try: # TEMPORARY
+                try: # TEMPORARY BUG FIX
                     asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
                 except IndexError:
                     print("\nSomething broke.\n")
