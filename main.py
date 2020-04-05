@@ -1,6 +1,4 @@
 '''
-HOW TO COPY THE VALUES OF A CLASS AT A GIVEN TIME, NOT BUILD A REFERENCE TO THE CLASS?
-
 BUGS BUGS BUGS:
     Could this be!? No bugs?? Ha you wish.
 '''
@@ -8,8 +6,6 @@ BUGS BUGS BUGS:
 import os
 import pygame as py
 import random
-import copy
-# from maliciouscode import *
 
 def user_screen_size_input(): # Creates game screen based on user input
     #-> Not needed as screen is automatically set based on the size of their monitor
@@ -446,6 +442,10 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
     return Stars.posX
 
 def shop_screen(): # Screen in between levels; gives player option to buy upgrades with points
+    ## GLOBALS ##
+    global Player
+    Player.score = 10000
+
     ## MAKE MOUSE VISIBLE ##
     py.mouse.set_visible(1)
     ticks = 0
@@ -467,7 +467,8 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
     AMMO_BUTTON_POS = (int(X*0.05), int(X*0.2))
     AMMO_BUTTON_DATA = (AMMO_BUTTON_POS[0], AMMO_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1])
     AMMO_BUTTON_COLOUR = (100,100,100) # Changed Later
-    AMMO_BUTTON_TEXT = buttonFont.render("50 AMMO (100p)", True, (200,200,200), AMMO_BUTTON_COLOUR)
+    AMMO_BUTTON_TEXT_COLOUR = (200,200,200) # Changed Later
+    AMMO_BUTTON_TEXT = buttonFont.render("50 AMMO (100p)", True, AMMO_BUTTON_TEXT_COLOUR, AMMO_BUTTON_COLOUR)
     AMMO_BUTTON_TEXTBOX = AMMO_BUTTON_TEXT.get_rect()
     AMMO_BUTTON_TEXTBOX.center = (int(AMMO_BUTTON_POS[0] + BUTTON_SIZE[0]*0.5), int(AMMO_BUTTON_POS[1] +BUTTON_SIZE[1]*0.5))
 
@@ -475,7 +476,8 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
     AUTOSHOOT_BUTTON_POS = (int(X*0.55), int(X*0.2))
     AUTOSHOOT_BUTTON_DATA = (AUTOSHOOT_BUTTON_POS[0], AUTOSHOOT_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1])
     AUTOSHOOT_BUTTON_COLOUR = (100,100,100) # Changed Later
-    AUTOSHOOT_BUTTON_TEXT = buttonFont.render("AUTOSHOOT (2000p)", True, (200,200,200), AUTOSHOOT_BUTTON_COLOUR)
+    AUTOSHOOT_BUTTON_TEXT_COLOUR = (200,200,200) # Changed Later
+    AUTOSHOOT_BUTTON_TEXT = buttonFont.render("AUTOSHOOT (2000p)", True, AUTOSHOOT_BUTTON_TEXT_COLOUR, AUTOSHOOT_BUTTON_COLOUR)
     AUTOSHOOT_BUTTON_TEXTBOX = AUTOSHOOT_BUTTON_TEXT.get_rect()
     AUTOSHOOT_BUTTON_TEXTBOX.center = (int(AUTOSHOOT_BUTTON_POS[0] + BUTTON_SIZE[0]*0.5), int(AUTOSHOOT_BUTTON_POS[1] +BUTTON_SIZE[1]*0.5))
 
@@ -483,7 +485,8 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
     MAX_SHOT_BUTTON_POS = (int(X*0.05), int(X*0.45))
     MAX_SHOT_BUTTON_DATA = (MAX_SHOT_BUTTON_POS[0], MAX_SHOT_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1])
     MAX_SHOT_BUTTON_COLOUR = (100,100,100) # Changed Later
-    MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (3000p)", True, (200,200,200), MAX_SHOT_BUTTON_COLOUR)
+    MAX_SHOT_BUTTON_TEXT_COLOUR = (200,200,200) # Changed Later
+    MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (3000p)", True, MAX_SHOT_BUTTON_TEXT_COLOUR, MAX_SHOT_BUTTON_COLOUR)
     MAX_SHOT_BUTTON_TEXTBOX = MAX_SHOT_BUTTON_TEXT.get_rect()
     MAX_SHOT_BUTTON_TEXTBOX.center = (int(MAX_SHOT_BUTTON_POS[0] + BUTTON_SIZE[0]*0.5), int(MAX_SHOT_BUTTON_POS[1] +BUTTON_SIZE[1]*0.5))
 
@@ -491,13 +494,14 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
     SHIELD_BUTTON_POS = (int(X*0.55), int(X*0.45))
     SHIELD_BUTTON_DATA = (SHIELD_BUTTON_POS[0], SHIELD_BUTTON_POS[1], BUTTON_SIZE[0], BUTTON_SIZE[1])
     SHIELD_BUTTON_COLOUR = (100,100,100) # Changed Later
-    SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (5000p)", True, (200,200,200), MAX_SHOT_BUTTON_COLOUR)
+    SHIELD_BUTTON_TEXT_COLOUR = (200,200,200) # Changed Later
+    SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (5000p)", True, SHIELD_BUTTON_TEXT_COLOUR, SHIELD_BUTTON_COLOUR)
     SHIELD_BUTTON_TEXTBOX = SHIELD_BUTTON_TEXT.get_rect()
     SHIELD_BUTTON_TEXTBOX.center =  (int(SHIELD_BUTTON_POS[0] + BUTTON_SIZE[0]*0.5), int(SHIELD_BUTTON_POS[1] +BUTTON_SIZE[1]*0.5))
 
     # Current Score #
     scoreFont = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.07))
-    scoreText = scoreFont.render(f"Score: {Player.score}", True, (0,255,255), (0,0,0))
+    scoreText = scoreFont.render(f"Score: {Player.score}p", True, (0,255,255), (0,0,0))
     scoreTextbox = scoreText.get_rect()
     scoreTextbox.center = (int(X*0.5), int(Y*0.9))
 
@@ -514,117 +518,182 @@ def shop_screen(): # Screen in between levels; gives player option to buy upgrad
 
     ## MAIN LOOP ##
     while True:
-        ## INTER-FRAME VARIABLES & HANDLING ##
-        SCREEN.fill(Colours.BACKGROUND_COLOUR)
-        keys = py.key.get_pressed()
-        Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
-        Mouse.leftClick, Mouse.rightClick = False, False
-        Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
-        for event in py.event.get():
-            if event.type == py.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    Mouse.leftClick = True
-                if event.button == 3:
-                    Mouse.rightClick = True
-            if event.type == py.QUIT:
+        if True:
+            ## INTER-FRAME VARIABLES & HANDLING ##
+            SCREEN.fill(Colours.BACKGROUND_COLOUR)
+            keys = py.key.get_pressed()
+            Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
+            Mouse.leftClick, Mouse.rightClick = False, False
+            Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
+            for event in py.event.get():
+                if event.type == py.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        Mouse.leftClick = True
+                    if event.button == 3:
+                        Mouse.rightClick = True
+                if event.type == py.QUIT:
+                    py.display.quit()
+                    py.quit()
+            if keys[py.K_ESCAPE]:
                 py.display.quit()
                 py.quit()
-        if keys[py.K_ESCAPE]:
-            py.display.quit()
-            py.quit()
 
-        ## DYNAMIC FADE ##
-        if textTicks %2 == 0:
-            textShade -= 4
-            if textShade < textShadeLimit[0]:
-                textShade = textShadeLimit[0]
-                textTicks += 1
-        if textTicks %2 == 1:
-            textShade += 4
-            if textShade > textShadeLimit[1]:
-                textShade = textShadeLimit[1]
-                textTicks += 1
+            ## DYNAMIC FADE ##
+            if textTicks %2 == 0:
+                textShade -= 4
+                if textShade < textShadeLimit[0]:
+                    textShade = textShadeLimit[0]
+                    textTicks += 1
+            if textTicks %2 == 1:
+                textShade += 4
+                if textShade > textShadeLimit[1]:
+                    textShade = textShadeLimit[1]
+                    textTicks += 1
 
-        ## PRINT CURRENT SCORE ##
-        SCREEN.blit(scoreText, scoreTextbox)
+            ## PRINT CURRENT SCORE ##
+            SCREEN.blit(scoreText, scoreTextbox)
 
-        ## DRAW AND MOVE STARS ##
-        Stars.posY = Stars.handle_stars(SCREEN, Stars)
+            ## DRAW AND MOVE STARS ##
+            Stars.posY = Stars.handle_stars(SCREEN, Stars)
 
-        ## DRAW PLAYER ##
-        py.draw.line(SCREEN, (255,60,0), shipCenter, (shipCenter[0], 
-            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
-        py.draw.line(SCREEN, (255,255,0), shipCenter, (shipCenter[0], 
-            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.01))
-        py.draw.line(SCREEN, (255,255,240), shipCenter, (shipCenter[0], 
-            shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
-        SCREEN.blit(playerShip, (shipCenter[0]-Player.halfSize, shipCenter[1]-Player.halfSize))
+            ## DRAW PLAYER ##
+            py.draw.line(SCREEN, (255,60,0), shipCenter, (shipCenter[0], 
+                shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
+            py.draw.line(SCREEN, (255,255,0), shipCenter, (shipCenter[0], 
+                shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.01))
+            py.draw.line(SCREEN, (255,255,240), shipCenter, (shipCenter[0], 
+                shipCenter[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
+            SCREEN.blit(playerShip, (shipCenter[0]-Player.halfSize, shipCenter[1]-Player.halfSize))
 
-        ## PLAYER HIGHLIGHT BOX ## -> Resume button
-        resumeText = resumeFont.render("RESUME", True, (textShade,textShade,textShade), (0,0,0))
-        SCREEN.blit(resumeText, resumeTextbox)
-        py.draw.rect(SCREEN, (textShade,textShade,textShade), 
-            (int(shipCenter[0]-Player.halfSize*1.5), int(shipCenter[1]-Player.halfSize*1.5), int(Player.size*1.5), int(Player.size*1.8)), int(X*0.005 +1))
-        if Mouse.leftClick:
-            if int(shipCenter[0]-Player.halfSize*1.5) < Mouse.currentPos[0] < int(shipCenter[0]-Player.halfSize*1.5 + Player.size*1.5):
-                if int(shipCenter[1]-Player.halfSize*1.5) < Mouse.currentPos[1] < int(shipCenter[1]-Player.halfSize*1.5 + Player.size*1.8):
-                    break
-        
-        ## PRINT 'UPGRADES!'' ##
-        upgradesTitleText = upgradesTitleFont.render("UPGRADES!", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
-        SCREEN.blit(upgradesTitleText, upgradesTitleTextbox)
+            ## PLAYER HIGHLIGHT BOX ## -> Resume button
+            resumeText = resumeFont.render("RESUME", True, (textShade,textShade,textShade), (0,0,0))
+            SCREEN.blit(resumeText, resumeTextbox)
+            py.draw.rect(SCREEN, (textShade,textShade,textShade), 
+                (int(shipCenter[0]-Player.halfSize*1.5), int(shipCenter[1]-Player.halfSize*1.5), int(Player.size*1.5), int(Player.size*1.8)), int(X*0.005 +1))
+            if Mouse.leftClick:
+                if int(shipCenter[0]-Player.halfSize*1.5) < Mouse.currentPos[0] < int(shipCenter[0]-Player.halfSize*1.5 + Player.size*1.5):
+                    if int(shipCenter[1]-Player.halfSize*1.5) < Mouse.currentPos[1] < int(shipCenter[1]-Player.halfSize*1.5 + Player.size*1.8):
+                        break
+            
+            ## PRINT 'UPGRADES!'' ##
+            upgradesTitleText = upgradesTitleFont.render("UPGRADES!", True, colour_loop_RGB(colourPointsRGB, loopLengthRGB, ticks%loopLengthRGB), (0,0,0))
+            SCREEN.blit(upgradesTitleText, upgradesTitleTextbox)
 
         ## DETECT SHOP BUTTON CLICKS + HANDLE MOUSE COLLISION ##
         # Ammo #
         if (AMMO_BUTTON_POS[0] < Mouse.currentPos[0] < AMMO_BUTTON_POS[0] +BUTTON_SIZE[0]) and (AMMO_BUTTON_POS[1] < Mouse.currentPos[1] < AMMO_BUTTON_POS[1] +BUTTON_SIZE[1]):
-            AMMO_BUTTON_COLOUR = (0,255,0)
-            AMMO_BUTTON_TEXT = buttonFont.render("50 AMMO (100p)", True, (255,255,255), AMMO_BUTTON_COLOUR)
+            if Player.score >= 100:
+                if Mouse.leftClick:
+                    Player.score -= 100
+                    scoreText = scoreFont.render(f"Score: {Player.score}p", True, (0,255,255), (0,0,0))
+                    Player.Ammo.lasers += 50
+                    if Player.score >= 100:
+                        AMMO_BUTTON_COLOUR = (0,255,0)
+                        AMMO_BUTTON_TEXT_COLOUR = (255,255,255)
+                    else:
+                        AMMO_BUTTON_COLOUR = (255,0,0)
+                        AMMO_BUTTON_TEXT_COLOUR = (255,255,255)
+                else:
+                    AMMO_BUTTON_COLOUR = (0,255,0)
+                    AMMO_BUTTON_TEXT_COLOUR = (255,255,255)
+            else:
+                AMMO_BUTTON_COLOUR = (255,0,0)
+                AMMO_BUTTON_TEXT_COLOUR = (255,255,255)
+        elif Player.score >= 100:
+            AMMO_BUTTON_COLOUR = (0,200,0)
+            AMMO_BUTTON_TEXT_COLOUR = (150,150,150)
         else:
-            AMMO_BUTTON_COLOUR = (0,150,0)
-            AMMO_BUTTON_TEXT = buttonFont.render("50 AMMO (100p)", True, (150,150,150), AMMO_BUTTON_COLOUR)
+            AMMO_BUTTON_COLOUR = (150,0,0)
+            AMMO_BUTTON_TEXT_COLOUR = (150,150,150)
 
-        # Autofire #
+        # Auto-shoot #
         if Player.Upgrades.autoShoot:
             AUTOSHOOT_BUTTON_COLOUR = (100,100,100)
+            AUTOSHOOT_BUTTON_TEXT_COLOUR = (150,150,150)
         else:
             if (AUTOSHOOT_BUTTON_POS[0] < Mouse.currentPos[0] < AUTOSHOOT_BUTTON_POS[0] + BUTTON_SIZE[0]) and (AUTOSHOOT_BUTTON_POS[1] < Mouse.currentPos[1] < AUTOSHOOT_BUTTON_POS[1] + BUTTON_SIZE[1]):
+                if Player.score >= 2000:
                     AUTOSHOOT_BUTTON_COLOUR = (0,255,0)
-                    AUTOSHOOT_BUTTON_TEXT = buttonFont.render("AUTOSHOOT (2000p)", True, (255,255,255), AUTOSHOOT_BUTTON_COLOUR)
+                    AUTOSHOOT_BUTTON_TEXT_COLOUR = (255,255,255)
+                    if Mouse.leftClick:
+                        Player.score -= 2000
+                        scoreText = scoreFont.render(f"Score: {Player.score}p", True, (0,255,255), (0,0,0))
+                        Player.Upgrades.autoShoot = True
+                        AUTOSHOOT_BUTTON_COLOUR = (100,100,100)
+                        AUTOSHOOT_BUTTON_TEXT_COLOUR = (150,150,150)
+                else:
+                    AUTOSHOOT_BUTTON_COLOUR = (255,0,0)
+                    AUTOSHOOT_BUTTON_TEXT_COLOUR = (255,255,255)
+            elif Player.score >= 2000:
+                AUTOSHOOT_BUTTON_COLOUR = (0,200,0)
+                AUTOSHOOT_BUTTON_TEXT_COLOUR = (150,150,150)
             else:
-                AUTOSHOOT_BUTTON_COLOUR = (0,150,0)
-                AUTOSHOOT_BUTTON_TEXT = buttonFont.render("AUTOSHOOT (2000p)", True, (150,150,150), AUTOSHOOT_BUTTON_COLOUR)
+                AUTOSHOOT_BUTTON_COLOUR = (150,0,0)
+                AUTOSHOOT_BUTTON_TEXT_COLOUR = (150,150,150)
 
         # Max Shots #
         if (MAX_SHOT_BUTTON_POS[0] < Mouse.currentPos[0] < MAX_SHOT_BUTTON_POS[0] + BUTTON_SIZE[0]) and (MAX_SHOT_BUTTON_POS[1] < Mouse.currentPos[1] < MAX_SHOT_BUTTON_POS[1] + BUTTON_SIZE[1]):
+            if Player.score >= 3000:
                 MAX_SHOT_BUTTON_COLOUR = (0,255,0)
-                MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (3000p)", True, (255,255,255), MAX_SHOT_BUTTON_COLOUR)
+                MAX_SHOT_BUTTON_TEXT_COLOUR = (255,255,255)
+                if Mouse.leftClick:
+                    Player.score -= 3000
+                    scoreText = scoreFont.render(f"Score: {Player.score}p", True, (0,255,255), (0,0,0))
+                    Player.Upgrades.maxLasers += 1
+                    if Player.score < 3000:
+                        MAX_SHOT_BUTTON_COLOUR = (255,0,0)
+                        MAX_SHOT_BUTTON_TEXT_COLOUR = (255,255,255)
+            else:
+                MAX_SHOT_BUTTON_COLOUR = (255,0,0)
+                MAX_SHOT_BUTTON_TEXT_COLOUR = (255,255,255)
+        elif Player.score >= 3000:
+            MAX_SHOT_BUTTON_COLOUR = (0,200,0)
+            MAX_SHOT_BUTTON_TEXT_COLOUR = (150,150,150)
         else:
-            MAX_SHOT_BUTTON_COLOUR = (0,150,0)
-            MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (3000p)", True, (150,150,150), MAX_SHOT_BUTTON_COLOUR)
+             MAX_SHOT_BUTTON_COLOUR = (150,0,0)
+             MAX_SHOT_BUTTON_TEXT_COLOUR = (150,150,150)
 
         # Shield #
         if Player.Upgrades.shield:
+            SHIELD_BUTTON_TEXT_COLOUR = (150,150,150)
             SHIELD_BUTTON_COLOUR = (100,100,100)
         else:
             if (SHIELD_BUTTON_POS[0] < Mouse.currentPos[0] < SHIELD_BUTTON_POS[0] + BUTTON_SIZE[0]) and (SHIELD_BUTTON_POS[1] < Mouse.currentPos[1] < SHIELD_BUTTON_POS[1] + BUTTON_SIZE[1]):
+                if Player.score >= 5000:
                     SHIELD_BUTTON_COLOUR = (0,255,0)
-                    SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (5000p)", True, (255,255,255), SHIELD_BUTTON_COLOUR)
+                    SHIELD_BUTTON_TEXT_COLOUR = (255,255,255)
+                    if Mouse.leftClick:
+                        Player.score -= 5000
+                        scoreText = scoreFont.render(f"Score: {Player.score}p", True, (0,255,255), (0,0,0))
+                        Player.Upgrades.shield = True
+                        if Player.score < 5000:
+                            SHIELD_BUTTON_COLOUR = (255,0,0)
+                            SHIELD_BUTTON_TEXT_COLOUR = (255,255,255)
+                else:
+                    SHIELD_BUTTON_COLOUR = (255,0,0)
+                    SHIELD_BUTTON_TEXT_COLOUR = (255,255,255)
+            elif Player.score >= 5000:
+                SHIELD_BUTTON_COLOUR = (0,200,0)
+                SHIELD_BUTTON_TEXT_COLOUR = (150,150,150)
             else:
-                SHIELD_BUTTON_COLOUR = (0,150,0)
-                SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (5000p)", True, (150,150,150), SHIELD_BUTTON_COLOUR)
-
+                SHIELD_BUTTON_COLOUR = (150,0,0)
+                SHIELD_BUTTON_TEXT_COLOUR = (150,150,150)
 
         ## DRAW UPGRADE BUTTONS ##
         # Ammo #
+        AMMO_BUTTON_TEXT = buttonFont.render("50 AMMO (100p)", True, AMMO_BUTTON_TEXT_COLOUR, AMMO_BUTTON_COLOUR)
         py.draw.rect(SCREEN, AMMO_BUTTON_COLOUR, AMMO_BUTTON_DATA)
         SCREEN.blit(AMMO_BUTTON_TEXT, AMMO_BUTTON_TEXTBOX)
         # Autofire #
+        AUTOSHOOT_BUTTON_TEXT = buttonFont.render("AUTOSHOOT (2000p)", True, AUTOSHOOT_BUTTON_TEXT_COLOUR, AUTOSHOOT_BUTTON_COLOUR)
         py.draw.rect(SCREEN, AUTOSHOOT_BUTTON_COLOUR, AUTOSHOOT_BUTTON_DATA)
         SCREEN.blit(AUTOSHOOT_BUTTON_TEXT, AUTOSHOOT_BUTTON_TEXTBOX)
         # Max Shots #
+        MAX_SHOT_BUTTON_TEXT = buttonFont.render("+1 MAX SHOT (3000p)", True, MAX_SHOT_BUTTON_TEXT_COLOUR, MAX_SHOT_BUTTON_COLOUR)
         py.draw.rect(SCREEN, MAX_SHOT_BUTTON_COLOUR, MAX_SHOT_BUTTON_DATA)
         SCREEN.blit(MAX_SHOT_BUTTON_TEXT, MAX_SHOT_BUTTON_TEXTBOX)
         # Shield #
+        SHIELD_BUTTON_TEXT = buttonFont.render("SHIELD (5000p)", True, SHIELD_BUTTON_TEXT_COLOUR, SHIELD_BUTTON_COLOUR)
         py.draw.rect(SCREEN, SHIELD_BUTTON_COLOUR, SHIELD_BUTTON_DATA)
         SCREEN.blit(SHIELD_BUTTON_TEXT, SHIELD_BUTTON_TEXTBOX)
 
@@ -985,7 +1054,7 @@ class Player: # Player variables
 
     class Ammo:
         lasers = 100 # Even if you change it to zero it does nothing
-        bombs = 0
+        bombs = 0 # Not included anymore
 
     class Upgrades:
         autoShoot = False
@@ -1102,10 +1171,6 @@ class Sounds: # Class to store all game music and SFX
     #soundEffect = py.mixer.Sound("sound.wav") #-> Creates a sound effect variable
     #py.mixer.Sound.play(soundEffect) #-> Plays sound effect 
 
-<<<<<<< HEAD
-shop_screen()
-=======
->>>>>>> 445e01026618232afe09543b83f29ffeafdf293a
 
 ## LOOP TO ALLOW REPLAY ##
 firstRun = True
@@ -1117,7 +1182,7 @@ while True:
     Player.destroyedAsteroids = 0
     Player.destroyedShips = 0
     Player.Ammo.lasers = 100
-    Player.Ammo.bombs = 0
+    Player.Ammo.bombs = 0 # No longer included
     Player.Upgrades.autoShoot = False
     Player.Upgrades.maxLasers = 1
     Player.Upgrades.shield = False
@@ -1130,7 +1195,7 @@ while True:
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
     Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
-    levelLength = 2000 # in ms
+    levelLength = 10000 # in ms
     levelStartTime = py.time.get_ticks()
     ## MAIN GAME LOOP ##
     while True:
@@ -1170,13 +1235,12 @@ while True:
         if Player.detect_collisions(): #If a collision happens, delete object it collides with and runs specified script
             if Player.Upgrades.shield:
                 Player.Upgrades.shield = False
+                py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
             else:
                 SCREEN.blit(Player.DEATH_EXPLOSION, (Mouse.currentPos[0]-Player.size, Mouse.currentPos[1]-Player.size))
-                #DEATHFRAME = SCREEN.convert()
                 py.mixer.Sound.play(Sounds.playerDeathExplosion)
                 py.mixer.music.stop()
                 py.display.update()
-                #SCREEN.blit(DEATHFRAME, (0,0))
             break # -> Exits main loop, goto score screen
 
         ## PLAYER SHOOTS LASERS ##
@@ -1232,6 +1296,8 @@ while True:
 
         ## DRAW PLAYER ##
         Player.draw_player()
+        if Player.Upgrades.shield:
+            py.draw.circle(SCREEN, (200,200,255), (Mouse.currentPos), int(Player.size * 0.8), int(X*0.005 +1))
 
         ## UPDATE SCREEN ##
         clock.tick(60)
@@ -1240,10 +1306,12 @@ while True:
         ## DETECT END OF LEVEL ##
         if endLevel:
             if len(Enemies.Asteroids.data) == 0:
-            	endLevel = False
-            	Stars.posX = hyperdrive_animation(Stars, Player)
-            	Stars.posY, levelStartTime = shop_screen()
-            	difficulty += 1
+                endLevel = False
+                Player.Lasers.pos = []
+                Enemies.Asteroids.data = []
+                Stars.posX = hyperdrive_animation(Stars, Player)
+                Stars.posY, levelStartTime = shop_screen()
+                difficulty += 1
         elif time > levelStartTime+ levelLength: 
         	endLevel = True
 
