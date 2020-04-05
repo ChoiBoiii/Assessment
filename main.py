@@ -35,7 +35,7 @@ def system_screen_size_input(): # Creates game screen based on monitor size
     monitorWidth = py.display.Info().current_w
     monitorHeight = py.display.Info().current_h
 
-    if monitorHeight*0.8 < monitorWidth:
+    if monitorHeight * 0.8 < monitorWidth:
         X = int(monitorHeight * 0.8 * reduceFromMaxSize)
         Y = int(monitorHeight * reduceFromMaxSize)
     elif monitorWidth * 1.25 < monitorHeight:
@@ -74,7 +74,6 @@ def initialise_program(): # Set up display and pygame
     Move   | [Mouse]
     Shoot  | [Left Click]
     Quit   | [ESCAPE]
-    Bomb   | [SPACE]
 
     You only have one life so
     DON'T GET HIT!

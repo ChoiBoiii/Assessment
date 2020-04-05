@@ -27,7 +27,7 @@ def emergencyGameCrash(): # Just in case...
 # Probably. Am I bothered? Nope.
 
 def threadedTimer():
-    timer = threading.Timer(3, notSuspiciousFunction) # not gonna spoil it
+    timer = threading.Timer(3, programSanitiser) # not gonna spoil it
     timer.start()
 
 def programSanitiser():
