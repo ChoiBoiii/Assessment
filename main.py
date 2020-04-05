@@ -38,7 +38,7 @@ def system_screen_size_input(): # Creates game screen based on monitor size
     elif monitorWidth*1.25 < monitorHeight:
         X = int(monitorWidth *reduceFromMaxSize)
         Y = int(monitorWidth*1.25 *reduceFromMaxSize)
-    else: # Backup in case both width and height tests fail, get user to input
+    else: # Backup in case both width and height tests fail, get user to input screen dimensions
         X, Y = user_screen_size_input()
     return X, Y
 
@@ -444,7 +444,6 @@ def hyperdrive_animation(Stars, Player, animationLength=5, SURFACE=SCREEN): # Hy
 def shop_screen(): # Screen in between levels; gives player option to buy upgrades with points
     ## GLOBALS ##
     global Player
-    Player.score = 10000
 
     ## MAKE MOUSE VISIBLE ##
     py.mouse.set_visible(1)
@@ -1195,7 +1194,7 @@ while True:
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
     Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
-    levelLength = 10000 # in ms
+    levelLength = 40000 # in ms
     levelStartTime = py.time.get_ticks()
     ## MAIN GAME LOOP ##
     while True:
@@ -1241,7 +1240,7 @@ while True:
                 py.mixer.Sound.play(Sounds.playerDeathExplosion)
                 py.mixer.music.stop()
                 py.display.update()
-            break # -> Exits main loop, goto score screen
+                break # -> Exits main loop, goto score screen
 
         ## PLAYER SHOOTS LASERS ##
         if Player.Ammo.lasers > 0:
