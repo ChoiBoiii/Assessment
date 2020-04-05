@@ -1055,7 +1055,7 @@ while True:
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
     Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
-    levelLength = 1000 # in ms
+    levelLength = 60000 # in ms
     levelStartTime = py.time.get_ticks()
     ## MAIN GAME LOOP ##
     while True:
