@@ -1,3 +1,6 @@
+###### Open and run 'main.py'
+###### Made using Python 3 and Pygame 3.8
+
 ### CONTROLS
 - **Movement**  \| \[Mouse]
 - **Shoot**     \| \[Left Click]
