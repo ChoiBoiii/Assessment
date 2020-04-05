@@ -1000,7 +1000,6 @@ def post_death_screen():
         py.display.update(updateRects)
         ticks += 1
 
-
 # Background Stars
 class Stars:
     num = 250
@@ -1314,7 +1313,7 @@ while True:
     ## MAIN GAME LOOP ##
     levelStartTime = py.time.get_ticks()
     while True:
-        ## INTER-FRAME VARIABLES & HANDLING ##
+        ## INTER-FRAME VARIABLES & PROCESS HANDLING ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
         keys = py.key.get_pressed()
         Mouse.B1, Mouse.B2, Mouse.B3 = py.mouse.get_pressed()
@@ -1401,8 +1400,6 @@ while True:
 
         ## UPDATE SCREEN ##
         clock.tick(60)
-        with open('test.txt', 'a') as f:
-            f.write(f'{clock.get_fps()}\n')
         py.display.update() 
         ticks += 1
 
