@@ -1000,6 +1000,23 @@ def post_death_screen():
         py.display.update(updateRects)
         ticks += 1
 
+# Handle end level detection & processes (detect end level -> end level processes -> restart next level)
+def handle_level_end(levelStartTime, time, levelLength):
+    global endLevel
+    global difficulty
+    if endLevel:
+        if len(Enemies.Asteroids.data) == 0:
+            endLevel = False
+            Player.Lasers.pos = []
+            Enemies.Asteroids.data = []
+            Stars.posX = hyperdrive_animation(Stars, Player)
+            Stars.posY, levelStartTime = shop_screen()
+            difficulty += 1
+    elif time > levelStartTime+ levelLength: 
+        endLevel = True
+    return levelStartTime
+
+
 # Background Stars
 class Stars:
     num = 250
@@ -1115,7 +1132,7 @@ class Player:
         moveStep = int(Y * 0.03)
 
         # Handle laser movement
-        def handle_movement(Lasers, Enemies):
+        def handle_movement(Lasers):
             # Move Lasers & Delete Offscreen
             global Player
             tempList = []
@@ -1131,7 +1148,7 @@ class Player:
                 py.draw.line(SCREEN, Colours.PLAYER_LASER_COLOUR, (Lasers.pos[i]),
                  (Lasers.pos[i][0], Lasers.pos[i][1] - Lasers.length), Lasers.width)
 
-            return Lasers, Enemies
+            return Lasers
 
         # Detects and handles player laser collisions with asteroids
         def handle_collisions():
@@ -1164,6 +1181,25 @@ class Player:
                         py.mixer.Sound.play(Sounds.asteroidExplosions[random.randrange(len(Sounds.asteroidExplosions))])
 
                         break
+
+        # Handles user inputs and events for shooting lasers
+        def handle_shooting():
+            if Player.Ammo.lasers > 0:
+                if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
+                    if Player.Upgrades.autoShoot:
+                        if Mouse.B1:
+                            Player.Lasers.pos.append(Mouse.currentPos)
+                            py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
+                            py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+                            Player.Ammo.lasers -= 1
+                            py.mixer.Sound.play(Sounds.playerLaser)
+                    else:
+                        if Mouse.leftClick:
+                            Player.Lasers.pos.append(Mouse.currentPos)
+                            py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
+                            py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
+                            Player.Ammo.lasers -= 1
+                            py.mixer.Sound.play(Sounds.playerLaser)
 
     # Draw's player and jet animation to screen over mouse pos
     def draw_player():
@@ -1366,23 +1402,8 @@ while True:
         runSession = Player.handle_collisions()
 
         ## PLAYER SHOOTS LASERS ##
-        if Player.Ammo.lasers > 0:
-            if len(Player.Lasers.pos) < Player.Upgrades.maxLasers:
-                if Player.Upgrades.autoShoot:
-                    if Mouse.B1:
-                        Player.Lasers.pos.append(Mouse.currentPos)
-                        py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
-                        py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
-                        Player.Ammo.lasers -= 1
-                        py.mixer.Sound.play(Sounds.playerLaser)
-                else:
-                    if Mouse.leftClick:
-                        Player.Lasers.pos.append(Mouse.currentPos)
-                        py.draw.circle(SCREEN, (255,0,0), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.01 +1))
-                        py.draw.circle(SCREEN, (255,200,200), (Mouse.currentPos[0], Mouse.currentPos[1]-Player.halfSize), int(X*0.008 +1))
-                        Player.Ammo.lasers -= 1
-                        py.mixer.Sound.play(Sounds.playerLaser)
-        Player.Lasers, Enemies = Player.Lasers.handle_movement(Player.Lasers, Enemies)
+        Player.Lasers.handle_shooting()
+        Player.Lasers = Player.Lasers.handle_movement(Player.Lasers)
 
         ## PLAYER'S LASER COLLISIONS ##
         Player.Lasers.handle_collisions()
@@ -1394,16 +1415,7 @@ while True:
         Player.draw_hud()
 
         ## DETECT END OF LEVEL ##
-        if endLevel:
-            if len(Enemies.Asteroids.data) == 0:
-                endLevel = False
-                Player.Lasers.pos = []
-                Enemies.Asteroids.data = []
-                Stars.posX = hyperdrive_animation(Stars, Player)
-                Stars.posY, levelStartTime = shop_screen()
-                difficulty += 1
-        elif time > levelStartTime+ levelLength: 
-            endLevel = True
+        levelStartTime = handle_level_end(levelStartTime, time, levelLength)
 
         ## UPDATE SCREEN ##
         clock.tick(60)
