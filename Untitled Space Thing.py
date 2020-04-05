@@ -1360,7 +1360,7 @@ while True:
 
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
-    #Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
+    Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
 
     ## MAIN GAME LOOP ##
     levelStartTime = py.time.get_ticks()
