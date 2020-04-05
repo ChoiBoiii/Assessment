@@ -13,7 +13,7 @@ from easterEgg import *
 def user_screen_size_input(): # Creates game screen based on user input
     #-> Not needed as screen is automatically set based on the size of their monitor
     while True:
-        try:
+        try: 
             tempVar = int(input('Enter screen height: '))
             try:
                 if tempVar >= 500:
