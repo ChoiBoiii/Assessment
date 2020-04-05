@@ -1,6 +1,7 @@
 '''
 BUGS BUGS BUGS:
     Could this be!? No bugs?? Ha you wish.
+
 '''
 
 import os
@@ -35,11 +36,11 @@ def system_screen_size_input(): # Creates game screen based on monitor size
     monitorHeight = py.display.Info().current_h
 
     if monitorHeight*0.8 < monitorWidth:
-        X = int(monitorHeight*0.8 *reduceFromMaxSize)
-        Y = int(monitorHeight *reduceFromMaxSize)
-    elif monitorWidth*1.25 < monitorHeight:
-        X = int(monitorWidth *reduceFromMaxSize)
-        Y = int(monitorWidth*1.25 *reduceFromMaxSize)
+        X = int(monitorHeight * 0.8 * reduceFromMaxSize)
+        Y = int(monitorHeight * reduceFromMaxSize)
+    elif monitorWidth * 1.25 < monitorHeight:
+        X = int(monitorWidth * reduceFromMaxSize)
+        Y = int(monitorWidth * 1.25 * reduceFromMaxSize)
     else: # Backup in case both width and height tests fail, get user to input
         X, Y = user_screen_size_input()
     return X, Y
@@ -47,7 +48,7 @@ def system_screen_size_input(): # Creates game screen based on monitor size
 def initialise_program(): # Set up display and pygame
     absolutePath = os.path.abspath(__file__) # takes file name and converts it to an absolute path
     directoryName = os.path.dirname(absolutePath) # uses absolute path to locate file on local system
-    os.chdir(directoryName) # changes cwd to the direct directory (I hate file paths.)
+    os.chdir(directoryName) # changes cwd to the direct directory
 
     # PRINT INITIAL CREDITS/INFO IN CONSOLE
     
@@ -109,8 +110,9 @@ def colour_loop_RGB(colourPoints, length, currentPoint):
     differenceStep1 = (fadeTo[0]-fadeFrom[0])/sectionLen
     differenceStep2 = (fadeTo[1]-fadeFrom[1])/sectionLen
     differenceStep3 = (fadeTo[2]-fadeFrom[2])/sectionLen
-    n = currentPoint%sectionLen
-    return (int(fadeFrom[0] + differenceStep1*n), int(fadeFrom[1] + differenceStep2*n), int(fadeFrom[2] + differenceStep3*n)) # produce ordered colour-points via an RGB gradient generated from given colour-points
+    n = currentPoint % sectionLen
+    return (int(fadeFrom[0] + differenceStep1 * n), int(fadeFrom[1] + differenceStep2 * n), int(fadeFrom[2] + differenceStep3 * n)) 
+    # produce ordered colour-points via an RGB gradient generated from given colour-points
 
 def handle_highscores(): # Pull scores from file, add player score, sort, return top 10 + re-write to file
     ## READ FILE ##
@@ -920,7 +922,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
             textShade -= 4
             if textShade < textShadeLimit[0]:
                 textShade = textShadeLimit[0]
-                textTicks += 1
+                textTicks += 1 
 
         if textTicks %2 == 1:
             textShade += 4
@@ -1198,6 +1200,7 @@ while True:
     Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
     levelLength = 10000 # in ms
     levelStartTime = py.time.get_ticks()
+
     ## MAIN GAME LOOP ##
     while True:
         ## INTER-FRAME VARIABLES & HANDLING ##
@@ -1228,7 +1231,7 @@ while True:
 
         ## ADD AND DRAW ENEMIES ## - Asteroids
         if not endLevel:
-            if random.randrange(41+ 2*difficulty) > 39:
+            if random.randrange(41 + 2 * difficulty) > 39:
                 Enemies.Asteroids.data.append(Enemies.Asteroids.create_new())
         Enemies.Asteroids.data = Enemies.Asteroids.move_and_print(Enemies.Asteroids.data)
 
