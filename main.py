@@ -1133,7 +1133,7 @@ while True:
                     asteroidSize = Enemies.Asteroids.data[n - indexOffset][2]# this line has a problem
                 except IndexError:
                     print("\nSomething broke.\n")
-                    raise idiot
+                    #raise idiot
 
                 asteroidPosX, asteroidPosY = Enemies.Asteroids.data[n-indexOffset][0:2]
                 asteroidCenter = ((asteroidPosX + asteroidSize * 0.5), (asteroidPosY + asteroidSize * 0.5))
@@ -1175,12 +1175,6 @@ while True:
     ## END SCREEN + HIGHSCORES ##
     Stars.posY, STAR_BACKGROUND = death_transition_screen()
     post_death_screen()
-
-
-
-#if time >= 666420:
-#    pass
-#    notSuspiciousFunction()
 
 
 
