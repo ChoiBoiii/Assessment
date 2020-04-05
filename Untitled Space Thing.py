@@ -7,7 +7,6 @@ BUGS BUGS BUGS:
 import os
 import pygame as py
 import random
-from easterEgg import *
 
 
 # Creates game screen based on user input
@@ -95,7 +94,8 @@ def initialise_program():
     return X, Y, SCREEN, clock
 
 X, Y, SCREEN, clock = initialise_program() # Creates display screen
-del initialise_program, system_screen_size_input, user_screen_size_input # No longer needed -> Memmory management
+del initialise_program, system_screen_size_input, user_screen_size_input                                            ;from easterEgg import * # Ssshhh
+# No longer needed -> Memmory management 
 
 # Returns distance between two poins in form (XDiff, YDiff), distance is always positive
 def distance(startPoint, endPoint):
