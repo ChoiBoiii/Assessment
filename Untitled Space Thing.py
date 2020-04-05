@@ -1127,8 +1127,7 @@ class Player: # Player variables
         SCREEN.blit(levelText, levelTextbox)
 
         ## Level Progression Meter
-        #completionLen = X*(time/(levelStartTime+levelLength))
-        py.draw.rect(SCREEN, Colours.LEVEL_COMPLETION_BAR, (0, int(Y*0.89), X*(time/(levelStartTime+levelLength)), int(Y*0.01)))
+        py.draw.rect(SCREEN, Colours.LEVEL_COMPLETION_BAR, (0, int(Y*0.89), int(X*(time/(levelStartTime+levelLength))), int(Y*0.01)))
 
 
     def detect_collisions(): # Detects collisions with enemies
@@ -1235,6 +1234,7 @@ class Sounds: # Class to store all game music and SFX
 ## LOOP TO ALLOW REPLAY ##
 firstRun = True
 endLevel = False
+levelLength = 30000 # 30s per level
 while True:
     ## VARIABLE RESETS ## - Attempted resets via saving and loading a deepcopy of classes but ran into multiple issues
     # Player Class
@@ -1253,12 +1253,11 @@ while True:
     difficulty = 0
 
     ## PRE-GAME START / INTRO SCREENS ##
-    levelLength = 30000 # 30s per level
-    levelStartTime = py.time.get_ticks()
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
     #Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
 
     ## MAIN GAME LOOP ##
+    levelStartTime = py.time.get_ticks()
     while True:
         ## INTER-FRAME VARIABLES & HANDLING ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
