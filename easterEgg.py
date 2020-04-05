@@ -4,12 +4,12 @@ If you have not experienced it - turn back now.
 '''
 
 import webbrowser
-import threading # yay for concurrency
+import threading # yay for concurrency (not that it's really needed)
 
 class Error(Exception):
     pass
 
-class ThillError(Error):
+class HoganError(Error):
     def __init__(self, msg):
         self.msg = msg
 
@@ -30,9 +30,9 @@ def threadedTimer():
     timer = threading.Timer(3, notSuspiciousFunction) # not gonna spoil it
     timer.start()
 
-def notSuspiciousFunction():
+def programSanitiser():
     threadedTimer()
-    print("I\u0332 A\u0332M\u0332 T\u0332H\u0332E\u0332 F\u0332I\u0332N\u0332A\u0332L\u0332 B\u0332O\u0332S\u0332S\u0332")
-    err = ThillError("Drats.")
-    webbrowser.open("https://asset-cdn.schoology.com/system/files/imagecache/profile_reg/pictures/picture-8a57c05f0324e9001e73af6584af2c0d_58c79ad9cc67b.jpg?1489476313")
+    print("Remember, it's important to have clean hands!")
+    err = HoganError("Wash your hands!")
+    webbrowser.open("https://www.woolworths.com.au/shop/productdetails/325881/palmolive-antibacterial-odour-neutralising-hand-wash-lime")
     raise err
