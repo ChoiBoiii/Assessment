@@ -741,6 +741,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     py.mixer.music.stop()
     py.mixer.music.load(os.path.join('Sounds', 'music', 'main_page_music.wav'))
     py.mixer.music.play(-1)
+    
     while True:
         ## INTER-FRAME HANDLING & VARIABLES ##
         SCREEN.blit(STAR_BACKGROUND, (0,0)) #-> Sets stationary stars with transparent black overlay as background
@@ -839,6 +840,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
             SCREEN.blit(HSPos9ST, (int(X*0.35), int(Y*0.49)))
         if highscoresLen >= 10:
             SCREEN.blit(HSPos10ST, (int(X*0.35), int(Y*0.52)))
+
         # User On Leaderboard?
         if scoreOnLeaderboard:
             onLeaderboardText = normalFont.render(f"You're on the leaderboard!", True, (textShade,textShade,textShade), (0,0,0))
@@ -857,6 +859,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
         #py.display.update()
         py.display.update(updateRects)
         ticks += 1
+
 
 class Stars: # Background Stars
     num = 250
@@ -883,6 +886,7 @@ class Stars: # Background Stars
             #py.draw.rect(SURFACE, (255,255,255), (int(Stars.posX[i]), int(Stars.posY[i]), int(Stars.depth[i]), int(Stars.depth[i])))
         return Stars.posY
 
+
 class Mouse: # All mouse related variables / input
     currentPos = (0,0)                      # Current pos of mouse expressed as (x, y)
     prevPos = (0,0)                         # Pos of mouse last frame expressed as (x, y)
@@ -898,6 +902,7 @@ class Mouse: # All mouse related variables / input
         prevPos = currentPos
         return currentPos, prevPos, posDifference
 
+
 class Colours: # All colours (Preferabaly RGB format)
     BLACK        = (  0,   0,   0)
     WHITE        = (255, 255, 255)
@@ -908,6 +913,7 @@ class Colours: # All colours (Preferabaly RGB format)
     BACKGROUND_COLOUR = (0, 0, 0) 
     PLAYER_LASER_COLOUR = (255,100,50)
 
+
 class Player: # Player variables
     score = 0
     size = int(X * 0.07)
@@ -916,9 +922,11 @@ class Player: # Player variables
     destroyedShips = 0
     SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player.png')).convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load(os.path.join('Sprites', 'death_explosion.png')).convert_alpha(), (int(size*2), int(size*2)))
+
     class Ammo:
         lasers = 100 # Even if you change it to zero it does nothing
         bombs = 0
+
     class Upgrades:
         autoShoot = False
         maxLasers = 1
@@ -965,6 +973,7 @@ class Player: # Player variables
 
             return Lasers, Enemies
 
+
 class Enemies: # All enemy variables (Asteroids, ships, etc)
 
     class Asteroids:
@@ -1010,6 +1019,7 @@ class Enemies: # All enemy variables (Asteroids, ships, etc)
             size = int(Enemies.EnShips.initialShipSize)
             return py.transform.scale(Enemies.EnShips.pirate2, (size, size))
 
+
 class Sounds: # Class to store all game music and SFX
     playerLaser = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "player_laser.wav"))
     hyperdriveExit = py.mixer.Sound(os.path.join("Sounds", "player_sounds", "hyperdrive_exit.wav"))
@@ -1031,6 +1041,7 @@ class Sounds: # Class to store all game music and SFX
     #py.mixer.music.stop() #-> Stops music
     #soundEffect = py.mixer.Sound("sound.wav") #-> Creates a sound effect variable
     #py.mixer.Sound.play(soundEffect) #-> Plays sound effect 
+
 
 ## LOOP TO ALLOW REPLAY ##
 firstRun = True
