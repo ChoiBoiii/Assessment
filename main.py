@@ -1055,6 +1055,9 @@ class Player: # Player variables
     SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player.png')).convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load(os.path.join('Sprites', 'death_explosion.png')).convert_alpha(), (int(size*2), int(size*2)))
 
+    HUD_TOP = py.transform.scale(py.image.load(os.path.join('Sprites', 'HUD_top.png')).convert_alpha(), (X, int(Y*0.05)))
+    HUD_BOTTOM = py.transform.scale(py.image.load(os.path.join('Sprites', 'HUD_bottom.png')).convert_alpha(), (X, int(Y*0.1)))
+
     class Ammo:
         lasers = 100 # Even if you change it to zero it does nothing
         bombs = 0 # Not included anymore
@@ -1073,11 +1076,15 @@ class Player: # Player variables
             Mouse.currentPos[1] + int(X * 0.04) + random.randrange(int(X * 0.01))), int(X * 0.005))
         SCREEN.blit(Player.SHIP_SPRITE, (Mouse.currentPos[0] - Player.halfSize, 
             Mouse.currentPos[1] - Player.halfSize))
+        if Player.Upgrades.shield:
+            py.draw.circle(SCREEN, (200,200,255), (Mouse.currentPos), int(Player.size * 0.8), int(X*0.005 +1))
 
     def draw_hud(): # Draws the HUD over the screen
         ## HUD Background
         py.draw.rect(SCREEN, Colours.HUD_DARK, (0, int(Y*0.9), X, int(Y*0.05)))
         py.draw.rect(SCREEN, Colours.HUD_LIGHT, (0, int(Y*0.92), X, int(Y*0.1)))
+        #SCREEN.blit(Player.HUD_TOP, (0, int(Y*0.9)))
+        #SCREEN.blit(Player.HUD_BOTTOM, (0, int(Y*0.92)))
 
         ## HUD Info
         scoreText = Player.SCORE_FONT.render(f"{Player.score}", True, (255,255,255), Colours.HUD_LIGHT)
@@ -1307,8 +1314,6 @@ while True:
 
         ## DRAW PLAYER ##
         Player.draw_player()
-        if Player.Upgrades.shield:
-            py.draw.circle(SCREEN, (200,200,255), (Mouse.currentPos), int(Player.size * 0.8), int(X*0.005 +1))
 
         ## DRAW IN-GAME HUD ##
         Player.draw_hud()
