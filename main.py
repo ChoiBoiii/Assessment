@@ -1049,6 +1049,10 @@ class Player: # Player variables
     halfSize = int(size * 0.5)
     destroyedAsteroids = 0
     destroyedShips = 0
+    SCORE_FONT = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.04))
+    scoreText = SCORE_FONT.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
+    scoreTextbox = scoreText.get_rect()
+    scoreTextbox.center = (int(X*0.5), int(Y*0.95))
     SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player.png')).convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load(os.path.join('Sprites', 'death_explosion.png')).convert_alpha(), (int(size*2), int(size*2)))
 
@@ -1195,7 +1199,7 @@ while True:
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
     Stars.posX = intro_hyperdrive_animation(Stars, Player, 7.3)
-    levelLength = 40000 # in ms
+    levelLength = 30000 # 30s per level
     levelStartTime = py.time.get_ticks()
     ## MAIN GAME LOOP ##
     while True:
@@ -1298,6 +1302,12 @@ while True:
         Player.draw_player()
         if Player.Upgrades.shield:
             py.draw.circle(SCREEN, (200,200,255), (Mouse.currentPos), int(Player.size * 0.8), int(X*0.005 +1))
+
+        ## DRAW IN-GAME HUD ##
+        py.draw.rect(SCREEN, (50,50,50), (0, int(Y*0.9), X, int(Y*0.02)))
+        py.draw.rect(SCREEN, (100,100,100), (0, int(Y*0.92), X, int(Y*0.08)))
+        scoreText = SCORE_FONT.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
+        SCREEN.blit(scoreText, scoreTextbox)
 
         ## UPDATE SCREEN ##
         clock.tick(60)
