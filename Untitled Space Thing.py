@@ -1127,7 +1127,7 @@ class Player: # Player variables
         SCREEN.blit(levelText, levelTextbox)
 
         ## Level Progression Meter
-        py.draw.rect(SCREEN, Colours.LEVEL_COMPLETION_BAR, (0, int(Y*0.89), int(X*(time/(levelStartTime+levelLength))), int(Y*0.01)))
+        py.draw.rect(SCREEN, Colours.LEVEL_COMPLETION_BAR, (0, int(Y*0.89), int(X*((time-levelStartTime)/levelLength)), int(Y*0.01)))
 
 
     def detect_collisions(): # Detects collisions with enemies
@@ -1258,6 +1258,7 @@ while True:
 
     ## MAIN GAME LOOP ##
     levelStartTime = py.time.get_ticks()
+    #print(levelStartTime, '\n')
     while True:
         ## INTER-FRAME VARIABLES & HANDLING ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
@@ -1266,6 +1267,7 @@ while True:
         Mouse.leftClick, Mouse.rightClick = False, False
         Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
         time = py.time.get_ticks()
+        #print(f"{levelStartTime} \n {(levelStartTime + levelLength)} {time} \n")
         for event in py.event.get():
             if event.type == py.MOUSEBUTTONDOWN:
                 if event.button == 1:
