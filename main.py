@@ -28,7 +28,7 @@ import os
 import pygame as py
 import random
 import copy
-# from maliciouscode import *
+#from maliciouscode import *
 
 def user_screen_size_input(): # Creates game screen based on user input
     #-> Not needed as screen is automatically set based on the size of their monitor
@@ -215,7 +215,6 @@ def intro_screen(playerShip): # Intoduction to basic game overview + controls
     titleText = titleFont.render("Untitled Space Thing", True, titleColour, (0,0,0))
     titleTextbox = titleText.get_rect()
     titleTextbox.center = (int(X*0.5), int(Y*0.1))
-    #######################
 
     ## START MUSIC ##
     if firstRun:
@@ -741,7 +740,7 @@ def post_death_screen(): # Death Screen; Shows game stats, score, and leaderboar
     py.mixer.music.stop()
     py.mixer.music.load(os.path.join('Sounds', 'music', 'main_page_music.wav'))
     py.mixer.music.play(-1)
-    
+
     while True:
         ## INTER-FRAME HANDLING & VARIABLES ##
         SCREEN.blit(STAR_BACKGROUND, (0,0)) #-> Sets stationary stars with transparent black overlay as background
@@ -1186,28 +1185,3 @@ while True:
     ## END SCREEN + HIGHSCORES ##
     Stars.posY, STAR_BACKGROUND = death_transition_screen()
     post_death_screen()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
