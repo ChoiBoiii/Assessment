@@ -1041,6 +1041,8 @@ class Colours: # All colours (Preferabaly RGB format)
     GREY         = (170, 170, 170)
     BACKGROUND_COLOUR = (0, 0, 0) 
     PLAYER_LASER_COLOUR = (255,100,50)
+    HUD_LIGHT = (100,100,100)
+    HUD_DARK = (50,50,50)
 
 
 class Player: # Player variables
@@ -1050,9 +1052,6 @@ class Player: # Player variables
     destroyedAsteroids = 0
     destroyedShips = 0
     SCORE_FONT = py.font.Font(os.path.join('Fonts', 'arcadeText.ttf'), int(X*0.04))
-    scoreText = SCORE_FONT.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
-    scoreTextbox = scoreText.get_rect()
-    scoreTextbox.center = (int(X*0.5), int(Y*0.95))
     SHIP_SPRITE = py.transform.scale(py.image.load(os.path.join('Sprites', 'player.png')).convert_alpha(), (size, size))
     DEATH_EXPLOSION = py.transform.scale(py.image.load(os.path.join('Sprites', 'death_explosion.png')).convert_alpha(), (int(size*2), int(size*2)))
 
@@ -1065,7 +1064,7 @@ class Player: # Player variables
         maxLasers = 1
         shield = False
 
-    def draw_player():
+    def draw_player(): # Draw's player and jet animation to screen over mouse pos
         py.draw.line(SCREEN, (255,60,0), Mouse.currentPos, (Mouse.currentPos[0], 
             Mouse.currentPos[1] + int(X * 0.04) + random.randrange(int(X * 0.02))), int(random.randrange(int(X * 0.01)) + X * 0.02))
         py.draw.line(SCREEN, (255,255,0), Mouse.currentPos, (Mouse.currentPos[0], 
@@ -1075,7 +1074,18 @@ class Player: # Player variables
         SCREEN.blit(Player.SHIP_SPRITE, (Mouse.currentPos[0] - Player.halfSize, 
             Mouse.currentPos[1] - Player.halfSize))
 
-    def detect_collisions():
+    def draw_hud(): # Draws the HUD over the screen
+        ## HUD Background
+        py.draw.rect(SCREEN, Colours.HUD_DARK, (0, int(Y*0.9), X, int(Y*0.05)))
+        py.draw.rect(SCREEN, Colours.HUD_LIGHT, (0, int(Y*0.92), X, int(Y*0.1)))
+
+        ## HUD Info
+        scoreText = Player.SCORE_FONT.render(f"{Player.score}", True, (255,255,255), Colours.HUD_LIGHT)
+        scoreTextbox = scoreText.get_rect()
+        scoreTextbox.center = (int(X*0.5), int(Y*0.95))
+        SCREEN.blit(scoreText, scoreTextbox)
+
+    def detect_collisions(): # Detects collisions with enemies
         for index, (APosX, APosY, ASize, ASprite) in enumerate(Enemies.Asteroids.data):
             if distance((Mouse.currentPos), (int(APosX + ASize*0.5), int(APosY + ASize*0.5))) < ASize*0.5 + Player.halfSize:
                 del Enemies.Asteroids.data[index]
@@ -1295,19 +1305,13 @@ while True:
 
                     break
 
-        ## PRINT SCORE TEST ##
-        SCREEN.blit(py.font.Font(None, int(X*0.05)).render(f"Score: {Player.score}", True, (255,255,255), (100,100,100)), (int(X*0.05), int(X*0.05)))
-
         ## DRAW PLAYER ##
         Player.draw_player()
         if Player.Upgrades.shield:
             py.draw.circle(SCREEN, (200,200,255), (Mouse.currentPos), int(Player.size * 0.8), int(X*0.005 +1))
 
         ## DRAW IN-GAME HUD ##
-        py.draw.rect(SCREEN, (50,50,50), (0, int(Y*0.9), X, int(Y*0.02)))
-        py.draw.rect(SCREEN, (100,100,100), (0, int(Y*0.92), X, int(Y*0.08)))
-        scoreText = SCORE_FONT.render("Click the ship to start!", True, (textShade,textShade,textShade), (0,0,0))
-        SCREEN.blit(scoreText, scoreTextbox)
+        Player.draw_hud()
 
         ## UPDATE SCREEN ##
         clock.tick(60)
