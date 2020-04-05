@@ -106,7 +106,7 @@ def distance(startPoint, endPoint):
     return ((differenceX*differenceX + differenceY*differenceY) ** 0.5)
 
 # produce ordered colour-points via an RGB gradient generated from given colour-points
-def colour_loop_RGB(currentPoint, colourPoints, length): 
+def colour_loop_RGB(currentPoint, colourPoints=[(255,0,0), (255,0,255), (0,0,255), (0,255,255), (0,255,0), (255,255,0)], length=1000): 
     sectionLen = int(length / len(colourPoints))
     i = int(currentPoint/sectionLen) 
     fadeFrom = colourPoints[i%len(colourPoints)]
@@ -1061,7 +1061,6 @@ class Colours:
     HUD_DARK     = (20,20,20)
     HUD_TITLE    = (200,200,200)
     HUD_TEXT     = (220,220,220)
-    LEVEL_COMPLETION_BAR = (255,255,0)
 
 
 # Player variables
@@ -1144,7 +1143,7 @@ class Player:
         SCREEN.blit(levelText, levelTextbox)
 
         ## Level Progression Meter
-        py.draw.rect(SCREEN, Colours.LEVEL_COMPLETION_BAR, (0, int(Y*0.89), int(X*((time-levelStartTime)/levelLength)), int(Y*0.01)))
+        py.draw.rect(SCREEN, colour_loop_RGB(ticks), (0, int(Y*0.89), int(X*((time-levelStartTime)/levelLength)), int(Y*0.01)))
 
 
     def detect_collisions(): # Detects collisions with enemies
@@ -1261,7 +1260,7 @@ while True:
     Player.destroyedAsteroids = 0
     Player.destroyedShips = 0
     Player.Ammo.lasers = 100
-    Player.Ammo.bombs = 0 # No longer included
+    #Player.Ammo.bombs = 0 #-> No longer included
     Player.Upgrades.autoShoot = False
     Player.Upgrades.maxLasers = 1
     Player.Upgrades.shield = False
@@ -1270,6 +1269,8 @@ while True:
     Enemies.Asteroids.data = []
     # Difficulty
     difficulty = 0
+    # Other
+    ticks = 0
 
     ## PRE-GAME START / INTRO SCREENS ##
     Stars.posY = intro_screen(Player.SHIP_SPRITE) 
@@ -1277,7 +1278,6 @@ while True:
 
     ## MAIN GAME LOOP ##
     levelStartTime = py.time.get_ticks()
-    #print(levelStartTime, '\n')
     while True:
         ## INTER-FRAME VARIABLES & HANDLING ##
         SCREEN.fill(Colours.BACKGROUND_COLOUR)
@@ -1286,7 +1286,6 @@ while True:
         Mouse.leftClick, Mouse.rightClick = False, False
         Mouse.currentPos, Mouse.prevPos, Mouse.movement = Mouse.calculate_movement(py.mouse.get_pos(), Mouse.prevPos)
         time = py.time.get_ticks()
-        #print(f"{levelStartTime} \n {(levelStartTime + levelLength)} {time} \n")
         for event in py.event.get():
             if event.type == py.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -1379,10 +1378,6 @@ while True:
         ## DRAW IN-GAME HUD ##
         Player.draw_hud()
 
-        ## UPDATE SCREEN ##
-        clock.tick(60)
-        py.display.update() 
-
         ## DETECT END OF LEVEL ##
         if endLevel:
             if len(Enemies.Asteroids.data) == 0:
@@ -1393,7 +1388,12 @@ while True:
                 Stars.posY, levelStartTime = shop_screen()
                 difficulty += 1
         elif time > levelStartTime+ levelLength: 
-        	endLevel = True
+            endLevel = True
+
+        ## UPDATE SCREEN ##
+        clock.tick(60)
+        py.display.update() 
+        ticks += 1
 
     ## END SCREEN + HIGHSCORES ##
     Stars.posY, STAR_BACKGROUND = death_transition_screen()
